@@ -237,7 +237,86 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
 .save-toast.error{border-color:rgba(255,107,107,.4);color:#ff6b6b;}
 .btn-load{background:rgba(79,142,247,.12);border-color:rgba(79,142,247,.4);color:#4f8ef7;}
 .btn-load:hover{background:rgba(79,142,247,.22);border-color:#4f8ef7;}
-</style>
+
+    /* ── 가격 보기 설정 박스 ── */
+    .price-view-box {
+      margin-top: 14px;
+      background: rgba(30,35,60,0.6);
+      border: 1px solid #363d5e;
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .price-view-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .price-view-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #8892bb;
+      letter-spacing: 0.5px;
+    }
+    .currency-selector {
+      display: flex;
+      gap: 4px;
+    }
+    .cur-btn {
+      background: transparent;
+      border: 1px solid #363d5e;
+      border-radius: 6px;
+      color: #5b6188;
+      font-size: 10px;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .cur-btn:hover { border-color: #4f8ef7; color: #4f8ef7; }
+    .cur-btn.active { background: rgba(79,142,247,.15); border-color: #4f8ef7; color: #4f8ef7; font-weight: 700; }
+    .price-view-grid {
+      display: grid;
+      grid-template-columns: 80px repeat(3, 1fr);
+      gap: 4px 6px;
+      font-size: 11px;
+    }
+    .price-view-grid.grid-2col {
+      grid-template-columns: 80px repeat(2, 1fr);
+    }
+    .pv-col-head {
+      text-align: center;
+      color: #5b6188;
+      font-weight: 700;
+      font-size: 10px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #2a2f4a;
+    }
+    .pv-row-label {
+      color: #8892bb;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      padding: 4px 0;
+      border-bottom: 1px solid #1e2340;
+    }
+    .pv-val {
+      text-align: right;
+      font-family: 'Space Mono', monospace;
+      color: #c8d0f0;
+      font-size: 10px;
+      padding: 4px 2px;
+      border-bottom: 1px solid #1e2340;
+    }
+    .pv-note {
+      margin-top: 8px;
+      font-size: 10px;
+      color: #f59e0b;
+      min-height: 14px;
+    }
+
+    </style>
 </head>
 <body>
 
@@ -329,6 +408,36 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="rrow"><span class="rname">보증금</span><span class="rval" id="d_g_dep">-</span></div>
         <div class="rrow total"><span class="rname">총 게스트 결제 금액</span><span class="rval" id="d_g_total">-</span></div>
         <div class="rrow"><span class="rname sub">보증금 제외</span><span class="rval sub" id="d_g_nodep">-</span></div>
+        <div class="price-view-box" id="d_price_view_box">
+          <div class="price-view-header">
+            <span class="price-view-title">📋 가격 보기 설정</span>
+            <div class="currency-selector">
+              <button class="cur-btn active" data-cur="KRW" onclick="setCurrency('KRW',this)">₩ KRW</button>
+              <button class="cur-btn" data-cur="USD" onclick="setCurrency('USD',this)">$ USD</button>
+              <button class="cur-btn" data-cur="JPY" onclick="setCurrency('JPY',this)">¥ JPY</button>
+              <button class="cur-btn" data-cur="CNY" onclick="setCurrency('CNY',this)">¥ CNY</button>
+            </div>
+          </div>
+          <div class="price-view-grid">
+            <div class="pv-col-head"></div>
+            <div class="pv-col-head">6박</div>
+            <div class="pv-col-head">14박</div>
+            <div class="pv-col-head">29박</div>
+            <div class="pv-row-label">실이용금액</div>
+            <div class="pv-val" id="d_pv_actual_6">-</div>
+            <div class="pv-val" id="d_pv_actual_14">-</div>
+            <div class="pv-val" id="d_pv_actual_29">-</div>
+            <div class="pv-row-label">기본가격</div>
+            <div class="pv-val" id="d_pv_basic_6">-</div>
+            <div class="pv-val" id="d_pv_basic_14">-</div>
+            <div class="pv-val" id="d_pv_basic_29">-</div>
+            <div class="pv-row-label">임대료기준</div>
+            <div class="pv-val" id="d_pv_rent_6">-</div>
+            <div class="pv-val" id="d_pv_rent_14">-</div>
+            <div class="pv-val" id="d_pv_rent_29">-</div>
+          </div>
+          <div class="pv-note" id="d_pv_note"></div>
+        </div>
       </div>
       <div class="result-card host">
         <div class="result-title">🏠 호스트 정산</div>
@@ -704,6 +813,32 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="rrow"><span class="rname">보증금</span><span class="rval" id="v2d_g_dep">-</span></div>
         <div class="rrow total"><span class="rname">총 게스트 결제 금액</span><span class="rval" id="v2d_g_total">-</span></div>
         <div class="rrow"><span class="rname sub">보증금 제외</span><span class="rval sub" id="v2d_g_nodep">-</span></div>
+        <div class="price-view-box" id="v2d_price_view_box">
+          <div class="price-view-header">
+            <span class="price-view-title">📋 가격 보기 설정</span>
+            <div class="currency-selector">
+              <button class="cur-btn active" data-cur="KRW" onclick="setCurrency('KRW',this)">₩ KRW</button>
+              <button class="cur-btn" data-cur="USD" onclick="setCurrency('USD',this)">$ USD</button>
+              <button class="cur-btn" data-cur="JPY" onclick="setCurrency('JPY',this)">¥ JPY</button>
+              <button class="cur-btn" data-cur="CNY" onclick="setCurrency('CNY',this)">¥ CNY</button>
+            </div>
+          </div>
+          <div class="price-view-grid">
+            <div class="pv-col-head"></div>
+            <div class="pv-col-head">6박</div>
+            <div class="pv-col-head">30박</div>
+            <div class="pv-row-label">실이용금액</div>
+            <div class="pv-val" id="v2d_pv_actual_6">-</div>
+            <div class="pv-val" id="v2d_pv_actual_30">-</div>
+            <div class="pv-row-label">기본가격</div>
+            <div class="pv-val" id="v2d_pv_basic_6">-</div>
+            <div class="pv-val" id="v2d_pv_basic_30">-</div>
+            <div class="pv-row-label">임대료기준</div>
+            <div class="pv-val" id="v2d_pv_rent_6">-</div>
+            <div class="pv-val" id="v2d_pv_rent_30">-</div>
+          </div>
+          <div class="pv-note" id="v2d_pv_note"></div>
+        </div>
       </div>
       <div class="result-card v2h">
         <div class="result-title">🏠 호스트 정산</div>
@@ -1270,6 +1405,7 @@ function calcD() {
   if(dBasis === 'old') syncD2FromState();
   calcD2();
   if(typeof calcSplitD === 'function') calcSplitD();
+  updatePriceView();
 }
 
 
@@ -1699,6 +1835,7 @@ function v2calcD() {
   if(v2dBasis === 'old') v2dSyncFromState();
   v2calcD2();
   if(typeof v2calcSplitD === 'function') v2calcSplitD();
+  updateV2PriceView();
 }
 
 function v2dSetBasis(val) {
@@ -2520,6 +2657,176 @@ function v2calcSplitD() {
 
 
 
+
+/* ============================================================
+   가격 보기 설정 + 통화 변환
+   - VER1: 6박 / 14박 / 29박
+   - VER2: 6박 / 30박
+   - 실이용금액: guest_nodep (보증금제외)
+   - 기본가격: 임대료 + 공과금 (수수료 제외)
+   - 임대료기준: 임대료만
+   - 외화(USD/JPY/CNY): 버퍼 2% 적용
+============================================================ */
+
+// 환율 (기준값, 실제 사용 시 변경 가능)
+var EXCHANGE_RATES = { KRW: 1, USD: 1350, JPY: 9.0, CNY: 186 };
+var CURRENCY_SYMBOL = { KRW: '₩', USD: '$', JPY: '¥', CNY: '¥' };
+var CURRENCY_LABEL  = { KRW: 'KRW', USD: 'USD', JPY: 'JPY', CNY: 'CNY' };
+var BUFFER = 1.02; // 외화 버퍼 2%
+var currentCurrency = 'KRW';
+
+function convertPrice(krw) {
+  if (currentCurrency === 'KRW') return krw;
+  return krw / EXCHANGE_RATES[currentCurrency] * BUFFER;
+}
+
+function formatCurrency(krw) {
+  if (!krw || krw <= 0) return '-';
+  var converted = convertPrice(krw);
+  var sym = CURRENCY_SYMBOL[currentCurrency];
+  if (currentCurrency === 'KRW') {
+    return sym + Math.round(converted).toLocaleString('ko-KR');
+  } else if (currentCurrency === 'JPY') {
+    return sym + Math.round(converted).toLocaleString('ja-JP');
+  } else {
+    return sym + converted.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+}
+
+function setCurrency(cur, btn) {
+  currentCurrency = cur;
+  // 모든 cur-btn active 해제 후 현재 버튼 active
+  document.querySelectorAll('.cur-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.cur === cur);
+  });
+  // 재계산
+  updatePriceView();
+  updateV2PriceView();
+}
+
+/* ── VER1 가격보기 계산 ──
+   실이용금액 = guest_nodep (보증금제외)
+   기본가격   = 임대료 + 공과금 (수수료없음)
+   임대료기준 = 임대료만
+   각 기간별 하루평균 × 기간 = 해당 기간 가격
+*/
+function updatePriceView() {
+  if (!dState || !dState.total_rent) return;
+
+  var rent_per  = v('d_rent');
+  var util_per  = v('d_utility');
+  var clean     = v('d_clean');
+  var pc        = v('d_pet_clean');
+  var pet       = b('d_pet');
+  var dep       = v('d_deposit');
+  var g_rrate   = v('d_g_rrate') / 100;
+  var g_orate   = v('d_g_orate') / 100;
+  var persons   = v('d_persons');
+  var base_pax  = v('d_base_pax');
+  var extra_per = v('d_extra_per') || 0;
+  var extra_pax = Math.max(persons - base_pax, 0);
+
+  var periods = [6, 14, 29];
+  var OVER = 87;
+
+  periods.forEach(function(n) {
+    var rent      = (rent_per + extra_per * extra_pax) * n;
+    var util_amt  = util_per * n;
+    var tc        = clean + (pet ? pc : 0);
+    var total_other = util_amt + tc;
+    var svc_r     = Math.ceil(Math.min(n, OVER) * (rent_per + extra_per * extra_pax) * g_rrate);
+    var svc_o     = Math.ceil(total_other * g_orate);
+    var guest_nodep = rent + total_other + svc_r + svc_o;
+
+    // 실이용금액 (보증금 제외)
+    var actual  = guest_nodep;
+    // 기본가격 (임대료+공과금, 수수료없음)
+    var basic   = rent + util_amt;
+    // 임대료기준
+    var rentOnly = rent;
+
+    var sfx = '_' + n;
+    var el_a = document.getElementById('d_pv_actual' + sfx);
+    var el_b = document.getElementById('d_pv_basic'  + sfx);
+    var el_r = document.getElementById('d_pv_rent'   + sfx);
+    if (el_a) el_a.textContent = formatCurrency(actual);
+    if (el_b) el_b.textContent = formatCurrency(basic);
+    if (el_r) el_r.textContent = formatCurrency(rentOnly);
+  });
+
+  var note = document.getElementById('d_pv_note');
+  if (note) {
+    note.textContent = currentCurrency !== 'KRW'
+      ? '※ ' + CURRENCY_LABEL[currentCurrency] + ' 환율 적용 (버퍼 2% 포함) · 기준환율: 1' + CURRENCY_LABEL[currentCurrency] + ' = ' + EXCHANGE_RATES[currentCurrency].toLocaleString() + '원'
+      : '';
+  }
+}
+
+/* ── VER2 가격보기 계산 ──
+   6박: n<30 구간 → base_rent = (M-W)/(30-6)*(6-6)+W = W
+   30박: n>=30 구간 → base_rent = M/30*30 = M
+*/
+function updateV2PriceView() {
+  var W     = v('v2d_W');
+  var M     = v('v2d_M');
+  if (!W || !M) return;
+
+  var util  = v('v2d_utility');
+  var clean = v('v2d_clean');
+  var pc    = v('v2d_pet_clean');
+  var pet   = b('v2d_pet');
+  var gr    = v('v2d_g_rate') / 100;
+  var bp    = v('v2d_base_pax');
+  var k     = v('v2d_persons');
+  var ep    = v('v2d_extra_per');
+  var extra_pax = Math.max(k - bp, 0);
+  var tc    = clean + (pet ? pc : 0);
+
+  var periods = [6, 30];
+  periods.forEach(function(n) {
+    var base_rent;
+    if (n < 30) {
+      base_rent = ((M - W) / (30 - 6)) * (n - 6) + W;
+    } else {
+      base_rent = M / 30 * n;
+    }
+    var extra_cost  = extra_pax * ep * n;
+    var total_rent  = base_rent + extra_cost;
+    var util_amt    = util * n;
+    var total_other = util_amt + tc;
+    var svc_nights  = Math.min(n, 90);
+    var svc_rent    = (total_rent / n * svc_nights) * gr;
+    var svc_other   = (util * svc_nights + tc) * gr;
+    var guest_nodep = Math.floor(total_rent + svc_rent + total_other + svc_other);
+
+    // 실이용금액
+    var actual   = guest_nodep;
+    // 기본가격 (임대료+공과금)
+    var basic    = Math.floor(total_rent + util_amt);
+    // 임대료기준
+    var rentOnly = Math.floor(total_rent);
+
+    var sfx = '_' + n;
+    var el_a = document.getElementById('v2d_pv_actual' + sfx);
+    var el_b = document.getElementById('v2d_pv_basic'  + sfx);
+    var el_r = document.getElementById('v2d_pv_rent'   + sfx);
+    if (el_a) el_a.textContent = formatCurrency(actual);
+    if (el_b) el_b.textContent = formatCurrency(basic);
+    if (el_r) el_r.textContent = formatCurrency(rentOnly);
+  });
+
+  // VER2 그리드 2열로 조정
+  var grid = document.querySelector('#v2d_price_view_box .price-view-grid');
+  if (grid) grid.className = 'price-view-grid grid-2col';
+
+  var note = document.getElementById('v2d_pv_note');
+  if (note) {
+    note.textContent = currentCurrency !== 'KRW'
+      ? '※ ' + CURRENCY_LABEL[currentCurrency] + ' 환율 적용 (버퍼 2% 포함) · 기준환율: 1' + CURRENCY_LABEL[currentCurrency] + ' = ' + EXCHANGE_RATES[currentCurrency].toLocaleString() + '원'
+      : '';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   calcD();
   calcO();
@@ -2529,6 +2836,8 @@ document.addEventListener('DOMContentLoaded', function() {
   calcCmpO();
   calcSplitD();
   v2calcSplitD();
+  updatePriceView();
+  updateV2PriceView();
 });
 
 </script>
