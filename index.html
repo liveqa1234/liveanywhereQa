@@ -498,6 +498,16 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
           <input type="number" id="v2d_h_rate" value="3.3" step="0.1" oninput="v2calcD()">
         </div>
         <hr class="section-divider">
+        <div class="card-title">쿠폰</div>
+        <div class="field">
+          <label>쿠폰 할인율 (%)</label>
+          <input type="number" id="v2d_c_rate" value="0" step="0.1" oninput="v2calcD()" placeholder="0">
+        </div>
+        <div class="field">
+          <label>쿠폰 최대 할인 금액 (원, 0=무제한)</label>
+          <input type="number" id="v2d_c_max" value="0" oninput="v2calcD()" placeholder="0">
+        </div>
+        <hr class="section-divider">
         <div class="card-title green">3개월 초과 추가 할인 <span class="changed-tag">신규</span></div>
         <div class="field">
           <div class="checkbox-row"><input type="checkbox" id="v2d_extra_disc_on" onchange="v2calcD()"><label for="v2d_extra_disc_on">90박 초과분 추가 할인 적용</label></div>
@@ -525,6 +535,7 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="rrow"><span class="rname sub">ㄴ 총 공과금</span><span class="rval sub" id="v2d_g_util">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 총 청소비</span><span class="rval sub" id="v2d_g_clean">-</span></div>
         <div class="rrow"><span class="rname">기타 서비스 이용료</span><span class="rval" id="v2d_g_svc_other">-</span></div>
+        <div class="rrow" id="v2d_g_coupon_row" style="display:none;"><span class="rname">쿠폰 할인</span><span class="rval neg" id="v2d_g_coupon">-</span></div>
         <div class="rrow"><span class="rname">보증금</span><span class="rval" id="v2d_g_dep">-</span></div>
         <div class="rrow" id="v2d_dep_basis_row" style="display:none;"><span class="rname sub" style="font-size:10px;color:#f59e0b;">ㄴ 기간별 적용 기준</span><span class="rval sub" id="v2d_dep_basis_label" style="font-size:10px;color:#f59e0b;">-</span></div>
         <div class="rrow total"><span class="rname">총 게스트 결제 금액</span><span class="rval" id="v2d_g_total">-</span></div>
@@ -683,7 +694,7 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         </div>
         <div class="field" style="grid-column:1/-1;">
           <label>적용 환율 <span id="v2o_rate_label" style="color:#4f8ef7;font-weight:700;">(원/바트)</span></label>
-          <input type="number" id="v2o_rate" value="50.082" step="0.001" oninput="v2calcO();updateV2OKrw();updateV2ODiscHint();updateV2OPeakHint()">
+          <input type="number" id="v2o_rate" value="49.8576" step="0.001" oninput="v2calcO();updateV2OKrw();updateV2ODiscHint();updateV2OPeakHint()">
         </div>
         <!-- W 입력 -->
         <div class="field">
@@ -804,6 +815,16 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="field"><label>게스트 수수료율 (%)</label><input type="number" id="v2o_g_rate" value="9.9" step="0.1" oninput="v2calcO()"></div>
         <div class="field"><label>호스트 수수료율 (%)</label><input type="number" id="v2o_h_rate" value="3.3" step="0.1" oninput="v2calcO()"></div>
         <hr class="section-divider">
+        <div class="card-title">쿠폰</div>
+        <div class="field">
+          <label>쿠폰 할인율 (%)</label>
+          <input type="number" id="v2o_c_rate" value="0" step="0.1" oninput="v2calcO()" placeholder="0">
+        </div>
+        <div class="field">
+          <label>쿠폰 최대 할인 금액 (원, 0=무제한)</label>
+          <input type="number" id="v2o_c_max" value="0" oninput="v2calcO()" placeholder="0">
+        </div>
+        <hr class="section-divider">
         <div class="card-title green">3개월 초과 추가 할인</div>
         <div class="field"><div class="checkbox-row"><input type="checkbox" id="v2o_extra_disc_on" onchange="v2calcO()"><label for="v2o_extra_disc_on">90박 초과분 추가 할인 적용</label></div></div>
         <div class="field"><label>추가 할인율 (%, 90박 초과 박수에 적용)</label><input type="number" id="v2o_extra_disc" value="0" step="0.1" oninput="v2calcO()"></div>
@@ -827,6 +848,7 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="rrow"><span class="rname sub">ㄴ 총 공과금</span><span class="rval sub" id="v2o_g_util">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 총 청소비</span><span class="rval sub" id="v2o_g_clean">-</span></div>
         <div class="rrow"><span class="rname">기타 서비스 이용료</span><span class="rval" id="v2o_g_svc_other">-</span></div>
+        <div class="rrow" id="v2o_g_coupon_row" style="display:none;"><span class="rname">쿠폰 할인</span><span class="rval neg" id="v2o_g_coupon">-</span></div>
         <div class="rrow"><span class="rname">보증금</span><span class="rval" id="v2o_g_dep">-</span></div>
         <div class="rrow" id="v2o_dep_basis_row" style="display:none;"><span class="rname sub" style="font-size:10px;color:#f59e0b;">ㄴ 기간별 적용 기준</span><span class="rval sub" id="v2o_dep_basis_label" style="font-size:10px;color:#f59e0b;">-</span></div>
         <div class="rrow total"><span class="rname">총 게스트 결제 금액</span><span class="rval" id="v2o_g_total">-</span></div>
@@ -1956,7 +1978,8 @@ function v2CoreCalc(n, k, pet,
                     W, M, utility, clean, pet_clean, extra_per, base_pax, deposit,
                     g_rate, h_rate, extra_disc_on, extra_disc_rate,
                     disc_on, disc_rate,
-                    peak_on, peak1, peak2, peak3) {
+                    peak_on, peak1, peak2, peak3,
+                    c_rate, c_max) {
   const extra_pax = Math.max(k - base_pax, 0);
 
   // 기본 임대료 (추가인원 제외)
@@ -2005,8 +2028,15 @@ function v2CoreCalc(n, k, pet,
   // [4] 기타 서비스 이용료
   const svc_other = (utility * Math.min(n, 90) + total_clean) * g_rate;
 
+  // 쿠폰 계산
+  let coupon = 0;
+  if (c_rate > 0) {
+    const raw = Math.ceil((total_rent + svc_rent) * c_rate);
+    coupon = (c_max > 0) ? Math.min(raw, c_max) : raw;
+  }
+
   // 게스트 결제 (소수점 버림)
-  const guest_nodep = Math.floor(total_rent + svc_rent + total_other + svc_other);
+  const guest_nodep = Math.floor(total_rent + svc_rent + total_other + svc_other) - coupon;
   const guest_total = guest_nodep + deposit;
 
   // 호스트 수수료
@@ -2016,7 +2046,7 @@ function v2CoreCalc(n, k, pet,
   return {
     base_rent, extra_cost, disc_amount, extra_disc_amount, peak_cost, total_rent,
     svc_rent, svc_nights, total_clean, total_util, total_other,
-    svc_other, guest_nodep, guest_total, deposit, h_svc, host_total,
+    svc_other, coupon, guest_nodep, guest_total, deposit, h_svc, host_total,
     extra_pax
   };
 }
@@ -2043,9 +2073,13 @@ function v2calcD() {
   const peak2=v('v2d_peak2');
   const peak3=v('v2d_peak3');
 
+  const c_rate_d = v('v2d_c_rate') / 100;
+  const c_max_d  = v('v2d_c_max');
+
   const r = v2CoreCalc(n,k,pet,W,M,util,clean,pc,ep,bp,dep,gr,hr,ed_on,ed,
                        disc_on,disc_rate,
-                       peak_on,peak1,peak2,peak3);
+                       peak_on,peak1,peak2,peak3,
+                       c_rate_d, c_max_d);
 
   set('v2d_g_rent', fmt(r.total_rent));
   set('v2d_g_base_rent', fmt(r.base_rent));
@@ -2064,6 +2098,10 @@ function v2calcD() {
   set('v2d_g_util', fmt(r.total_util));
   set('v2d_g_clean', fmt(r.total_clean));
   set('v2d_g_svc_other', fmt(r.svc_other));
+  // 쿠폰 표시
+  var v2dCouponRow = document.getElementById('v2d_g_coupon_row');
+  if (v2dCouponRow) v2dCouponRow.style.display = r.coupon > 0 ? '' : 'none';
+  set('v2d_g_coupon', r.coupon > 0 ? '-' + fmt(r.coupon) : fmt(0));
   set('v2d_g_dep', fmt(dep));
   // 기간별 보증금 기준 표시
   var depBasisRow = document.getElementById('v2d_dep_basis_row');
@@ -2172,7 +2210,8 @@ function v2CoreCalcOverseas(rate, n, k, pet,
                              W, M, utility, clean, pet_clean, extra_per, base_pax, deposit_base,
                              g_rate, h_rate, extra_disc_on, extra_disc_rate,
                              disc_on, disc_rate,
-                             peak_on, peak1, peak2, peak3) {
+                             peak_on, peak1, peak2, peak3,
+                             c_rate, c_max) {
   const extra_pax = Math.max(k - base_pax, 0);
 
   // 기본 임대료 (기준 통화)
@@ -2227,7 +2266,14 @@ function v2CoreCalcOverseas(rate, n, k, pet,
 
   const deposit_k = Math.ceil(deposit_base * rate / 10000) * 10000;
 
-  const guest_nodep = Math.floor(total_rent_k + svc_rent_k + total_other_k + svc_other_k);
+  // 쿠폰 계산 (원화 기준)
+  let coupon_k = 0;
+  if (c_rate > 0) {
+    const raw = Math.ceil((total_rent_k + svc_rent_k) * c_rate);
+    coupon_k = (c_max > 0) ? Math.min(raw, c_max) : raw;
+  }
+
+  const guest_nodep = Math.floor(total_rent_k + svc_rent_k + total_other_k + svc_other_k) - coupon_k;
   const guest_total = guest_nodep + deposit_k;
 
   const h_svc_b = (total_rent_b + total_other_b) * h_rate;
@@ -2236,7 +2282,7 @@ function v2CoreCalcOverseas(rate, n, k, pet,
   return {
     base_rent_k, extra_k, total_rent_k, total_rent_b, base_rent_b, extra_cost_b,
     total_clean_k, total_util_k, total_other_k, total_clean_b, total_util_b, total_other_b,
-    svc_rent_k, svc_other_k, guest_nodep, guest_total, deposit_k, deposit_base,
+    svc_rent_k, svc_other_k, coupon_k, guest_nodep, guest_total, deposit_k, deposit_base,
     h_svc_b, host_total_b, extra_pax, extra_disc_b, disc_b, peak_cost_b
   };
 }
@@ -2254,8 +2300,12 @@ function v2calcO() {
   const peak_on   = b('v2o_peak_on');
   const peak1=v('v2o_peak1'), peak2=v('v2o_peak2'), peak3=v('v2o_peak3');
 
+  const c_rate_o = v('v2o_c_rate') / 100;
+  const c_max_o  = v('v2o_c_max');
+
   const r = v2CoreCalcOverseas(rate,n,k,pet,W,M,util,clean,pc,ep,bp,dep,gr,hr,ed_on,ed,
-                                disc_on,disc_rate,peak_on,peak1,peak2,peak3);
+                                disc_on,disc_rate,peak_on,peak1,peak2,peak3,
+                                c_rate_o, c_max_o);
 
   set('v2o_g_rent', fmt(r.total_rent_k));
   set('v2o_g_base_rent', fmt(r.base_rent_k));
@@ -2272,6 +2322,10 @@ function v2calcO() {
   set('v2o_g_util', fmt(r.total_util_k));
   set('v2o_g_clean', fmt(r.total_clean_k));
   set('v2o_g_svc_other', fmt(r.svc_other_k));
+  // 쿠폰 표시
+  var v2oCouponRow = document.getElementById('v2o_g_coupon_row');
+  if (v2oCouponRow) v2oCouponRow.style.display = r.coupon_k > 0 ? '' : 'none';
+  set('v2o_g_coupon', r.coupon_k > 0 ? '-' + fmt(r.coupon_k) : fmt(0));
   set('v2o_g_dep', fmt(r.deposit_k));
   var oBasisRow = document.getElementById('v2o_dep_basis_row');
   var oBasisLabel = document.getElementById('v2o_dep_basis_label');
@@ -3271,6 +3325,7 @@ document.addEventListener('DOMContentLoaded', function() {
   v2calcSplitD();
   updatePriceView();
   updateV2PriceView();
+  setV2OCountry();
   updateV2OKrw();
   updateV2ODiscHint();
   updateV2OPeakHint();
