@@ -316,6 +316,21 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
       min-height: 14px;
     }
 
+    
+    /* ── 보증금 모드 버튼 ── */
+    .dep-mode-btn {
+      background: transparent;
+      border: 1px solid #363d5e;
+      border-radius: 6px;
+      color: #5b6188;
+      font-size: 10px;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .dep-mode-btn:hover { border-color: #4f8ef7; color: #4f8ef7; }
+    .dep-mode-btn.active { background: rgba(79,142,247,.15); border-color: #4f8ef7; color: #4f8ef7; font-weight: 700; }
+
     </style>
 </head>
 <body>
@@ -764,7 +779,32 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="field"><label>반려동물 청소비 (원)</label><input type="number" id="v2d_pet_clean" value="0" oninput="v2calcD()"></div>
         <div class="field"><label>박당 추가 인원비 (원)</label><input type="number" id="v2d_extra_per" value="0" oninput="v2calcD()"></div>
         <div class="field"><label>기준 인원 j</label><input type="number" id="v2d_base_pax" value="1" oninput="v2calcD()"></div>
-        <div class="field"><label>보증금 (30박 기준 단일, 원) <span class="changed-tag">변경</span></label><input type="number" id="v2d_deposit" value="0" oninput="v2calcD()"></div>
+        <div class="field" style="grid-column:1/-1;">
+          <label style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+            <span>보증금 <span class="changed-tag">변경</span></span>
+            <span style="display:flex;gap:4px;">
+              <button class="dep-mode-btn active" id="v2d_dep_mode_flat" onclick="setV2DepMode('flat')">일괄</button>
+              <button class="dep-mode-btn" id="v2d_dep_mode_period" onclick="setV2DepMode('period')">기간별</button>
+            </span>
+          </label>
+          <!-- 일괄 모드 -->
+          <div id="v2d_dep_flat_wrap">
+            <input type="number" id="v2d_deposit" value="0" placeholder="보증금 (원)" style="width:100%;margin-top:6px;" oninput="v2calcD()">
+          </div>
+          <!-- 기간별 모드 -->
+          <div id="v2d_dep_period_wrap" style="display:none;margin-top:6px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+              <div>
+                <div style="font-size:10px;color:#8892bb;margin-bottom:3px;">일주일 이상 (n &lt; 30)</div>
+                <input type="number" id="v2d_dep_week" value="0" placeholder="0" oninput="v2calcD()">
+              </div>
+              <div>
+                <div style="font-size:10px;color:#8892bb;margin-bottom:3px;">한달 이상 (n ≥ 30)</div>
+                <input type="number" id="v2d_dep_month_gte" value="0" placeholder="0" oninput="v2calcD()">
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="card">
         <div class="card-title green">예약 조건</div>
@@ -811,6 +851,7 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="rrow"><span class="rname sub">ㄴ 총 청소비</span><span class="rval sub" id="v2d_g_clean">-</span></div>
         <div class="rrow"><span class="rname">기타 서비스 이용료</span><span class="rval" id="v2d_g_svc_other">-</span></div>
         <div class="rrow"><span class="rname">보증금</span><span class="rval" id="v2d_g_dep">-</span></div>
+        <div class="rrow" id="v2d_dep_basis_row" style="display:none;"><span class="rname sub" style="font-size:10px;color:#f59e0b;">ㄴ 기간별 적용 기준</span><span class="rval sub" id="v2d_dep_basis_label" style="font-size:10px;color:#f59e0b;">-</span></div>
         <div class="rrow total"><span class="rname">총 게스트 결제 금액</span><span class="rval" id="v2d_g_total">-</span></div>
         <div class="rrow"><span class="rname sub">보증금 제외</span><span class="rval sub" id="v2d_g_nodep">-</span></div>
         <div class="price-view-box" id="v2d_price_view_box">
@@ -1793,7 +1834,8 @@ function v2calcD() {
   const n=v('v2d_nights'), k=v('v2d_persons'), pet=b('v2d_pet');
   const W=v('v2d_W'), M=v('v2d_M'), util=v('v2d_utility');
   const clean=v('v2d_clean'), pc=v('v2d_pet_clean'), ep=v('v2d_extra_per');
-  const bp=v('v2d_base_pax'), dep=v('v2d_deposit');
+  const bp=v('v2d_base_pax');
+  const n_for_dep=v('v2d_nights'), dep=getV2Deposit(n_for_dep);
   const gr=v('v2d_g_rate')/100, hr=v('v2d_h_rate')/100;
   const ed_on=b('v2d_extra_disc_on'), ed=v('v2d_extra_disc')/100;
 
@@ -1810,6 +1852,18 @@ function v2calcD() {
   set('v2d_g_clean', fmt(r.total_clean));
   set('v2d_g_svc_other', fmt(r.svc_other));
   set('v2d_g_dep', fmt(dep));
+  // 기간별 보증금 기준 표시
+  var depBasisRow = document.getElementById('v2d_dep_basis_row');
+  var depBasisLabel = document.getElementById('v2d_dep_basis_label');
+  if (depBasisRow && depBasisLabel) {
+    if (v2DepMode === 'period') {
+      depBasisRow.style.display = '';
+      var n_chk = v('v2d_nights');
+      depBasisLabel.textContent = n_chk < 30 ? '일주일 이상 (n < 30)' : '한달 이상 (n ≥ 30)';
+    } else {
+      depBasisRow.style.display = 'none';
+    }
+  }
   set('v2d_g_total', fmt(r.guest_total));
   set('v2d_g_nodep', fmt(r.guest_nodep));
   set('v2d_h_rent', fmt(r.total_rent));
@@ -2561,7 +2615,7 @@ function v2calcSplitD() {
   var clean= v('v2d_clean');
   var pc   = v('v2d_pet_clean');
   var pet  = b('v2d_pet');
-  var dep  = v('v2d_deposit');
+  var dep  = getV2Deposit(n);
   var gr   = v('v2d_g_rate') / 100;
   var bp   = v('v2d_base_pax');
   var k    = v('v2d_persons');
@@ -2824,6 +2878,28 @@ function updateV2PriceView() {
     note.textContent = currentCurrency !== 'KRW'
       ? '※ ' + CURRENCY_LABEL[currentCurrency] + ' 환율 적용 (버퍼 2% 포함) · 기준환율: 1' + CURRENCY_LABEL[currentCurrency] + ' = ' + EXCHANGE_RATES[currentCurrency].toLocaleString() + '원'
       : '';
+  }
+}
+
+
+/* ── VER2 보증금 모드 관리 ── */
+var v2DepMode = 'flat';
+
+function setV2DepMode(mode) {
+  v2DepMode = mode;
+  document.getElementById('v2d_dep_flat_wrap').style.display   = mode === 'flat'   ? '' : 'none';
+  document.getElementById('v2d_dep_period_wrap').style.display = mode === 'period' ? '' : 'none';
+  document.getElementById('v2d_dep_mode_flat').classList.toggle('active',   mode === 'flat');
+  document.getElementById('v2d_dep_mode_period').classList.toggle('active', mode === 'period');
+  v2calcD();
+}
+
+function getV2Deposit(n) {
+  if (v2DepMode === 'flat') {
+    return v('v2d_deposit');
+  } else {
+    if (n < 30) return v('v2d_dep_week');
+    return v('v2d_dep_month_gte');
   }
 }
 
