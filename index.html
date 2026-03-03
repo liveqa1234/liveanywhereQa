@@ -331,6 +331,16 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
     .dep-mode-btn:hover { border-color: #4f8ef7; color: #4f8ef7; }
     .dep-mode-btn.active { background: rgba(79,142,247,.15); border-color: #4f8ef7; color: #4f8ef7; font-weight: 700; }
 
+    
+    /* 원화 환산 힌트 */
+    .krw-hint {
+      font-size: 10px;
+      color: #f59e0b;
+      margin-top: 3px;
+      min-height: 14px;
+      font-family: 'Space Mono', monospace;
+    }
+
     </style>
 </head>
 <body>
@@ -1035,22 +1045,135 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
     </div>
     <div class="grid2">
       <div class="card">
-        <div class="card-title green">기본 설정 (기준 통화)</div>
-        <div class="field"><label>적용 환율 (원/기준통화)</label><input type="number" id="v2o_rate" value="50.082" step="0.001" oninput="v2calcO()"></div>
-        <div class="field"><label>일주일(6박) 기준 임대료 W</label><input type="number" id="v2o_W" value="246.8" step="0.01" oninput="v2calcO()"></div>
-        <div class="field"><label>한달(30박) 기준 임대료 M</label><input type="number" id="v2o_M" value="617" step="0.01" oninput="v2calcO()"></div>
-        <div class="field"><label>박당 공과금 (기준 통화)</label><input type="number" id="v2o_utility" value="0" step="0.01" oninput="v2calcO()"></div>
-        <div class="field"><label>청소비 (기준 통화)</label><input type="number" id="v2o_clean" value="0" step="0.01" oninput="v2calcO()"></div>
-        <div class="field"><label>반려동물 청소비 (기준 통화)</label><input type="number" id="v2o_pet_clean" value="0" step="0.01" oninput="v2calcO()"></div>
-        <div class="field"><label>박당 추가 인원비 (기준 통화)</label><input type="number" id="v2o_extra_per" value="0" step="0.01" oninput="v2calcO()"></div>
+        <div class="card-title green">기본 설정</div>
+        <!-- 국가 선택 -->
+        <div class="field" style="grid-column:1/-1;">
+          <label>국가 선택</label>
+          <select id="v2o_country" onchange="setV2OCountry()" style="width:100%;padding:8px;background:#1a1f3a;color:#c8d0f0;border:1px solid #363d5e;border-radius:8px;">
+            <option value="TH">🇹🇭 태국 (바트, THB)</option>
+            <option value="ID">🇮🇩 인도네시아 (루피아, IDR)</option>
+            <option value="MY">🇲🇾 말레이시아 (링깃, MYR)</option>
+            <option value="VN">🇻🇳 베트남 (동, VND)</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column:1/-1;">
+          <label>적용 환율 <span id="v2o_rate_label" style="color:#4f8ef7;font-weight:700;">(원/바트)</span></label>
+          <input type="number" id="v2o_rate" value="50.082" step="0.001" oninput="v2calcO();updateV2OKrw();updateV2ODiscHint();updateV2OPeakHint()">
+        </div>
+        <!-- W 입력 -->
+        <div class="field">
+          <label>일주일(6박) 기준 임대료 W <span class="v2o_unit" style="color:#4f8ef7;font-weight:700;">바트</span></label>
+          <input type="number" id="v2o_W" value="246.8" step="0.01" oninput="v2calcO();updateV2OKrw()">
+          <div class="krw-hint" id="v2o_W_krw"></div>
+        </div>
+        <!-- M 입력 -->
+        <div class="field">
+          <label>한달(30박) 기준 임대료 M <span class="v2o_unit" style="color:#4f8ef7;font-weight:700;">바트</span></label>
+          <input type="number" id="v2o_M" value="617" step="0.01" oninput="v2calcO();updateV2OKrw()">
+          <div class="krw-hint" id="v2o_M_krw"></div>
+        </div>
+        <!-- 공과금 -->
+        <div class="field">
+          <label>박당 공과금 <span class="v2o_unit" style="color:#4f8ef7;font-weight:700;">바트</span></label>
+          <input type="number" id="v2o_utility" value="0" step="0.01" oninput="v2calcO();updateV2OKrw()">
+          <div class="krw-hint" id="v2o_utility_krw"></div>
+        </div>
+        <!-- 청소비 -->
+        <div class="field">
+          <label>청소비 <span class="v2o_unit" style="color:#4f8ef7;font-weight:700;">바트</span></label>
+          <input type="number" id="v2o_clean" value="0" step="0.01" oninput="v2calcO();updateV2OKrw()">
+          <div class="krw-hint" id="v2o_clean_krw"></div>
+        </div>
+        <!-- 반려동물 청소비 -->
+        <div class="field">
+          <label>반려동물 청소비 <span class="v2o_unit" style="color:#4f8ef7;font-weight:700;">바트</span></label>
+          <input type="number" id="v2o_pet_clean" value="0" step="0.01" oninput="v2calcO();updateV2OKrw()">
+          <div class="krw-hint" id="v2o_pet_clean_krw"></div>
+        </div>
+        <!-- 추가 인원비 -->
+        <div class="field">
+          <label>박당 추가 인원비 <span class="v2o_unit" style="color:#4f8ef7;font-weight:700;">바트</span></label>
+          <input type="number" id="v2o_extra_per" value="0" step="0.01" oninput="v2calcO();updateV2OKrw()">
+          <div class="krw-hint" id="v2o_extra_per_krw"></div>
+        </div>
         <div class="field"><label>기준 인원 j</label><input type="number" id="v2o_base_pax" value="1" oninput="v2calcO()"></div>
-        <div class="field"><label>보증금 (기준 통화)</label><input type="number" id="v2o_deposit" value="0" step="0.01" oninput="v2calcO()"></div>
+        <div class="field" style="grid-column:1/-1;">
+          <label style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+            <span>보증금 (기준 통화) <span class="changed-tag">변경</span></span>
+            <span style="display:flex;gap:4px;">
+              <button class="dep-mode-btn active" id="v2o_dep_mode_flat" onclick="setV2ODepMode('flat')">일괄</button>
+              <button class="dep-mode-btn" id="v2o_dep_mode_period" onclick="setV2ODepMode('period')">기간별</button>
+            </span>
+          </label>
+          <!-- 일괄 모드 -->
+          <div id="v2o_dep_flat_wrap">
+            <input type="number" id="v2o_deposit" value="0" step="0.01" placeholder="보증금 (기준 통화)" style="width:100%;margin-top:6px;" oninput="v2calcO();updateV2OKrw()">
+            <div class="krw-hint" id="v2o_deposit_krw"></div>
+          </div>
+          <!-- 기간별 모드 -->
+          <div id="v2o_dep_period_wrap" style="display:none;margin-top:6px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+              <div>
+                <div style="font-size:10px;color:#8892bb;margin-bottom:3px;">일주일 이상 (n &lt; 30)</div>
+                <input type="number" id="v2o_dep_week" value="0" step="0.01" placeholder="0" oninput="v2calcO();updateV2OKrw()">
+                <div class="krw-hint" id="v2o_dep_week_krw"></div>
+              </div>
+              <div>
+                <div style="font-size:10px;color:#8892bb;margin-bottom:3px;">한달 이상 (n ≥ 30)</div>
+                <input type="number" id="v2o_dep_month_gte" value="0" step="0.01" placeholder="0" oninput="v2calcO();updateV2OKrw()">
+                <div class="krw-hint" id="v2o_dep_month_gte_krw"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="card">
         <div class="card-title green">예약 조건</div>
-        <div class="field"><label>총 박수 n</label><input type="number" id="v2o_nights" value="30" oninput="v2calcO()"></div>
+        <div class="field"><label>총 박수 n</label><input type="number" id="v2o_nights" value="30" oninput="v2calcO();updateV2ODiscHint()"></div>
         <div class="field"><label>인원수 k (유아 제외)</label><input type="number" id="v2o_persons" value="1" oninput="v2calcO()"></div>
         <div class="field"><div class="checkbox-row"><input type="checkbox" id="v2o_pet" onchange="v2calcO()"><label for="v2o_pet">반려동물 있음</label></div></div>
+        <hr class="section-divider">
+        <div class="card-title orange">기간 할인 <span class="changed-tag">신규</span></div>
+        <div class="field" style="grid-column:1/-1;">
+          <label style="display:flex;align-items:center;justify-content:space-between;">
+            <span>기간 할인 적용</span>
+            <input type="checkbox" id="v2o_disc_on" onchange="v2calcO()" style="width:auto;margin:0;">
+          </label>
+        </div>
+        <div class="field">
+          <label>할인율 (%)</label>
+          <input type="number" id="v2o_disc_rate" value="0" step="0.1" min="0" max="100" oninput="v2calcO();updateV2ODiscHint()" placeholder="0">
+          <div class="krw-hint" id="v2o_disc_hint" style="color:#4f8ef7;"></div>
+        </div>
+        <div class="field" style="grid-column:1/-1;">
+          <div class="hint" style="margin:0;">✅ 임대료 전체에 할인율 적용 (수수료는 할인 후 임대료 기준으로 재산정)</div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-title orange">성수기 박당 추가요금 <span class="changed-tag">신규</span></div>
+        <div class="field" style="grid-column:1/-1;">
+          <label style="display:flex;align-items:center;justify-content:space-between;">
+            <span>성수기 추가요금 적용</span>
+            <input type="checkbox" id="v2o_peak_on" onchange="v2calcO()" style="width:auto;margin:0;">
+          </label>
+        </div>
+        <div class="field">
+          <label>구간 1 · 박당 추가요금 (원)</label>
+          <input type="number" id="v2o_peak1" value="0" oninput="v2calcO();updateV2OPeakHint()" placeholder="0">
+          <div class="krw-hint" id="v2o_peak1_hint"></div>
+        </div>
+        <div class="field">
+          <label>구간 2 · 박당 추가요금 (원)</label>
+          <input type="number" id="v2o_peak2" value="0" oninput="v2calcO();updateV2OPeakHint()" placeholder="0">
+          <div class="krw-hint" id="v2o_peak2_hint"></div>
+        </div>
+        <div class="field">
+          <label>구간 3 · 박당 추가요금 (원)</label>
+          <input type="number" id="v2o_peak3" value="0" oninput="v2calcO();updateV2OPeakHint()" placeholder="0">
+          <div class="krw-hint" id="v2o_peak3_hint"></div>
+        </div>
+        <div class="field" style="grid-column:1/-1;">
+          <div class="hint" style="margin:0;">✅ 성수기 추가요금은 임대료에 합산 · 수수료 대상에 포함</div>
+        </div>
         <hr class="section-divider">
         <div class="card-title green">수수료율 <span class="changed-tag">변경</span></div>
         <div class="field"><label>게스트 수수료율 (%)</label><input type="number" id="v2o_g_rate" value="9.9" step="0.1" oninput="v2calcO()"></div>
@@ -1072,12 +1195,15 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="rrow"><span class="rname sub">ㄴ 기본 임대료</span><span class="rval sub" id="v2o_g_base_rent">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 추가인원비</span><span class="rval sub" id="v2o_g_extra">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 90박 초과 할인</span><span class="rval sub neg" id="v2o_g_extra_disc">-</span></div>
+        <div class="rrow" id="v2o_g_disc_row" style="display:none;"><span class="rname sub">ㄴ 기간 할인</span><span class="rval sub neg" id="v2o_g_disc_amt">-</span></div>
+        <div class="rrow" id="v2o_g_peak_row" style="display:none;"><span class="rname sub">ㄴ 성수기 추가요금</span><span class="rval sub" id="v2o_g_peak_cost">-</span></div>
         <div class="rrow"><span class="rname">임대 서비스 이용료</span><span class="rval" id="v2o_g_svc_rent">-</span></div>
         <div class="rrow"><span class="rname">총 공과금 + 총 청소비</span><span class="rval" id="v2o_g_other">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 총 공과금</span><span class="rval sub" id="v2o_g_util">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 총 청소비</span><span class="rval sub" id="v2o_g_clean">-</span></div>
         <div class="rrow"><span class="rname">기타 서비스 이용료</span><span class="rval" id="v2o_g_svc_other">-</span></div>
         <div class="rrow"><span class="rname">보증금</span><span class="rval" id="v2o_g_dep">-</span></div>
+        <div class="rrow" id="v2o_dep_basis_row" style="display:none;"><span class="rname sub" style="font-size:10px;color:#f59e0b;">ㄴ 기간별 적용 기준</span><span class="rval sub" id="v2o_dep_basis_label" style="font-size:10px;color:#f59e0b;">-</span></div>
         <div class="rrow total"><span class="rname">총 게스트 결제 금액</span><span class="rval" id="v2o_g_total">-</span></div>
         <div class="rrow"><span class="rname sub">보증금 제외</span><span class="rval sub" id="v2o_g_nodep">-</span></div>
       </div>
@@ -2027,7 +2153,9 @@ let v2oBasis = 'new';
 
 function v2CoreCalcOverseas(rate, n, k, pet,
                              W, M, utility, clean, pet_clean, extra_per, base_pax, deposit_base,
-                             g_rate, h_rate, extra_disc_on, extra_disc_rate) {
+                             g_rate, h_rate, extra_disc_on, extra_disc_rate,
+                             disc_on, disc_rate,
+                             peak_on, peak1, peak2, peak3) {
   const extra_pax = Math.max(k - base_pax, 0);
 
   // 기본 임대료 (기준 통화)
@@ -2039,12 +2167,28 @@ function v2CoreCalcOverseas(rate, n, k, pet,
   }
   const extra_cost_b = extra_pax * extra_per * n;
 
+  // [A] 기간 할인 (기준 통화 기준)
+  let disc_b = 0;
+  if (disc_on && disc_rate > 0) {
+    disc_b = (base_rent_b + extra_cost_b) * disc_rate;
+  }
+
+  // [B] 90박 초과 할인
   let extra_disc_b = 0;
   if (extra_disc_on && n > 90 && extra_disc_rate > 0) {
     const over_nights = n - 90;
     extra_disc_b = (base_rent_b / n) * over_nights * extra_disc_rate;
   }
-  const total_rent_b = base_rent_b + extra_cost_b - extra_disc_b;
+
+  // [C] 성수기 박당 추가요금 (기준 통화)
+  let peak_cost_b = 0;
+  if (peak_on) {
+    peak_cost_b += (peak1 || 0) * n;
+    peak_cost_b += (peak2 || 0) * n;
+    peak_cost_b += (peak3 || 0) * n;
+  }
+
+  const total_rent_b = base_rent_b + extra_cost_b - disc_b - extra_disc_b + peak_cost_b;
 
   // 원화 변환
   const total_rent_k = Math.floor(total_rent_b * rate);
@@ -2076,7 +2220,7 @@ function v2CoreCalcOverseas(rate, n, k, pet,
     base_rent_k, extra_k, total_rent_k, total_rent_b, base_rent_b, extra_cost_b,
     total_clean_k, total_util_k, total_other_k, total_clean_b, total_util_b, total_other_b,
     svc_rent_k, svc_other_k, guest_nodep, guest_total, deposit_k, deposit_base,
-    h_svc_b, host_total_b, extra_pax, extra_disc_b
+    h_svc_b, host_total_b, extra_pax, extra_disc_b, disc_b, peak_cost_b
   };
 }
 
@@ -2084,22 +2228,44 @@ function v2calcO() {
   const rate=v('v2o_rate'), n=v('v2o_nights'), k=v('v2o_persons'), pet=b('v2o_pet');
   const W=v('v2o_W'), M=v('v2o_M'), util=v('v2o_utility');
   const clean=v('v2o_clean'), pc=v('v2o_pet_clean'), ep=v('v2o_extra_per');
-  const bp=v('v2o_base_pax'), dep=v('v2o_deposit');
+  const bp=v('v2o_base_pax'), dep=getV2ODeposit(n);
   const gr=v('v2o_g_rate')/100, hr=v('v2o_h_rate')/100;
   const ed_on=b('v2o_extra_disc_on'), ed=v('v2o_extra_disc')/100;
 
-  const r = v2CoreCalcOverseas(rate,n,k,pet,W,M,util,clean,pc,ep,bp,dep,gr,hr,ed_on,ed);
+  const disc_on   = b('v2o_disc_on');
+  const disc_rate = v('v2o_disc_rate') / 100;
+  const peak_on   = b('v2o_peak_on');
+  const peak1=v('v2o_peak1'), peak2=v('v2o_peak2'), peak3=v('v2o_peak3');
+
+  const r = v2CoreCalcOverseas(rate,n,k,pet,W,M,util,clean,pc,ep,bp,dep,gr,hr,ed_on,ed,
+                                disc_on,disc_rate,peak_on,peak1,peak2,peak3);
 
   set('v2o_g_rent', fmt(r.total_rent_k));
   set('v2o_g_base_rent', fmt(r.base_rent_k));
   set('v2o_g_extra', fmt(r.extra_k));
   set('v2o_g_extra_disc', r.extra_disc_b > 0 ? '-' + fmt(r.extra_disc_b * rate) : fmt(0));
+  var oDiscRow = document.getElementById('v2o_g_disc_row');
+  var oPeakRow = document.getElementById('v2o_g_peak_row');
+  if (oDiscRow) oDiscRow.style.display = r.disc_b > 0 ? '' : 'none';
+  if (oPeakRow) oPeakRow.style.display = r.peak_cost_b > 0 ? '' : 'none';
+  set('v2o_g_disc_amt',  r.disc_b > 0      ? '-' + fmt(r.disc_b * rate)      : fmt(0));
+  set('v2o_g_peak_cost', r.peak_cost_b > 0 ?       fmt(r.peak_cost_b * rate) : fmt(0));
   set('v2o_g_svc_rent', fmt(r.svc_rent_k));
   set('v2o_g_other', fmt(r.total_other_k));
   set('v2o_g_util', fmt(r.total_util_k));
   set('v2o_g_clean', fmt(r.total_clean_k));
   set('v2o_g_svc_other', fmt(r.svc_other_k));
   set('v2o_g_dep', fmt(r.deposit_k));
+  var oBasisRow = document.getElementById('v2o_dep_basis_row');
+  var oBasisLabel = document.getElementById('v2o_dep_basis_label');
+  if (oBasisRow && oBasisLabel) {
+    if (v2ODepMode === 'period') {
+      oBasisRow.style.display = '';
+      oBasisLabel.textContent = n < 30 ? '일주일 이상 (n < 30)' : '한달 이상 (n ≥ 30)';
+    } else {
+      oBasisRow.style.display = 'none';
+    }
+  }
   set('v2o_g_total', fmt(r.guest_total));
   set('v2o_g_nodep', fmt(r.guest_nodep));
 
@@ -2964,6 +3130,26 @@ function setV2DepMode(mode) {
   v2calcD();
 }
 
+var v2ODepMode = 'flat';
+
+function setV2ODepMode(mode) {
+  v2ODepMode = mode;
+  document.getElementById('v2o_dep_flat_wrap').style.display   = mode === 'flat'   ? '' : 'none';
+  document.getElementById('v2o_dep_period_wrap').style.display = mode === 'period' ? '' : 'none';
+  document.getElementById('v2o_dep_mode_flat').classList.toggle('active',   mode === 'flat');
+  document.getElementById('v2o_dep_mode_period').classList.toggle('active', mode === 'period');
+  v2calcO();
+}
+
+function getV2ODeposit(n) {
+  if (v2ODepMode === 'flat') {
+    return v('v2o_deposit');
+  } else {
+    if (n < 30) return v('v2o_dep_week');
+    return v('v2o_dep_month_gte');
+  }
+}
+
 function getV2Deposit(n) {
   if (v2DepMode === 'flat') {
     return v('v2d_deposit');
@@ -2971,6 +3157,90 @@ function getV2Deposit(n) {
     if (n < 30) return v('v2d_dep_week');
     return v('v2d_dep_month_gte');
   }
+}
+
+
+/* ── VER2 해외 국가/통화 설정 ── */
+var V2O_COUNTRY_INFO = {
+  TH: { name: '태국',       currency: '바트',   code: 'THB', rate: 49.8576 },
+  ID: { name: '인도네시아', currency: '루피아', code: 'IDR', rate: 0.0965  },
+  MY: { name: '말레이시아', currency: '링깃',   code: 'MYR', rate: 406.7352},
+  VN: { name: '베트남',     currency: '동',     code: 'VND', rate: 0.0629  }
+};
+
+function setV2OCountry() {
+  var country = document.getElementById('v2o_country').value;
+  var info = V2O_COUNTRY_INFO[country];
+  if (!info) return;
+
+  // 환율 업데이트
+  document.getElementById('v2o_rate').value = info.rate;
+  // 환율 라벨 업데이트
+  document.getElementById('v2o_rate_label').textContent = '(원/' + info.currency + ')';
+  // 통화 단위 라벨 전체 업데이트
+  document.querySelectorAll('.v2o_unit').forEach(function(el) {
+    el.textContent = info.currency;
+  });
+  updateV2OKrw();
+  updateV2ODiscHint();
+  updateV2OPeakHint();
+  v2calcO();
+}
+
+function updateV2ODiscHint() {
+  var rate     = v('v2o_rate');
+  var discRate = v('v2o_disc_rate') / 100;
+  var W        = v('v2o_W');
+  var M        = v('v2o_M');
+  var n        = v('v2o_nights') || 30;
+  var hintEl   = document.getElementById('v2o_disc_hint');
+  if (!hintEl || !rate || !discRate) { if (hintEl) hintEl.textContent = ''; return; }
+
+  // 기준 임대료 계산 (기준 통화)
+  var base_rent_b = n < 30 ? ((M - W) / (30 - 6)) * (n - 6) + W : (M / 30) * n;
+  var disc_b = base_rent_b * discRate;
+  var disc_krw = disc_b * rate;
+
+  var country = document.getElementById('v2o_country') ? document.getElementById('v2o_country').value : 'TH';
+  var info = V2O_COUNTRY_INFO[country] || { currency: '현지통화' };
+
+  hintEl.textContent = '≈ -' + disc_b.toFixed(2) + ' ' + info.currency + '  /  ≈ -₩' + Math.round(disc_krw).toLocaleString('ko-KR') + '원';
+}
+
+function updateV2OPeakHint() {
+  var rate = v('v2o_rate');
+  if (!rate) return;
+  var country = document.getElementById('v2o_country') ? document.getElementById('v2o_country').value : 'TH';
+  var info = V2O_COUNTRY_INFO[country] || { currency: '현지통화' };
+  var n = v('v2o_nights') || 30;
+
+  [1, 2, 3].forEach(function(i) {
+    var krw    = v('v2o_peak' + i);
+    var hintEl = document.getElementById('v2o_peak' + i + '_hint');
+    if (!hintEl) return;
+    if (krw > 0) {
+      var local_per_night = krw / rate;
+      var total_local = local_per_night * n;
+      var total_krw   = krw * n;
+      hintEl.textContent = '≈ ' + local_per_night.toFixed(2) + ' ' + info.currency + '/박  /  ≈ ₩' + Math.round(total_krw).toLocaleString('ko-KR') + '원 (총 ' + n + '박)';
+    } else {
+      hintEl.textContent = '';
+    }
+  });
+}
+
+function updateV2OKrw() {
+  var rate = v('v2o_rate');
+  if (!rate) return;
+  var fields = ['v2o_W', 'v2o_M', 'v2o_utility', 'v2o_clean', 'v2o_pet_clean', 'v2o_extra_per',
+               'v2o_deposit', 'v2o_dep_week', 'v2o_dep_month_gte'];
+  fields.forEach(function(id) {
+    var val = v(id);
+    var hintEl = document.getElementById(id + '_krw');
+    if (hintEl) {
+      hintEl.textContent = val > 0 ? '≈ ₩' + Math.round(val * rate).toLocaleString('ko-KR') + '원' : '';
+    }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -2984,6 +3254,9 @@ document.addEventListener('DOMContentLoaded', function() {
   v2calcSplitD();
   updatePriceView();
   updateV2PriceView();
+  updateV2OKrw();
+  updateV2ODiscHint();
+  updateV2OPeakHint();
 });
 
 </script>
