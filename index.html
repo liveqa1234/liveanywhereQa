@@ -142,8 +142,8 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
 
 /* ── VER2 styles ── */
 .ver-divider{max-width:1100px;margin:56px auto 0;border:none;border-top:2px solid #2a2f4a;}
-.ver-divider-label{text-align:center;padding:18px 0 28px;}
-.ver-divider-label .ver2-title{display:inline-block;background:linear-gradient(135deg,#2dd4a0,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:22px;font-weight:800;}
+.ver-divider-label{text-align:center;padding:18px 0 28px;max-width:1100px;margin:0 auto;}
+.ver-divider-label .ver2-title{display:inline-block;background:linear-gradient(135deg,#2dd4a0,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:22px;font-weight:800;white-space:nowrap;}
 .ver-divider-label small{display:block;font-size:11px;color:#5b6188;margin-top:4px;letter-spacing:1px;}
 .badge-green{background:rgba(45,212,160,.15);color:#2dd4a0;border:1px solid rgba(45,212,160,.3);}
 .badge-teal{background:rgba(6,182,212,.15);color:#06b6d4;border:1px solid rgba(6,182,212,.3);}
@@ -371,393 +371,16 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
   <button class="tab-btn" onclick="switchTab('overseas',this)">🌏 해외</button>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════
-     국내
-═══════════════════════════════════════════════════════ -->
-<div id="domestic" class="tab-content active">
-
-  <!-- SECTION 1: 집 설정 + 기본 예약 -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-badge badge-blue">① 집 설정 가격</span>
-    </div>
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title">기본 설정</div>
-        <div class="field"><label>박당 임대료 (원)</label><input type="number" id="d_rent" value="25000" oninput="calcD()"></div>
-        <div class="field"><label>박당 공과금 (원)</label><input type="number" id="d_utility" value="0" oninput="calcD()"></div>
-        <div class="field"><label>청소비 (원)</label><input type="number" id="d_clean" value="0" oninput="calcD()"></div>
-        <div class="field"><label>반려동물 청소비 (원)</label><input type="number" id="d_pet_clean" value="0" oninput="calcD()"></div>
-        <div class="field"><label>박당 추가 인원비 (원)</label><input type="number" id="d_extra_per" value="0" oninput="calcD()"></div>
-        <div class="field"><label>기준 인원</label><input type="number" id="d_base_pax" value="1" oninput="calcD()"></div>
-        <div class="field"><label>최대 인원</label><input type="number" id="d_max_pax" value="2" oninput="calcD()"></div>
-        <div class="field"><label>보증금 (원)</label><input type="number" id="d_deposit" value="200000" oninput="calcD()"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">예약 조건</div>
-        <div class="field"><label>박수</label><input type="number" id="d_nights" value="139" oninput="calcD()"></div>
-        <div class="field"><label>인원수</label><input type="number" id="d_persons" value="1" oninput="calcD()"></div>
-        <div class="field">
-          <div class="checkbox-row"><input type="checkbox" id="d_pet" onchange="calcD()"><label for="d_pet">반려동물 있음</label></div>
-        </div>
-        <hr class="section-divider">
-        <div class="card-title">수수료율</div>
-        <div class="field"><label>게스트 임대 수수료율 (%)</label><input type="number" id="d_g_rrate" value="11" step="0.1" oninput="calcD()"></div>
-        <div class="field"><label>게스트 기타 수수료율 (%)</label><input type="number" id="d_g_orate" value="5" step="0.1" oninput="calcD()"></div>
-        <div class="field"><label>호스트 임대 수수료율 (%)</label><input type="number" id="d_h_rrate" value="5" step="0.1" oninput="calcD()"></div>
-        <div class="field"><label>호스트 기타 수수료율 (%)</label><input type="number" id="d_h_orate" value="0" step="0.1" oninput="calcD()"></div>
-        <hr class="section-divider">
-        <div class="card-title">쿠폰</div>
-        <div class="field"><label>쿠폰 할인율 (%)</label><input type="number" id="d_c_rate" value="0" step="0.1" oninput="calcD()"></div>
-        <div class="field"><label>쿠폰 최대 할인 금액 (원, 0=무제한)</label><input type="number" id="d_c_max" value="0" oninput="calcD()"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SECTION 2: 계약·세부 가격 결과 -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-badge badge-blue">② 계약 · 세부 가격</span>
-    </div>
-    <div class="grid2">
-      <div class="result-card guest">
-        <div class="result-title">👤 게스트 결제</div>
-        <div class="rrow"><span class="rname">임대료</span><span class="rval" id="d_g_rent">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 기본 임대료</span><span class="rval sub" id="d_g_base_rent">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 추가인원비</span><span class="rval sub" id="d_g_extra">-</span></div>
-        <div class="rrow"><span class="rname">기타 비용</span><span class="rval" id="d_g_other">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 총 청소비</span><span class="rval sub" id="d_g_clean">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 총 공과금</span><span class="rval sub" id="d_g_util">-</span></div>
-        <div class="rrow"><span class="rname">서비스 이용료</span><span class="rval" id="d_g_svc">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 임대 서비스이용료</span><span class="rval sub" id="d_g_svc_r">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 기타 서비스이용료</span><span class="rval sub" id="d_g_svc_o">-</span></div>
-        <div class="rrow"><span class="rname">쿠폰 할인</span><span class="rval neg" id="d_g_coupon">-</span></div>
-        <div class="rrow"><span class="rname">보증금</span><span class="rval" id="d_g_dep">-</span></div>
-        <div class="rrow total"><span class="rname">총 게스트 결제 금액</span><span class="rval" id="d_g_total">-</span></div>
-        <div class="rrow"><span class="rname sub">보증금 제외</span><span class="rval sub" id="d_g_nodep">-</span></div>
-        <div class="price-view-box" id="d_price_view_box">
-          <div class="price-view-header">
-            <span class="price-view-title">📋 가격 보기 설정</span>
-            <div class="currency-selector">
-              <button class="cur-btn active" data-cur="KRW" onclick="setCurrency('KRW',this)">₩ KRW</button>
-              <button class="cur-btn" data-cur="USD" onclick="setCurrency('USD',this)">$ USD</button>
-              <button class="cur-btn" data-cur="JPY" onclick="setCurrency('JPY',this)">¥ JPY</button>
-              <button class="cur-btn" data-cur="CNY" onclick="setCurrency('CNY',this)">¥ CNY</button>
-            </div>
-          </div>
-          <div class="price-view-grid">
-            <div class="pv-col-head"></div>
-            <div class="pv-col-head">6박</div>
-            <div class="pv-col-head">14박</div>
-            <div class="pv-col-head">29박</div>
-            <div class="pv-row-label">실이용금액</div>
-            <div class="pv-val" id="d_pv_actual_6">-</div>
-            <div class="pv-val" id="d_pv_actual_14">-</div>
-            <div class="pv-val" id="d_pv_actual_29">-</div>
-            <div class="pv-row-label">기본가격</div>
-            <div class="pv-val" id="d_pv_basic_6">-</div>
-            <div class="pv-val" id="d_pv_basic_14">-</div>
-            <div class="pv-val" id="d_pv_basic_29">-</div>
-            <div class="pv-row-label">임대료기준</div>
-            <div class="pv-val" id="d_pv_rent_6">-</div>
-            <div class="pv-val" id="d_pv_rent_14">-</div>
-            <div class="pv-val" id="d_pv_rent_29">-</div>
-          </div>
-          <div class="pv-note" id="d_pv_note"></div>
-        </div>
-      </div>
-      <div class="result-card host">
-        <div class="result-title">🏠 호스트 정산</div>
-        <div class="rrow"><span class="rname">총 임대료</span><span class="rval" id="d_h_rent">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 기본 임대료</span><span class="rval sub" id="d_h_base_rent">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 추가인원비</span><span class="rval sub" id="d_h_extra">-</span></div>
-        <div class="rrow"><span class="rname">호스트 서비스 이용료</span><span class="rval neg" id="d_h_svc">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 임대 서비스이용료</span><span class="rval sub" id="d_h_svc_r">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 기타 서비스이용료</span><span class="rval sub" id="d_h_svc_o">-</span></div>
-        <div class="rrow"><span class="rname">총 공과금</span><span class="rval" id="d_h_util">-</span></div>
-        <div class="rrow"><span class="rname">총 청소비</span><span class="rval" id="d_h_clean">-</span></div>
-        <div class="rrow total"><span class="rname">호스트 최종 정산액</span><span class="rval" id="d_h_total">-</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SECTION 3: 변경 후 가격 -->
-  
-  <!-- ②-B VER1 분할결제 -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-badge badge-blue">② 분할 결제 회차별 금액</span>
-      <span class="section-title" style="font-size:11px;color:#5b6188;">VER1 기준 · 29박 단위 · 58박 이상 · 최대 7회차</span>
-    </div>
-    <div id="d_split_unavail" class="card" style="background:rgba(255,107,107,.06);border-color:rgba(255,107,107,.3);display:none;">
-      ⚠️ 분할결제는 <strong style="color:#ff6b6b;">58박 이상</strong>일 때만 가능합니다. 현재 <span id="d_split_n">-</span>박
-    </div>
-    <div id="d_split_wrap">
-      <div id="d_split_rows" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;"></div>
-    </div>
-  </div>
-
-<div class="section">
-    <div class="section-header">
-      <span class="section-badge badge-orange">③ 변경 후 가격</span>
-      <span class="section-title" style="color:var(--muted);font-size:12px;">일정/조건 변경 시 차액 계산</span>
-    </div>
-
-    <!-- 기준 선택 -->
-    <div class="card" style="margin-bottom:14px;">
-      <div class="card-title orange">변경 기준 선택</div>
-      <div class="basis-toggle">
-        <button class="basis-btn active-new" id="d_basis_new" onclick="dSetBasis('new')">신규 입력값 기준 (①번 설정)</button>
-        <button class="basis-btn" id="d_basis_old" onclick="dSetBasis('old')">기존 세부 가격 기준 (②번 결과)</button>
-      </div>
-      <div id="d_basis_old_hint" style="display:none;" class="hint" style="color:var(--orange);">
-        ⚠️ 기존 세부 가격 기준: 보증금·수수료율·청소비 등을 ②번 결과에서 자동으로 가져옵니다. 변경된 항목(반려동물 청소비, 추가인원비 등)은 아래에서 직접 입력하세요.
-      </div>
-    </div>
-
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title orange">변경 후 조건</div>
-        <div class="field"><label>박수 (변경 후)</label><input type="number" id="d_n2_nights" value="164" oninput="calcD2()"></div>
-        <div class="field"><label>인원수 (변경 후)</label><input type="number" id="d_n2_persons" value="1" oninput="calcD2()"></div>
-        <div class="field">
-          <div class="checkbox-row"><input type="checkbox" id="d_n2_pet" onchange="calcD2()"><label for="d_n2_pet">반려동물 있음 (변경 후)</label></div>
-        </div>
-        <hr class="section-divider">
-        <div class="card-title orange">변경 후 기준 (자동/수동)</div>
-        <div class="field"><label>박당 임대료 (원)</label><input type="number" id="d_n2_rent" value="25000" oninput="calcD2()"></div>
-        <div class="field"><label>박당 공과금 (원)</label><input type="number" id="d_n2_utility" value="0" oninput="calcD2()"></div>
-        <div class="field"><label>청소비 (원)</label><input type="number" id="d_n2_clean" value="0" oninput="calcD2()"></div>
-        <div class="field">
-          <label>반려동물 청소비 (원)</label>
-          <input type="number" id="d_n2_pet_clean" value="0" oninput="calcD2()">
-          <div class="hint">⚠️ 기존에 반려동물이 없다가 생기는 경우, 변경 시점의 값 직접 입력</div>
-        </div>
-        <div class="field">
-          <label>박당 추가 인원비 (원)</label>
-          <input type="number" id="d_n2_extra_per" value="0" oninput="calcD2()">
-          <div class="hint">⚠️ 기존 초과 인원이 없다가 생기는 경우, 변경 시점의 값 직접 입력</div>
-        </div>
-        <div class="field"><label>기준 인원</label><input type="number" id="d_n2_base_pax" value="1" oninput="calcD2()"></div>
-        <div class="field"><label>보증금 (원)</label><input type="number" id="d_n2_deposit" value="200000" oninput="calcD2()"></div>
-        <hr class="section-divider">
-        <div class="card-title orange">수수료율 (변경 후)</div>
-        <div class="field"><label>게스트 임대 수수료율 (%)</label><input type="number" id="d_n2_g_rrate" value="11" step="0.1" oninput="calcD2()"></div>
-        <div class="field"><label>게스트 기타 수수료율 (%)</label><input type="number" id="d_n2_g_orate" value="5" step="0.1" oninput="calcD2()"></div>
-        <div class="field"><label>호스트 임대 수수료율 (%)</label><input type="number" id="d_n2_h_rrate" value="5" step="0.1" oninput="calcD2()"></div>
-        <div class="field"><label>호스트 기타 수수료율 (%)</label><input type="number" id="d_n2_h_orate" value="0" step="0.1" oninput="calcD2()"></div>
-        <hr class="section-divider">
-        <div class="card-title orange">쿠폰 (변경 후)</div>
-        <div class="field"><label>쿠폰 할인 금액 (원)</label><input type="number" id="d_n2_coupon" value="0" oninput="calcD2()"></div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <!-- 변경 후 결과 비교 -->
-        <div class="result-card diff">
-          <div class="result-title">📊 게스트 기준 가격 비교</div>
-          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
-          <div class="compare-row"><span class="cn">게스트 임대료</span><span class="cv old-v" id="d2_g_rent_old">-</span><span class="cv new-v" id="d2_g_rent_new">-</span></div>
-          <div class="compare-row"><span class="cn">게스트 서비스 이용료</span><span class="cv old-v" id="d2_g_svc_old">-</span><span class="cv new-v" id="d2_g_svc_new">-</span></div>
-          <div class="compare-row"><span class="cn sub">ㄴ 임대 서비스이용료</span><span class="cv old-v" id="d2_g_svcr_old">-</span><span class="cv new-v" id="d2_g_svcr_new">-</span></div>
-          <div class="compare-row"><span class="cn sub">ㄴ 기타 서비스이용료</span><span class="cv old-v" id="d2_g_svco_old">-</span><span class="cv new-v" id="d2_g_svco_new">-</span></div>
-          <div class="compare-row"><span class="cn">쿠폰 할인</span><span class="cv old-v" id="d2_coupon_old">-</span><span class="cv new-v" id="d2_coupon_new">-</span></div>
-          <div class="compare-row"><span class="cn">총 게스트 결제</span><span class="cv old-v" id="d2_g_total_old">-</span><span class="cv new-v" id="d2_g_total_new">-</span></div>
-        </div>
-
-        <div class="result-card diff">
-          <div class="result-title">📊 호스트 기준 가격 비교</div>
-          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
-          <div class="compare-row"><span class="cn">호스트 총 임대료</span><span class="cv old-v" id="d2_h_rent_old">-</span><span class="cv new-v" id="d2_h_rent_new">-</span></div>
-          <div class="compare-row"><span class="cn sub">ㄴ 기본 임대료</span><span class="cv old-v" id="d2_h_base_old">-</span><span class="cv new-v" id="d2_h_base_new">-</span></div>
-          <div class="compare-row"><span class="cn sub">ㄴ 추가인원비</span><span class="cv old-v" id="d2_h_extra_old">-</span><span class="cv new-v" id="d2_h_extra_new">-</span></div>
-          <div class="compare-row"><span class="cn">호스트 서비스 이용료</span><span class="cv old-v" id="d2_h_svc_old">-</span><span class="cv new-v" id="d2_h_svc_new">-</span></div>
-          <div class="compare-row"><span class="cn">공과금</span><span class="cv old-v" id="d2_util_old">-</span><span class="cv new-v" id="d2_util_new">-</span></div>
-          <div class="compare-row"><span class="cn">총 청소비</span><span class="cv old-v" id="d2_clean_old">-</span><span class="cv new-v" id="d2_clean_new">-</span></div>
-        </div>
-
-        <!-- 차액 결과 -->
-        <div class="result-card diff" style="border-color:rgba(245,158,11,.5);">
-          <div class="result-title">💸 차액 결과</div>
-          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="d2_guest_label">게스트 추가결제/환불</span><span class="rval" id="d2_guest_diff">-</span></div>
-          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="d2_host_label">호스트 추가정산/지불</span><span class="rval" id="d2_host_diff">-</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════
-     해외
-═══════════════════════════════════════════════════════ -->
-<div id="overseas" class="tab-content">
-
-  <div class="section">
-    <div class="section-header">
-      <span class="section-badge badge-blue">① 집 설정 가격</span>
-    </div>
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title">기본 설정 (기준 통화)</div>
-        <div class="field"><label>적용 환율 (원/기준통화)</label><input type="number" id="o_rate" value="50.082" step="0.001" oninput="calcO()"></div>
-        <div class="field"><label>박당 임대료</label><input type="number" id="o_rent" value="1234" oninput="calcO()"></div>
-        <div class="field"><label>박당 공과금</label><input type="number" id="o_utility" value="111" oninput="calcO()"></div>
-        <div class="field"><label>청소비</label><input type="number" id="o_clean" value="582" oninput="calcO()"></div>
-        <div class="field"><label>반려동물 청소비</label><input type="number" id="o_pet_clean" value="1679" oninput="calcO()"></div>
-        <div class="field"><label>박당 추가 인원비</label><input type="number" id="o_extra_per" value="3333" oninput="calcO()"></div>
-        <div class="field"><label>기준 인원</label><input type="number" id="o_base_pax" value="6" oninput="calcO()"></div>
-        <div class="field"><label>최대 인원</label><input type="number" id="o_max_pax" value="11" oninput="calcO()"></div>
-        <div class="field"><label>보증금 (기준 통화)</label><input type="number" id="o_deposit" value="5819" oninput="calcO()"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">예약 조건</div>
-        <div class="field"><label>박수</label><input type="number" id="o_nights" value="6" oninput="calcO()"></div>
-        <div class="field"><label>인원수</label><input type="number" id="o_persons" value="1" oninput="calcO()"></div>
-        <div class="field">
-          <div class="checkbox-row"><input type="checkbox" id="o_pet" onchange="calcO()"><label for="o_pet">반려동물 있음</label></div>
-        </div>
-        <hr class="section-divider">
-        <div class="card-title">수수료율</div>
-        <div class="field"><label>게스트 임대 수수료율 (%)</label><input type="number" id="o_g_rrate" value="13" step="0.1" oninput="calcO()"></div>
-        <div class="field"><label>게스트 기타 수수료율 (%)</label><input type="number" id="o_g_orate" value="5" step="0.1" oninput="calcO()"></div>
-        <div class="field"><label>호스트 임대 수수료율 (%)</label><input type="number" id="o_h_rrate" value="3" step="0.1" oninput="calcO()"></div>
-        <div class="field"><label>호스트 기타 수수료율 (%)</label><input type="number" id="o_h_orate" value="0" step="0.1" oninput="calcO()"></div>
-        <hr class="section-divider">
-        <div class="card-title">쿠폰</div>
-        <div class="field"><label>쿠폰 할인율 (%)</label><input type="number" id="o_c_rate" value="0" step="0.1" oninput="calcO()"></div>
-        <div class="field"><label>쿠폰 최대 할인 금액 (원, 0=무제한)</label><input type="number" id="o_c_max" value="1000000" oninput="calcO()"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-header">
-      <span class="section-badge badge-blue">② 계약 · 세부 가격</span>
-    </div>
-    <div class="grid2">
-      <div class="result-card guest">
-        <div class="result-title">👤 게스트 결제 (원화)</div>
-        <div class="rrow"><span class="rname">임대료</span><span class="rval" id="o_g_rent">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 기본 임대료</span><span class="rval sub" id="o_g_base_rent">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 추가인원비</span><span class="rval sub" id="o_g_extra">-</span></div>
-        <div class="rrow"><span class="rname">기타 비용</span><span class="rval" id="o_g_other">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 총 청소비</span><span class="rval sub" id="o_g_clean">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 총 공과금</span><span class="rval sub" id="o_g_util">-</span></div>
-        <div class="rrow"><span class="rname">서비스 이용료</span><span class="rval" id="o_g_svc">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 임대 서비스이용료</span><span class="rval sub" id="o_g_svc_r">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 기타 서비스이용료</span><span class="rval sub" id="o_g_svc_o">-</span></div>
-        <div class="rrow"><span class="rname">쿠폰 할인</span><span class="rval neg" id="o_g_coupon">-</span></div>
-        <div class="rrow"><span class="rname">보증금</span><span class="rval" id="o_g_dep">-</span></div>
-        <div class="rrow total"><span class="rname">총 게스트 결제 금액</span><span class="rval" id="o_g_total">-</span></div>
-        <div class="rrow"><span class="rname sub">보증금 제외</span><span class="rval sub" id="o_g_nodep">-</span></div>
-      </div>
-      <div class="result-card host">
-        <div class="result-title">🏠 호스트 정산 (원화 · 기준통화)</div>
-        <div class="rrow"><span class="rname">총 임대료</span><span class="dual-val"><div class="krw" id="o_h_rent_k">-</div><div class="base" id="o_h_rent_b">-</div></span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 기본 임대료</span><span class="dual-val"><div class="krw" id="o_h_base_k">-</div><div class="base" id="o_h_base_b">-</div></span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 추가인원비</span><span class="dual-val"><div class="krw" id="o_h_extra_k">-</div><div class="base" id="o_h_extra_b">-</div></span></div>
-        <div class="rrow"><span class="rname">호스트 서비스이용료</span><span class="rval neg" id="o_h_svc">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 임대 서비스이용료</span><span class="rval sub" id="o_h_svc_r">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 기타 서비스이용료</span><span class="rval sub" id="o_h_svc_o">-</span></div>
-        <div class="rrow"><span class="rname">총 공과금</span><span class="dual-val"><div class="krw" id="o_h_util_k">-</div><div class="base" id="o_h_util_b">-</div></span></div>
-        <div class="rrow"><span class="rname">총 청소비</span><span class="dual-val"><div class="krw" id="o_h_clean_k">-</div><div class="base" id="o_h_clean_b">-</div></span></div>
-        <div class="rrow total"><span class="rname">호스트 최종 정산액</span><span class="dual-val"><div class="krw" id="o_h_total_k" style="color:var(--accent2);font-size:15px;">-</div><div class="base" id="o_h_total_b">-</div></span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 해외 변경 후 -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-badge badge-orange">③ 변경 후 가격</span>
-    </div>
-    <div class="card" style="margin-bottom:14px;">
-      <div class="card-title orange">변경 기준 선택</div>
-      <div class="basis-toggle">
-        <button class="basis-btn active-new" id="o_basis_new" onclick="oSetBasis('new')">신규 입력값 기준 (①번 설정)</button>
-        <button class="basis-btn" id="o_basis_old" onclick="oSetBasis('old')">기존 세부 가격 기준 (②번 결과)</button>
-      </div>
-      <div id="o_basis_old_hint" style="display:none;" class="hint">
-        ⚠️ 기존 세부 가격 기준: 환율·보증금·수수료율 등을 ②번 결과에서 자동으로 가져옵니다. 변경된 항목은 아래에서 직접 입력하세요.
-      </div>
-    </div>
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title orange">변경 후 조건</div>
-        <div class="field"><label>적용 환율 (자동/수동)</label><input type="number" id="o_n2_rate" value="50.082" step="0.001" oninput="calcO2()"></div>
-        <div class="field"><label>박수 (변경 후)</label><input type="number" id="o_n2_nights" value="7" oninput="calcO2()"></div>
-        <div class="field"><label>인원수 (변경 후)</label><input type="number" id="o_n2_persons" value="1" oninput="calcO2()"></div>
-        <div class="field">
-          <div class="checkbox-row"><input type="checkbox" id="o_n2_pet" onchange="calcO2()"><label for="o_n2_pet">반려동물 있음 (변경 후)</label></div>
-        </div>
-        <hr class="section-divider">
-        <div class="card-title orange">변경 후 기준 (기준 통화)</div>
-        <div class="field"><label>박당 임대료</label><input type="number" id="o_n2_rent" value="1234" oninput="calcO2()"></div>
-        <div class="field"><label>박당 공과금</label><input type="number" id="o_n2_utility" value="111" oninput="calcO2()"></div>
-        <div class="field"><label>청소비</label><input type="number" id="o_n2_clean" value="582" oninput="calcO2()"></div>
-        <div class="field">
-          <label>반려동물 청소비</label>
-          <input type="number" id="o_n2_pet_clean" value="0" oninput="calcO2()">
-          <div class="hint">⚠️ 기존에 반려동물이 없다가 생기는 경우, 변경 시점의 값 직접 입력</div>
-        </div>
-        <div class="field">
-          <label>박당 추가 인원비</label>
-          <input type="number" id="o_n2_extra_per" value="0" oninput="calcO2()">
-          <div class="hint">⚠️ 기존 초과 인원이 없다가 생기는 경우, 변경 시점의 값 직접 입력</div>
-        </div>
-        <div class="field"><label>기준 인원</label><input type="number" id="o_n2_base_pax" value="6" oninput="calcO2()"></div>
-        <div class="field"><label>보증금 (기준 통화)</label><input type="number" id="o_n2_deposit" value="5819" oninput="calcO2()"></div>
-        <hr class="section-divider">
-        <div class="card-title orange">수수료율 (변경 후)</div>
-        <div class="field"><label>게스트 임대 수수료율 (%)</label><input type="number" id="o_n2_g_rrate" value="13" step="0.1" oninput="calcO2()"></div>
-        <div class="field"><label>게스트 기타 수수료율 (%)</label><input type="number" id="o_n2_g_orate" value="5" step="0.1" oninput="calcO2()"></div>
-        <div class="field"><label>호스트 임대 수수료율 (%)</label><input type="number" id="o_n2_h_rrate" value="3" step="0.1" oninput="calcO2()"></div>
-        <div class="field"><label>호스트 기타 수수료율 (%)</label><input type="number" id="o_n2_h_orate" value="0" step="0.1" oninput="calcO2()"></div>
-        <hr class="section-divider">
-        <div class="card-title orange">쿠폰 (변경 후, 원화)</div>
-        <div class="field"><label>쿠폰 할인 금액 (원)</label><input type="number" id="o_n2_coupon" value="0" oninput="calcO2()"></div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <div class="result-card diff">
-          <div class="result-title">📊 게스트 기준 가격 비교 (원화)</div>
-          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
-          <div class="compare-row"><span class="cn">게스트 임대료</span><span class="cv old-v" id="o2_g_rent_old">-</span><span class="cv new-v" id="o2_g_rent_new">-</span></div>
-          <div class="compare-row"><span class="cn">게스트 서비스 이용료</span><span class="cv old-v" id="o2_g_svc_old">-</span><span class="cv new-v" id="o2_g_svc_new">-</span></div>
-          <div class="compare-row"><span class="cn sub">ㄴ 임대 서비스이용료</span><span class="cv old-v" id="o2_g_svcr_old">-</span><span class="cv new-v" id="o2_g_svcr_new">-</span></div>
-          <div class="compare-row"><span class="cn sub">ㄴ 기타 서비스이용료</span><span class="cv old-v" id="o2_g_svco_old">-</span><span class="cv new-v" id="o2_g_svco_new">-</span></div>
-          <div class="compare-row"><span class="cn">쿠폰 할인</span><span class="cv old-v" id="o2_coupon_old">-</span><span class="cv new-v" id="o2_coupon_new">-</span></div>
-          <div class="compare-row"><span class="cn">총 게스트 결제</span><span class="cv old-v" id="o2_g_total_old">-</span><span class="cv new-v" id="o2_g_total_new">-</span></div>
-        </div>
-        <div class="result-card diff">
-          <div class="result-title">📊 호스트 기준 가격 비교 (기준 통화)</div>
-          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
-          <div class="compare-row"><span class="cn">호스트 총 임대료</span><span class="cv old-v" id="o2_h_rent_old">-</span><span class="cv new-v" id="o2_h_rent_new">-</span></div>
-          <div class="compare-row"><span class="cn sub">ㄴ 기본 임대료</span><span class="cv old-v" id="o2_h_base_old">-</span><span class="cv new-v" id="o2_h_base_new">-</span></div>
-          <div class="compare-row"><span class="cn sub">ㄴ 추가인원비</span><span class="cv old-v" id="o2_h_extra_old">-</span><span class="cv new-v" id="o2_h_extra_new">-</span></div>
-          <div class="compare-row"><span class="cn">호스트 서비스 이용료</span><span class="cv old-v" id="o2_h_svc_old">-</span><span class="cv new-v" id="o2_h_svc_new">-</span></div>
-          <div class="compare-row"><span class="cn">공과금</span><span class="cv old-v" id="o2_util_old">-</span><span class="cv new-v" id="o2_util_new">-</span></div>
-          <div class="compare-row"><span class="cn">총 청소비</span><span class="cv old-v" id="o2_clean_old">-</span><span class="cv new-v" id="o2_clean_new">-</span></div>
-        </div>
-        <div class="result-card diff" style="border-color:rgba(245,158,11,.5);">
-          <div class="result-title">💸 차액 결과</div>
-          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="o2_guest_label">게스트 추가결제/환불 (원화)</span><span class="rval" id="o2_guest_diff">-</span></div>
-          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="o2_host_label">호스트 추가정산/지불 (기준 통화)</span><span class="rval" id="o2_host_diff">-</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- ═══════════════ VER2 DIVIDER ═══════════════ -->
 <hr class="ver-divider">
 <div class="ver-divider-label">
-  <span class="ver2-title">VER 2 · 신규 계산식</span>
+  <span class="ver2-title">신규 가격 계산기</span>
   <small>PLAT-1172 개편 적용 버전 · 2025.10.27~</small>
 </div>
 
 <div class="v2-tab-bar">
-  <button class="v2-tab-btn active" onclick="v2SwitchTab('v2domestic',this)">🇰🇷 국내 VER2</button>
-  <button class="v2-tab-btn" onclick="v2SwitchTab('v2overseas',this)">🌏 해외 VER2</button>
+  <button class="v2-tab-btn active" onclick="v2SwitchTab('v2domestic',this)">🇰🇷 국내</button>
+  <button class="v2-tab-btn" onclick="v2SwitchTab('v2overseas',this)">🌏 해외</button>
 </div>
 
 <!-- ═══════ VER2 국내 ═══════ -->
@@ -1279,6 +902,398 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
 
 <!-- ═══════════════ VER1 vs VER2 비교 ═══════════════ -->
 <hr class="compare-divider">
+
+<!-- ═══════════════ VER1 DIVIDER ═══════════════ -->
+<hr class="ver-divider">
+<div class="ver-divider-label">
+  <span class="ver2-title" style="background:linear-gradient(135deg,#4f8ef7,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">기존 가격 계산기</span>
+  <small>기존 계산식 기준</small>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('domestic',this)">🇰🇷 국내</button>
+  <button class="tab-btn" onclick="switchTab('overseas',this)">🌏 해외</button>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     국내
+═══════════════════════════════════════════════════════ -->
+<div id="domestic" class="tab-content active">
+
+  <!-- SECTION 1: 집 설정 + 기본 예약 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-badge badge-blue">① 집 설정 가격</span>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">기본 설정</div>
+        <div class="field"><label>박당 임대료 (원)</label><input type="number" id="d_rent" value="25000" oninput="calcD()"></div>
+        <div class="field"><label>박당 공과금 (원)</label><input type="number" id="d_utility" value="0" oninput="calcD()"></div>
+        <div class="field"><label>청소비 (원)</label><input type="number" id="d_clean" value="0" oninput="calcD()"></div>
+        <div class="field"><label>반려동물 청소비 (원)</label><input type="number" id="d_pet_clean" value="0" oninput="calcD()"></div>
+        <div class="field"><label>박당 추가 인원비 (원)</label><input type="number" id="d_extra_per" value="0" oninput="calcD()"></div>
+        <div class="field"><label>기준 인원</label><input type="number" id="d_base_pax" value="1" oninput="calcD()"></div>
+        <div class="field"><label>최대 인원</label><input type="number" id="d_max_pax" value="2" oninput="calcD()"></div>
+        <div class="field"><label>보증금 (원)</label><input type="number" id="d_deposit" value="200000" oninput="calcD()"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">예약 조건</div>
+        <div class="field"><label>박수</label><input type="number" id="d_nights" value="139" oninput="calcD()"></div>
+        <div class="field"><label>인원수</label><input type="number" id="d_persons" value="1" oninput="calcD()"></div>
+        <div class="field">
+          <div class="checkbox-row"><input type="checkbox" id="d_pet" onchange="calcD()"><label for="d_pet">반려동물 있음</label></div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-title">수수료율</div>
+        <div class="field"><label>게스트 임대 수수료율 (%)</label><input type="number" id="d_g_rrate" value="11" step="0.1" oninput="calcD()"></div>
+        <div class="field"><label>게스트 기타 수수료율 (%)</label><input type="number" id="d_g_orate" value="5" step="0.1" oninput="calcD()"></div>
+        <div class="field"><label>호스트 임대 수수료율 (%)</label><input type="number" id="d_h_rrate" value="5" step="0.1" oninput="calcD()"></div>
+        <div class="field"><label>호스트 기타 수수료율 (%)</label><input type="number" id="d_h_orate" value="0" step="0.1" oninput="calcD()"></div>
+        <hr class="section-divider">
+        <div class="card-title">쿠폰</div>
+        <div class="field"><label>쿠폰 할인율 (%)</label><input type="number" id="d_c_rate" value="0" step="0.1" oninput="calcD()"></div>
+        <div class="field"><label>쿠폰 최대 할인 금액 (원, 0=무제한)</label><input type="number" id="d_c_max" value="0" oninput="calcD()"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: 계약·세부 가격 결과 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-badge badge-blue">② 계약 · 세부 가격</span>
+    </div>
+    <div class="grid2">
+      <div class="result-card guest">
+        <div class="result-title">👤 게스트 결제</div>
+        <div class="rrow"><span class="rname">임대료</span><span class="rval" id="d_g_rent">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 기본 임대료</span><span class="rval sub" id="d_g_base_rent">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 추가인원비</span><span class="rval sub" id="d_g_extra">-</span></div>
+        <div class="rrow"><span class="rname">기타 비용</span><span class="rval" id="d_g_other">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 총 청소비</span><span class="rval sub" id="d_g_clean">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 총 공과금</span><span class="rval sub" id="d_g_util">-</span></div>
+        <div class="rrow"><span class="rname">서비스 이용료</span><span class="rval" id="d_g_svc">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 임대 서비스이용료</span><span class="rval sub" id="d_g_svc_r">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 기타 서비스이용료</span><span class="rval sub" id="d_g_svc_o">-</span></div>
+        <div class="rrow"><span class="rname">쿠폰 할인</span><span class="rval neg" id="d_g_coupon">-</span></div>
+        <div class="rrow"><span class="rname">보증금</span><span class="rval" id="d_g_dep">-</span></div>
+        <div class="rrow total"><span class="rname">총 게스트 결제 금액</span><span class="rval" id="d_g_total">-</span></div>
+        <div class="rrow"><span class="rname sub">보증금 제외</span><span class="rval sub" id="d_g_nodep">-</span></div>
+        <div class="price-view-box" id="d_price_view_box">
+          <div class="price-view-header">
+            <span class="price-view-title">📋 가격 보기 설정</span>
+            <div class="currency-selector">
+              <button class="cur-btn active" data-cur="KRW" onclick="setCurrency('KRW',this)">₩ KRW</button>
+              <button class="cur-btn" data-cur="USD" onclick="setCurrency('USD',this)">$ USD</button>
+              <button class="cur-btn" data-cur="JPY" onclick="setCurrency('JPY',this)">¥ JPY</button>
+              <button class="cur-btn" data-cur="CNY" onclick="setCurrency('CNY',this)">¥ CNY</button>
+            </div>
+          </div>
+          <div class="price-view-grid">
+            <div class="pv-col-head"></div>
+            <div class="pv-col-head">6박</div>
+            <div class="pv-col-head">14박</div>
+            <div class="pv-col-head">29박</div>
+            <div class="pv-row-label">실이용금액</div>
+            <div class="pv-val" id="d_pv_actual_6">-</div>
+            <div class="pv-val" id="d_pv_actual_14">-</div>
+            <div class="pv-val" id="d_pv_actual_29">-</div>
+            <div class="pv-row-label">기본가격</div>
+            <div class="pv-val" id="d_pv_basic_6">-</div>
+            <div class="pv-val" id="d_pv_basic_14">-</div>
+            <div class="pv-val" id="d_pv_basic_29">-</div>
+            <div class="pv-row-label">임대료기준</div>
+            <div class="pv-val" id="d_pv_rent_6">-</div>
+            <div class="pv-val" id="d_pv_rent_14">-</div>
+            <div class="pv-val" id="d_pv_rent_29">-</div>
+          </div>
+          <div class="pv-note" id="d_pv_note"></div>
+        </div>
+      </div>
+      <div class="result-card host">
+        <div class="result-title">🏠 호스트 정산</div>
+        <div class="rrow"><span class="rname">총 임대료</span><span class="rval" id="d_h_rent">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 기본 임대료</span><span class="rval sub" id="d_h_base_rent">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 추가인원비</span><span class="rval sub" id="d_h_extra">-</span></div>
+        <div class="rrow"><span class="rname">호스트 서비스 이용료</span><span class="rval neg" id="d_h_svc">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 임대 서비스이용료</span><span class="rval sub" id="d_h_svc_r">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 기타 서비스이용료</span><span class="rval sub" id="d_h_svc_o">-</span></div>
+        <div class="rrow"><span class="rname">총 공과금</span><span class="rval" id="d_h_util">-</span></div>
+        <div class="rrow"><span class="rname">총 청소비</span><span class="rval" id="d_h_clean">-</span></div>
+        <div class="rrow total"><span class="rname">호스트 최종 정산액</span><span class="rval" id="d_h_total">-</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: 변경 후 가격 -->
+  
+  <!-- ②-B VER1 분할결제 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-badge badge-blue">② 분할 결제 회차별 금액</span>
+      <span class="section-title" style="font-size:11px;color:#5b6188;">VER1 기준 · 29박 단위 · 58박 이상 · 최대 7회차</span>
+    </div>
+    <div id="d_split_unavail" class="card" style="background:rgba(255,107,107,.06);border-color:rgba(255,107,107,.3);display:none;">
+      ⚠️ 분할결제는 <strong style="color:#ff6b6b;">58박 이상</strong>일 때만 가능합니다. 현재 <span id="d_split_n">-</span>박
+    </div>
+    <div id="d_split_wrap">
+      <div id="d_split_rows" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;"></div>
+    </div>
+  </div>
+
+<div class="section">
+    <div class="section-header">
+      <span class="section-badge badge-orange">③ 변경 후 가격</span>
+      <span class="section-title" style="color:var(--muted);font-size:12px;">일정/조건 변경 시 차액 계산</span>
+    </div>
+
+    <!-- 기준 선택 -->
+    <div class="card" style="margin-bottom:14px;">
+      <div class="card-title orange">변경 기준 선택</div>
+      <div class="basis-toggle">
+        <button class="basis-btn active-new" id="d_basis_new" onclick="dSetBasis('new')">신규 입력값 기준 (①번 설정)</button>
+        <button class="basis-btn" id="d_basis_old" onclick="dSetBasis('old')">기존 세부 가격 기준 (②번 결과)</button>
+      </div>
+      <div id="d_basis_old_hint" style="display:none;" class="hint" style="color:var(--orange);">
+        ⚠️ 기존 세부 가격 기준: 보증금·수수료율·청소비 등을 ②번 결과에서 자동으로 가져옵니다. 변경된 항목(반려동물 청소비, 추가인원비 등)은 아래에서 직접 입력하세요.
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title orange">변경 후 조건</div>
+        <div class="field"><label>박수 (변경 후)</label><input type="number" id="d_n2_nights" value="164" oninput="calcD2()"></div>
+        <div class="field"><label>인원수 (변경 후)</label><input type="number" id="d_n2_persons" value="1" oninput="calcD2()"></div>
+        <div class="field">
+          <div class="checkbox-row"><input type="checkbox" id="d_n2_pet" onchange="calcD2()"><label for="d_n2_pet">반려동물 있음 (변경 후)</label></div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-title orange">변경 후 기준 (자동/수동)</div>
+        <div class="field"><label>박당 임대료 (원)</label><input type="number" id="d_n2_rent" value="25000" oninput="calcD2()"></div>
+        <div class="field"><label>박당 공과금 (원)</label><input type="number" id="d_n2_utility" value="0" oninput="calcD2()"></div>
+        <div class="field"><label>청소비 (원)</label><input type="number" id="d_n2_clean" value="0" oninput="calcD2()"></div>
+        <div class="field">
+          <label>반려동물 청소비 (원)</label>
+          <input type="number" id="d_n2_pet_clean" value="0" oninput="calcD2()">
+          <div class="hint">⚠️ 기존에 반려동물이 없다가 생기는 경우, 변경 시점의 값 직접 입력</div>
+        </div>
+        <div class="field">
+          <label>박당 추가 인원비 (원)</label>
+          <input type="number" id="d_n2_extra_per" value="0" oninput="calcD2()">
+          <div class="hint">⚠️ 기존 초과 인원이 없다가 생기는 경우, 변경 시점의 값 직접 입력</div>
+        </div>
+        <div class="field"><label>기준 인원</label><input type="number" id="d_n2_base_pax" value="1" oninput="calcD2()"></div>
+        <div class="field"><label>보증금 (원)</label><input type="number" id="d_n2_deposit" value="200000" oninput="calcD2()"></div>
+        <hr class="section-divider">
+        <div class="card-title orange">수수료율 (변경 후)</div>
+        <div class="field"><label>게스트 임대 수수료율 (%)</label><input type="number" id="d_n2_g_rrate" value="11" step="0.1" oninput="calcD2()"></div>
+        <div class="field"><label>게스트 기타 수수료율 (%)</label><input type="number" id="d_n2_g_orate" value="5" step="0.1" oninput="calcD2()"></div>
+        <div class="field"><label>호스트 임대 수수료율 (%)</label><input type="number" id="d_n2_h_rrate" value="5" step="0.1" oninput="calcD2()"></div>
+        <div class="field"><label>호스트 기타 수수료율 (%)</label><input type="number" id="d_n2_h_orate" value="0" step="0.1" oninput="calcD2()"></div>
+        <hr class="section-divider">
+        <div class="card-title orange">쿠폰 (변경 후)</div>
+        <div class="field"><label>쿠폰 할인 금액 (원)</label><input type="number" id="d_n2_coupon" value="0" oninput="calcD2()"></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <!-- 변경 후 결과 비교 -->
+        <div class="result-card diff">
+          <div class="result-title">📊 게스트 기준 가격 비교</div>
+          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
+          <div class="compare-row"><span class="cn">게스트 임대료</span><span class="cv old-v" id="d2_g_rent_old">-</span><span class="cv new-v" id="d2_g_rent_new">-</span></div>
+          <div class="compare-row"><span class="cn">게스트 서비스 이용료</span><span class="cv old-v" id="d2_g_svc_old">-</span><span class="cv new-v" id="d2_g_svc_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 임대 서비스이용료</span><span class="cv old-v" id="d2_g_svcr_old">-</span><span class="cv new-v" id="d2_g_svcr_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 기타 서비스이용료</span><span class="cv old-v" id="d2_g_svco_old">-</span><span class="cv new-v" id="d2_g_svco_new">-</span></div>
+          <div class="compare-row"><span class="cn">쿠폰 할인</span><span class="cv old-v" id="d2_coupon_old">-</span><span class="cv new-v" id="d2_coupon_new">-</span></div>
+          <div class="compare-row"><span class="cn">총 게스트 결제</span><span class="cv old-v" id="d2_g_total_old">-</span><span class="cv new-v" id="d2_g_total_new">-</span></div>
+        </div>
+
+        <div class="result-card diff">
+          <div class="result-title">📊 호스트 기준 가격 비교</div>
+          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
+          <div class="compare-row"><span class="cn">호스트 총 임대료</span><span class="cv old-v" id="d2_h_rent_old">-</span><span class="cv new-v" id="d2_h_rent_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 기본 임대료</span><span class="cv old-v" id="d2_h_base_old">-</span><span class="cv new-v" id="d2_h_base_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 추가인원비</span><span class="cv old-v" id="d2_h_extra_old">-</span><span class="cv new-v" id="d2_h_extra_new">-</span></div>
+          <div class="compare-row"><span class="cn">호스트 서비스 이용료</span><span class="cv old-v" id="d2_h_svc_old">-</span><span class="cv new-v" id="d2_h_svc_new">-</span></div>
+          <div class="compare-row"><span class="cn">공과금</span><span class="cv old-v" id="d2_util_old">-</span><span class="cv new-v" id="d2_util_new">-</span></div>
+          <div class="compare-row"><span class="cn">총 청소비</span><span class="cv old-v" id="d2_clean_old">-</span><span class="cv new-v" id="d2_clean_new">-</span></div>
+        </div>
+
+        <!-- 차액 결과 -->
+        <div class="result-card diff" style="border-color:rgba(245,158,11,.5);">
+          <div class="result-title">💸 차액 결과</div>
+          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="d2_guest_label">게스트 추가결제/환불</span><span class="rval" id="d2_guest_diff">-</span></div>
+          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="d2_host_label">호스트 추가정산/지불</span><span class="rval" id="d2_host_diff">-</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     해외
+═══════════════════════════════════════════════════════ -->
+<div id="overseas" class="tab-content">
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-badge badge-blue">① 집 설정 가격</span>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">기본 설정 (기준 통화)</div>
+        <div class="field"><label>적용 환율 (원/기준통화)</label><input type="number" id="o_rate" value="50.082" step="0.001" oninput="calcO()"></div>
+        <div class="field"><label>박당 임대료</label><input type="number" id="o_rent" value="1234" oninput="calcO()"></div>
+        <div class="field"><label>박당 공과금</label><input type="number" id="o_utility" value="111" oninput="calcO()"></div>
+        <div class="field"><label>청소비</label><input type="number" id="o_clean" value="582" oninput="calcO()"></div>
+        <div class="field"><label>반려동물 청소비</label><input type="number" id="o_pet_clean" value="1679" oninput="calcO()"></div>
+        <div class="field"><label>박당 추가 인원비</label><input type="number" id="o_extra_per" value="3333" oninput="calcO()"></div>
+        <div class="field"><label>기준 인원</label><input type="number" id="o_base_pax" value="6" oninput="calcO()"></div>
+        <div class="field"><label>최대 인원</label><input type="number" id="o_max_pax" value="11" oninput="calcO()"></div>
+        <div class="field"><label>보증금 (기준 통화)</label><input type="number" id="o_deposit" value="5819" oninput="calcO()"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">예약 조건</div>
+        <div class="field"><label>박수</label><input type="number" id="o_nights" value="6" oninput="calcO()"></div>
+        <div class="field"><label>인원수</label><input type="number" id="o_persons" value="1" oninput="calcO()"></div>
+        <div class="field">
+          <div class="checkbox-row"><input type="checkbox" id="o_pet" onchange="calcO()"><label for="o_pet">반려동물 있음</label></div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-title">수수료율</div>
+        <div class="field"><label>게스트 임대 수수료율 (%)</label><input type="number" id="o_g_rrate" value="13" step="0.1" oninput="calcO()"></div>
+        <div class="field"><label>게스트 기타 수수료율 (%)</label><input type="number" id="o_g_orate" value="5" step="0.1" oninput="calcO()"></div>
+        <div class="field"><label>호스트 임대 수수료율 (%)</label><input type="number" id="o_h_rrate" value="3" step="0.1" oninput="calcO()"></div>
+        <div class="field"><label>호스트 기타 수수료율 (%)</label><input type="number" id="o_h_orate" value="0" step="0.1" oninput="calcO()"></div>
+        <hr class="section-divider">
+        <div class="card-title">쿠폰</div>
+        <div class="field"><label>쿠폰 할인율 (%)</label><input type="number" id="o_c_rate" value="0" step="0.1" oninput="calcO()"></div>
+        <div class="field"><label>쿠폰 최대 할인 금액 (원, 0=무제한)</label><input type="number" id="o_c_max" value="1000000" oninput="calcO()"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-badge badge-blue">② 계약 · 세부 가격</span>
+    </div>
+    <div class="grid2">
+      <div class="result-card guest">
+        <div class="result-title">👤 게스트 결제 (원화)</div>
+        <div class="rrow"><span class="rname">임대료</span><span class="rval" id="o_g_rent">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 기본 임대료</span><span class="rval sub" id="o_g_base_rent">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 추가인원비</span><span class="rval sub" id="o_g_extra">-</span></div>
+        <div class="rrow"><span class="rname">기타 비용</span><span class="rval" id="o_g_other">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 총 청소비</span><span class="rval sub" id="o_g_clean">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 총 공과금</span><span class="rval sub" id="o_g_util">-</span></div>
+        <div class="rrow"><span class="rname">서비스 이용료</span><span class="rval" id="o_g_svc">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 임대 서비스이용료</span><span class="rval sub" id="o_g_svc_r">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 기타 서비스이용료</span><span class="rval sub" id="o_g_svc_o">-</span></div>
+        <div class="rrow"><span class="rname">쿠폰 할인</span><span class="rval neg" id="o_g_coupon">-</span></div>
+        <div class="rrow"><span class="rname">보증금</span><span class="rval" id="o_g_dep">-</span></div>
+        <div class="rrow total"><span class="rname">총 게스트 결제 금액</span><span class="rval" id="o_g_total">-</span></div>
+        <div class="rrow"><span class="rname sub">보증금 제외</span><span class="rval sub" id="o_g_nodep">-</span></div>
+      </div>
+      <div class="result-card host">
+        <div class="result-title">🏠 호스트 정산 (원화 · 기준통화)</div>
+        <div class="rrow"><span class="rname">총 임대료</span><span class="dual-val"><div class="krw" id="o_h_rent_k">-</div><div class="base" id="o_h_rent_b">-</div></span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 기본 임대료</span><span class="dual-val"><div class="krw" id="o_h_base_k">-</div><div class="base" id="o_h_base_b">-</div></span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 추가인원비</span><span class="dual-val"><div class="krw" id="o_h_extra_k">-</div><div class="base" id="o_h_extra_b">-</div></span></div>
+        <div class="rrow"><span class="rname">호스트 서비스이용료</span><span class="rval neg" id="o_h_svc">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 임대 서비스이용료</span><span class="rval sub" id="o_h_svc_r">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 기타 서비스이용료</span><span class="rval sub" id="o_h_svc_o">-</span></div>
+        <div class="rrow"><span class="rname">총 공과금</span><span class="dual-val"><div class="krw" id="o_h_util_k">-</div><div class="base" id="o_h_util_b">-</div></span></div>
+        <div class="rrow"><span class="rname">총 청소비</span><span class="dual-val"><div class="krw" id="o_h_clean_k">-</div><div class="base" id="o_h_clean_b">-</div></span></div>
+        <div class="rrow total"><span class="rname">호스트 최종 정산액</span><span class="dual-val"><div class="krw" id="o_h_total_k" style="color:var(--accent2);font-size:15px;">-</div><div class="base" id="o_h_total_b">-</div></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 해외 변경 후 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-badge badge-orange">③ 변경 후 가격</span>
+    </div>
+    <div class="card" style="margin-bottom:14px;">
+      <div class="card-title orange">변경 기준 선택</div>
+      <div class="basis-toggle">
+        <button class="basis-btn active-new" id="o_basis_new" onclick="oSetBasis('new')">신규 입력값 기준 (①번 설정)</button>
+        <button class="basis-btn" id="o_basis_old" onclick="oSetBasis('old')">기존 세부 가격 기준 (②번 결과)</button>
+      </div>
+      <div id="o_basis_old_hint" style="display:none;" class="hint">
+        ⚠️ 기존 세부 가격 기준: 환율·보증금·수수료율 등을 ②번 결과에서 자동으로 가져옵니다. 변경된 항목은 아래에서 직접 입력하세요.
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title orange">변경 후 조건</div>
+        <div class="field"><label>적용 환율 (자동/수동)</label><input type="number" id="o_n2_rate" value="50.082" step="0.001" oninput="calcO2()"></div>
+        <div class="field"><label>박수 (변경 후)</label><input type="number" id="o_n2_nights" value="7" oninput="calcO2()"></div>
+        <div class="field"><label>인원수 (변경 후)</label><input type="number" id="o_n2_persons" value="1" oninput="calcO2()"></div>
+        <div class="field">
+          <div class="checkbox-row"><input type="checkbox" id="o_n2_pet" onchange="calcO2()"><label for="o_n2_pet">반려동물 있음 (변경 후)</label></div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-title orange">변경 후 기준 (기준 통화)</div>
+        <div class="field"><label>박당 임대료</label><input type="number" id="o_n2_rent" value="1234" oninput="calcO2()"></div>
+        <div class="field"><label>박당 공과금</label><input type="number" id="o_n2_utility" value="111" oninput="calcO2()"></div>
+        <div class="field"><label>청소비</label><input type="number" id="o_n2_clean" value="582" oninput="calcO2()"></div>
+        <div class="field">
+          <label>반려동물 청소비</label>
+          <input type="number" id="o_n2_pet_clean" value="0" oninput="calcO2()">
+          <div class="hint">⚠️ 기존에 반려동물이 없다가 생기는 경우, 변경 시점의 값 직접 입력</div>
+        </div>
+        <div class="field">
+          <label>박당 추가 인원비</label>
+          <input type="number" id="o_n2_extra_per" value="0" oninput="calcO2()">
+          <div class="hint">⚠️ 기존 초과 인원이 없다가 생기는 경우, 변경 시점의 값 직접 입력</div>
+        </div>
+        <div class="field"><label>기준 인원</label><input type="number" id="o_n2_base_pax" value="6" oninput="calcO2()"></div>
+        <div class="field"><label>보증금 (기준 통화)</label><input type="number" id="o_n2_deposit" value="5819" oninput="calcO2()"></div>
+        <hr class="section-divider">
+        <div class="card-title orange">수수료율 (변경 후)</div>
+        <div class="field"><label>게스트 임대 수수료율 (%)</label><input type="number" id="o_n2_g_rrate" value="13" step="0.1" oninput="calcO2()"></div>
+        <div class="field"><label>게스트 기타 수수료율 (%)</label><input type="number" id="o_n2_g_orate" value="5" step="0.1" oninput="calcO2()"></div>
+        <div class="field"><label>호스트 임대 수수료율 (%)</label><input type="number" id="o_n2_h_rrate" value="3" step="0.1" oninput="calcO2()"></div>
+        <div class="field"><label>호스트 기타 수수료율 (%)</label><input type="number" id="o_n2_h_orate" value="0" step="0.1" oninput="calcO2()"></div>
+        <hr class="section-divider">
+        <div class="card-title orange">쿠폰 (변경 후, 원화)</div>
+        <div class="field"><label>쿠폰 할인 금액 (원)</label><input type="number" id="o_n2_coupon" value="0" oninput="calcO2()"></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="result-card diff">
+          <div class="result-title">📊 게스트 기준 가격 비교 (원화)</div>
+          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
+          <div class="compare-row"><span class="cn">게스트 임대료</span><span class="cv old-v" id="o2_g_rent_old">-</span><span class="cv new-v" id="o2_g_rent_new">-</span></div>
+          <div class="compare-row"><span class="cn">게스트 서비스 이용료</span><span class="cv old-v" id="o2_g_svc_old">-</span><span class="cv new-v" id="o2_g_svc_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 임대 서비스이용료</span><span class="cv old-v" id="o2_g_svcr_old">-</span><span class="cv new-v" id="o2_g_svcr_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 기타 서비스이용료</span><span class="cv old-v" id="o2_g_svco_old">-</span><span class="cv new-v" id="o2_g_svco_new">-</span></div>
+          <div class="compare-row"><span class="cn">쿠폰 할인</span><span class="cv old-v" id="o2_coupon_old">-</span><span class="cv new-v" id="o2_coupon_new">-</span></div>
+          <div class="compare-row"><span class="cn">총 게스트 결제</span><span class="cv old-v" id="o2_g_total_old">-</span><span class="cv new-v" id="o2_g_total_new">-</span></div>
+        </div>
+        <div class="result-card diff">
+          <div class="result-title">📊 호스트 기준 가격 비교 (기준 통화)</div>
+          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
+          <div class="compare-row"><span class="cn">호스트 총 임대료</span><span class="cv old-v" id="o2_h_rent_old">-</span><span class="cv new-v" id="o2_h_rent_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 기본 임대료</span><span class="cv old-v" id="o2_h_base_old">-</span><span class="cv new-v" id="o2_h_base_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 추가인원비</span><span class="cv old-v" id="o2_h_extra_old">-</span><span class="cv new-v" id="o2_h_extra_new">-</span></div>
+          <div class="compare-row"><span class="cn">호스트 서비스 이용료</span><span class="cv old-v" id="o2_h_svc_old">-</span><span class="cv new-v" id="o2_h_svc_new">-</span></div>
+          <div class="compare-row"><span class="cn">공과금</span><span class="cv old-v" id="o2_util_old">-</span><span class="cv new-v" id="o2_util_new">-</span></div>
+          <div class="compare-row"><span class="cn">총 청소비</span><span class="cv old-v" id="o2_clean_old">-</span><span class="cv new-v" id="o2_clean_new">-</span></div>
+        </div>
+        <div class="result-card diff" style="border-color:rgba(245,158,11,.5);">
+          <div class="result-title">💸 차액 결과</div>
+          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="o2_guest_label">게스트 추가결제/환불 (원화)</span><span class="rval" id="o2_guest_diff">-</span></div>
+          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="o2_host_label">호스트 추가정산/지불 (기준 통화)</span><span class="rval" id="o2_host_diff">-</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="compare-section">
   <div class="compare-header">
     <span class="cmp-title">VER1 vs VER2 · 요금 비교</span>
