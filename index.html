@@ -814,6 +814,44 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
           <div class="checkbox-row"><input type="checkbox" id="v2d_pet" onchange="v2calcD()"><label for="v2d_pet">반려동물 있음</label></div>
         </div>
         <hr class="section-divider">
+        <div class="card-title orange">기간 할인 <span class="changed-tag">신규</span></div>
+        <div class="field" style="grid-column:1/-1;">
+          <label style="display:flex;align-items:center;justify-content:space-between;">
+            <span>기간 할인 적용</span>
+            <input type="checkbox" id="v2d_disc_on" onchange="v2calcD()" style="width:auto;margin:0;">
+          </label>
+        </div>
+        <div class="field">
+          <label>할인율 (%)</label>
+          <input type="number" id="v2d_disc_rate" value="0" step="0.1" min="0" max="100" oninput="v2calcD()" placeholder="0">
+        </div>
+        <div class="field" style="grid-column:1/-1;">
+          <div class="hint" style="margin:0;">✅ 임대료 전체에 할인율 적용 (수수료는 할인 후 임대료 기준으로 재산정)</div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-title orange">성수기 박당 추가요금 <span class="changed-tag">신규</span></div>
+        <div class="field" style="grid-column:1/-1;">
+          <label style="display:flex;align-items:center;justify-content:space-between;">
+            <span>성수기 추가요금 적용</span>
+            <input type="checkbox" id="v2d_peak_on" onchange="v2calcD()" style="width:auto;margin:0;">
+          </label>
+        </div>
+        <div class="field">
+          <label>구간 1 · 박당 추가요금 (원)</label>
+          <input type="number" id="v2d_peak1" value="0" oninput="v2calcD()" placeholder="0">
+        </div>
+        <div class="field">
+          <label>구간 2 · 박당 추가요금 (원)</label>
+          <input type="number" id="v2d_peak2" value="0" oninput="v2calcD()" placeholder="0">
+        </div>
+        <div class="field">
+          <label>구간 3 · 박당 추가요금 (원)</label>
+          <input type="number" id="v2d_peak3" value="0" oninput="v2calcD()" placeholder="0">
+        </div>
+        <div class="field" style="grid-column:1/-1;">
+          <div class="hint" style="margin:0;">✅ 성수기 추가요금은 임대료에 합산 · 수수료 대상에 포함</div>
+        </div>
+        <hr class="section-divider">
         <div class="card-title green">수수료율 <span class="changed-tag">변경</span></div>
         <div class="field">
           <label>게스트 수수료율 (%)</label>
@@ -844,6 +882,8 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="rrow"><span class="rname sub">ㄴ 기본 임대료 (n 박수 기준)</span><span class="rval sub" id="v2d_g_base_rent">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 추가인원비</span><span class="rval sub" id="v2d_g_extra">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 90박 초과 할인</span><span class="rval sub neg" id="v2d_g_extra_disc">-</span></div>
+        <div class="rrow" id="v2d_g_disc_row" style="display:none;"><span class="rname sub">ㄴ 기간 할인</span><span class="rval sub neg" id="v2d_g_disc_amt">-</span></div>
+        <div class="rrow" id="v2d_g_peak_row" style="display:none;"><span class="rname sub">ㄴ 성수기 추가요금</span><span class="rval sub" id="v2d_g_peak_cost">-</span></div>
         <div class="rrow"><span class="rname">임대 서비스 이용료</span><span class="rval" id="v2d_g_svc_rent">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 수수료 적용 박수 min(n,90)</span><span class="rval sub" id="v2d_g_svc_nights">-</span></div>
         <div class="rrow"><span class="rname">총 공과금 + 총 청소비</span><span class="rval" id="v2d_g_other">-</span></div>
@@ -1771,7 +1811,9 @@ function v2SwitchTab(tab, btn) {
 ============================================================ */
 function v2CoreCalc(n, k, pet,
                     W, M, utility, clean, pet_clean, extra_per, base_pax, deposit,
-                    g_rate, h_rate, extra_disc_on, extra_disc_rate) {
+                    g_rate, h_rate, extra_disc_on, extra_disc_rate,
+                    disc_on, disc_rate,
+                    peak_on, peak1, peak2, peak3) {
   const extra_pax = Math.max(k - base_pax, 0);
 
   // 기본 임대료 (추가인원 제외)
@@ -1784,16 +1826,29 @@ function v2CoreCalc(n, k, pet,
 
   const extra_cost = extra_pax * extra_per * n;
 
-  // 90박 초과 추가 할인 (임대료 전체에 적용)
+  // [A] 기간 할인 (임대료 전체에 적용)
+  let disc_amount = 0;
+  if (disc_on && disc_rate > 0) {
+    disc_amount = (base_rent + extra_cost) * disc_rate;
+  }
+
+  // [B] 90박 초과 추가 할인
   let extra_disc_amount = 0;
   if (extra_disc_on && n > 90 && extra_disc_rate > 0) {
     const over_nights = n - 90;
-    // 초과 박수 비율에 해당하는 임대료에 할인 적용
     const base_per_night = base_rent / n;
     extra_disc_amount = base_per_night * over_nights * extra_disc_rate;
   }
 
-  const total_rent = base_rent + extra_cost - extra_disc_amount;
+  // [C] 성수기 박당 추가요금
+  let peak_cost = 0;
+  if (peak_on) {
+    peak_cost += (peak1 || 0) * n;
+    peak_cost += (peak2 || 0) * n;
+    peak_cost += (peak3 || 0) * n;
+  }
+
+  const total_rent = base_rent + extra_cost - disc_amount - extra_disc_amount + peak_cost;
 
   // [2] 임대 서비스 이용료
   const svc_nights = Math.min(n, 90);
@@ -1811,13 +1866,12 @@ function v2CoreCalc(n, k, pet,
   const guest_nodep = Math.floor(total_rent + svc_rent + total_other + svc_other);
   const guest_total = guest_nodep + deposit;
 
-  // 호스트 수수료: (임대료 + 기타서비스) × 호스트 수수료율
-  // VER2에서는 동일 수수료율 적용
+  // 호스트 수수료
   const h_svc = (total_rent + total_other) * h_rate;
   const host_total = total_rent + total_other - h_svc;
 
   return {
-    base_rent, extra_cost, extra_disc_amount, total_rent,
+    base_rent, extra_cost, disc_amount, extra_disc_amount, peak_cost, total_rent,
     svc_rent, svc_nights, total_clean, total_util, total_other,
     svc_other, guest_nodep, guest_total, deposit, h_svc, host_total,
     extra_pax
@@ -1839,12 +1893,28 @@ function v2calcD() {
   const gr=v('v2d_g_rate')/100, hr=v('v2d_h_rate')/100;
   const ed_on=b('v2d_extra_disc_on'), ed=v('v2d_extra_disc')/100;
 
-  const r = v2CoreCalc(n,k,pet,W,M,util,clean,pc,ep,bp,dep,gr,hr,ed_on,ed);
+  const disc_on   = b('v2d_disc_on');
+  const disc_rate = v('v2d_disc_rate') / 100;
+  const peak_on   = b('v2d_peak_on');
+  const peak1=v('v2d_peak1');
+  const peak2=v('v2d_peak2');
+  const peak3=v('v2d_peak3');
+
+  const r = v2CoreCalc(n,k,pet,W,M,util,clean,pc,ep,bp,dep,gr,hr,ed_on,ed,
+                       disc_on,disc_rate,
+                       peak_on,peak1,peak2,peak3);
 
   set('v2d_g_rent', fmt(r.total_rent));
   set('v2d_g_base_rent', fmt(r.base_rent));
   set('v2d_g_extra', fmt(r.extra_cost));
   set('v2d_g_extra_disc', r.extra_disc_amount > 0 ? '-' + fmt(r.extra_disc_amount) : fmt(0));
+  // 기간할인 / 성수기 표시
+  var discRow  = document.getElementById('v2d_g_disc_row');
+  var peakRow  = document.getElementById('v2d_g_peak_row');
+  if (discRow)  { discRow.style.display  = r.disc_amount > 0  ? '' : 'none'; }
+  if (peakRow)  { peakRow.style.display  = r.peak_cost > 0    ? '' : 'none'; }
+  set('v2d_g_disc_amt',  r.disc_amount  > 0 ? '-' + fmt(r.disc_amount)  : fmt(0));
+  set('v2d_g_peak_cost', r.peak_cost    > 0 ?       fmt(r.peak_cost)    : fmt(0));
   set('v2d_g_svc_rent', fmt(r.svc_rent));
   set('v2d_g_svc_nights', Math.min(n,90) + '박');
   set('v2d_g_other', fmt(r.total_other));
