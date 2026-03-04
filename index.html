@@ -2130,8 +2130,14 @@ function v2calcD() {
   }
   set('v2d_g_total', fmt(r.guest_total));
   set('v2d_g_nodep', fmt(r.guest_nodep));
+  window._v2d_dep = dep;
   window._v2d_guest_total = r.guest_total;
   window._v2d_guest_nodep = r.guest_nodep;
+  // 분할결제용: 추가인원비(원금+수수료) 제외한 총액
+  var extra_pax_n = Math.max(k - bp, 0);
+  var extra_amt   = extra_pax_n * ep * n;
+  var extra_svc   = Math.floor(extra_amt / n * Math.min(n, 90) * gr);
+  window._v2d_split_total = r.guest_total - extra_amt - extra_svc;
   set('v2d_h_rent', fmt(r.total_rent));
   set('v2d_h_base_rent', fmt(r.base_rent));
   set('v2d_h_extra', fmt(r.extra_cost));
@@ -2951,7 +2957,7 @@ function v2calcSplitD() {
   var total_rounds = remain_N > 0 ? full_rounds + 1 : full_rounds;
 
   // 한번에 결제 총액 (단건 계산 결과 사용)
-  var onetime_total = window._v2d_guest_total || 0;
+  var onetime_total = window._v2d_split_total || 0;
 
   var rounds = [];
   var sum_prev = 0; // 이전 회차 누적합
@@ -2965,12 +2971,10 @@ function v2calcSplitD() {
       // A. 1회차: M×(1+수수료) + 추가인원비(수수료없음) + (공과금+청소비)×(1+수수료) + 보증금
       nights = UNIT;
       var r_a  = Math.floor(M * (1 + gr));
-      var ex_a = extra_pax * ep * UNIT;
       var ot_a = Math.floor((util * UNIT + total_clean) * (1 + gr));
-      total_amt = r_a + ex_a + ot_a + dep;
+      total_amt = r_a + ot_a + dep;
       items = [
         { label: 'M × (1+' + (gr*100).toFixed(1) + '%)', val: r_a },
-        { label: '추가인원비 × ' + UNIT, val: ex_a },
         { label: '(공과금×' + UNIT + '+청소비) × (1+수수료)', val: ot_a },
         { label: '보증금', val: dep }
       ];
@@ -2979,22 +2983,18 @@ function v2calcSplitD() {
       if (withFee) {
         // B. 2~3회차: M×(1+수수료) + 추가인원비(수수료없음) + 공과금×(1+수수료)
         var r_b  = Math.floor(M * (1 + gr));
-        var ex_b = extra_pax * ep * UNIT;
         var ut_b = Math.floor(util * UNIT * (1 + gr));
-        total_amt = r_b + ex_b + ut_b;
+        total_amt = r_b + ut_b;
         items = [
           { label: 'M × (1+' + (gr*100).toFixed(1) + '%)', val: r_b },
-          { label: '추가인원비 × ' + UNIT, val: ex_b },
           { label: '공과금×' + UNIT + ' × (1+수수료)', val: ut_b }
         ];
       } else {
         // C. 4회차 이상: 수수료 없음
-        var ex_c = extra_pax * ep * UNIT;
         var ut_c = util * UNIT;
-        total_amt = M + ex_c + ut_c;
+        total_amt = M + ut_c;
         items = [
           { label: 'M (수수료 없음)', val: M },
-          { label: '추가인원비 × ' + UNIT, val: ex_c },
           { label: '공과금 × ' + UNIT, val: ut_c }
         ];
       }
@@ -3005,20 +3005,16 @@ function v2calcSplitD() {
       var N_last = nights;
       if (withFee) {
         var r_last  = Math.floor((M / UNIT * N_last) * (1 + gr));
-        var ex_last = extra_pax * ep * N_last;
         var ut_last = Math.floor(util * N_last * (1 + gr));
         items = [
           { label: 'M/30×' + N_last + ' × (1+수수료)', val: r_last },
-          { label: '추가인원비 × ' + N_last, val: ex_last },
           { label: '공과금×' + N_last + ' × (1+수수료)', val: ut_last }
         ];
       } else {
         var r_last2  = Math.floor(M / UNIT * N_last);
-        var ex_last2 = extra_pax * ep * N_last;
         var ut_last2 = util * N_last;
         items = [
           { label: 'M/30×' + N_last + ' (수수료 없음)', val: r_last2 },
-          { label: '추가인원비 × ' + N_last, val: ex_last2 },
           { label: '공과금 × ' + N_last, val: ut_last2 }
         ];
       }
@@ -3031,8 +3027,8 @@ function v2calcSplitD() {
   }
 
   // 한 번에 결제 금액 = 단건 총 게스트 결제 금액 (v2calcD에서 계산된 값)
-  var onetimeTotal = window._v2d_guest_total || 0;
-  var onetimeNodep = window._v2d_guest_nodep || 0;
+  var onetimeTotal = window._v2d_split_total || 0;
+  var onetimeNodep = (window._v2d_split_total || 0) - (window._v2d_dep || 0);
   var otBox = document.getElementById('v2d_onetime_box');
   if (otBox) otBox.style.display = n >= 60 ? '' : 'none';
   set('v2d_onetime_total', onetimeTotal > 0 ? '₩' + onetimeTotal.toLocaleString('ko-KR') + '원' : '-');
