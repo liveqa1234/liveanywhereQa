@@ -2942,7 +2942,7 @@ function v2calcSplitD() {
     var nights, items = [], total_amt = 0;
 
     if (x === 1) {
-      // A. 1회차
+      // A. 1회차: M×(1+수수료) + 추가인원비(수수료없음) + (공과금+청소비)×(1+수수료) + 보증금
       nights = UNIT;
       var r_a  = Math.floor(M * (1 + gr));
       var ex_a = extra_pax * ep * UNIT;
@@ -2957,7 +2957,7 @@ function v2calcSplitD() {
     } else if (!isLast) {
       nights = UNIT;
       if (withFee) {
-        // B. 2~3회차
+        // B. 2~3회차: M×(1+수수료) + 추가인원비(수수료없음) + 공과금×(1+수수료)
         var r_b  = Math.floor(M * (1 + gr));
         var ex_b = extra_pax * ep * UNIT;
         var ut_b = Math.floor(util * UNIT * (1 + gr));
@@ -2968,7 +2968,7 @@ function v2calcSplitD() {
           { label: '공과금×' + UNIT + ' × (1+수수료)', val: ut_b }
         ];
       } else {
-        // C. 4회차 이상
+        // C. 4회차 이상: 수수료 없음
         var ex_c = extra_pax * ep * UNIT;
         var ut_c = util * UNIT;
         total_amt = M + ex_c + ut_c;
@@ -2983,7 +2983,7 @@ function v2calcSplitD() {
       nights = remain_N > 0 ? remain_N : UNIT;
       var N = nights;
       if (withFee) {
-        // D-1
+        // D-1: M/30×N×(1+수수료) + 추가인원비(수수료없음) + 공과금×N×(1+수수료)
         var r_d1  = Math.floor((M / UNIT * N) * (1 + gr));
         var ex_d1 = extra_pax * ep * N;
         var ut_d1 = Math.floor(util * N * (1 + gr));
@@ -2994,7 +2994,7 @@ function v2calcSplitD() {
           { label: '공과금×' + N + ' × (1+수수료)', val: ut_d1 }
         ];
       } else {
-        // D-2
+        // D-2: 수수료 없음
         var r_d2  = Math.floor(M / UNIT * N);
         var ex_d2 = extra_pax * ep * N;
         var ut_d2 = util * N;
