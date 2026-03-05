@@ -1,2 +1,2 @@
-# liveanywhereQa
+# liveanywhere calculator
 리브애니웨어 계산기
