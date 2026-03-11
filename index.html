@@ -1207,11 +1207,14 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
             <option value="VN">🇻🇳 베트남 (동, VND)</option>
           </select></div>
         <div class="field"><label>적용 환율 (원/기준통화)</label><input type="number" id="o_rate" value="50.082" step="0.001" oninput="calcO()"></div>
-        <div class="field"><label>일주일(6박) 가격 (기준 통화)</label><input type="number" id="o_W" value="6750" oninput="calcO()"></div>
-        <div class="field"><label>보름(14박) 가격 (기준 통화)</label><input type="number" id="o_M14" value="14868" oninput="calcO()"></div>
-        <div class="field"><label>한달(29박) 가격 (기준 통화)</label><input type="number" id="o_M29" value="27376" oninput="calcO()"></div>
+        <div class="field"><label>박당 임대료 (기준 통화)</label><input type="number" id="o_rent_per" value="1125" oninput="calcO()"></div>
+        <div class="field"><label>14박 기간 할인율 (%)</label><input type="number" id="o_disc14" value="5.6" step="0.1" oninput="calcO()"></div>
+        <div class="field"><label>29박 기간 할인율 (%)</label><input type="number" id="o_disc29" value="16.1" step="0.1" oninput="calcO()"></div>
         <input type="hidden" id="o_rent" value="0">
+        <input type="hidden" id="o_W" value="0">
         <input type="hidden" id="o_M" value="0">
+        <input type="hidden" id="o_M14" value="0">
+        <input type="hidden" id="o_M29" value="0">
         <div class="field"><label>박당 공과금</label><input type="number" id="o_utility" value="111" oninput="calcO()"></div>
         <div class="field"><label>청소비</label><input type="number" id="o_clean" value="582" oninput="calcO()"></div>
         <div class="field"><label>반려동물 청소비</label><input type="number" id="o_pet_clean" value="1679" oninput="calcO()"></div>
@@ -1894,14 +1897,16 @@ function calcO() {
   const grr=v('o_g_rrate')/100, gor=v('o_g_orate')/100;
   const hrr=v('o_h_rrate')/100, hor=v('o_h_orate')/100;
   const c_rate=v('o_c_rate')/100, c_max=v('o_c_max');
-  // 구간별 총 임대료 계산 (기준통화, 전체금액)
-  const oM14=v('o_M14'), oM29=v('o_M29');
-  let totalRentB;  // 기준통화 총 임대료
-  if (nights <= 6) totalRentB = oW / 6 * nights;
-  else if (nights < 14) totalRentB = (oW + (oM14 - oW) / (14 - 6) * (nights - 6)) / Math.max(nights,1) * nights;
-  else if (nights < 29) totalRentB = (oM14 + (oM29 - oM14) / (29 - 14) * (nights - 14)) / Math.max(nights,1) * nights;
-  else totalRentB = oM29 / 29 * nights;
-  const rent = totalRentB / Math.max(nights, 1);  // 박당 기준통화
+  // 박당 임대료 (구간별 할인율 보간 적용)
+  const rentPer = v('o_rent_per');
+  const disc14 = v('o_disc14') / 100;
+  const disc29 = v('o_disc29') / 100;
+  let discRate;
+  if (nights <= 6) discRate = 0;
+  else if (nights < 14) discRate = disc14 * (nights - 6) / (14 - 6);
+  else if (nights < 29) discRate = disc14 + (disc29 - disc14) * (nights - 14) / (29 - 14);
+  else discRate = disc29;
+  const rent = rentPer * (1 - discRate);
   document.getElementById('o_rent').value = rent;
 
   const r = oCalcCore(rate, nights, persons, pet, rent, util, clean, pc, ep, bp, dep, grr, gor, hrr, hor);
@@ -3343,7 +3348,7 @@ function updateV2OPriceView() {
   });
 }
 
-/* ── 기존 해외(o) 가격보기 업데이트 ── */
+/* ── 기존 해외(o) 가격보기 업데이트 (국내와 동일 구조: 박당×n) ── */
 var oPvCurrency = 'KRW';
 function setOCurrency(cur, btn) {
   oPvCurrency = cur;
@@ -3352,42 +3357,42 @@ function setOCurrency(cur, btn) {
   updateOPriceView();
 }
 function formatOCurrency(krw) {
-  if (oPvCurrency === 'KRW') return '₩' + Math.round(krw).toLocaleString('ko-KR');
-  var rate = EXCHANGE_RATES[oPvCurrency] || 1;
-  var buf = krw / rate / 1.02;
-  if (oPvCurrency === 'JPY') return '¥' + Math.round(buf).toLocaleString();
-  return (oPvCurrency === 'USD' ? '$' : '¥') + buf.toFixed(2);
+  if (oPvCurrency === 'KRW') return '\u20a9' + Math.round(krw).toLocaleString('ko-KR');
+  var exRate = EXCHANGE_RATES[oPvCurrency] || 1;
+  var buf = krw / exRate / 1.02;
+  if (oPvCurrency === 'JPY') return '\u00a5' + Math.round(buf).toLocaleString();
+  return (oPvCurrency === 'USD' ? '$' : '\u00a5') + buf.toFixed(2);
 }
 function updateOPriceView() {
-  var oW   = v('o_W');
-  var oM   = v('o_M');
-  var rate = v('o_rate');
-  if ((!oW && !oM) || !rate) return;
+  var rentPer  = v('o_rent_per');  // 박당 기준통화 (기본 6박 기준)
+  var rate     = v('o_rate');
+  if (!rentPer || !rate) return;
 
-  var util_per = v('o_utility');
-  var clean    = v('o_clean') * rate;
-  var pc       = v('o_pet_clean') * rate;
-  var pet      = b('o_pet');
-  var g_rrate  = v('o_g_rrate') / 100;
-  var g_orate  = v('o_g_orate') / 100;
-  var bp       = v('o_base_pax');
-  var k        = v('o_persons');
-  var ep       = (v('o_extra_per') || 0) * rate;
+  var disc14   = v('o_disc14') / 100;   // 14박 할인율
+  var disc29   = v('o_disc29') / 100;   // 29박 할인율
+  var discByN  = { 6: 0, 14: disc14, 29: disc29 };
+
+  var util_per  = v('o_utility');
+  var clean     = v('o_clean');
+  var pc        = v('o_pet_clean');
+  var pet       = b('o_pet');
+  var g_rrate   = v('o_g_rrate') / 100;
+  var g_orate   = v('o_g_orate') / 100;
+  var bp        = v('o_base_pax');
+  var k         = v('o_persons');
+  var ep        = v('o_extra_per') || 0;
   var extra_pax = Math.max(k - bp, 0);
-  var tc       = clean + (pet ? pc : 0);
-  var OVER     = 87;
-
-  var oM14 = v('o_M14'), oM29 = v('o_M29');
-  var rentByN = { 6: oW, 14: oM14, 29: oM29 };
+  var tc        = (clean + (pet ? pc : 0)) * rate;
+  var OVER      = 87;
 
   var periods = [6, 14, 29];
   periods.forEach(function(n) {
-    var base_rent_b = rentByN[n];
-    var rent_k     = Math.ceil(base_rent_b * rate + extra_pax * ep * n);
-    var util_k     = Math.ceil(util_per * rate * n);
+    var rn          = rentPer * (1 - discByN[n]);            // 구간별 박당 임대료(기준통화)
+    var rent_k      = Math.ceil((rn + extra_pax * ep) * n * rate);
+    var util_k      = Math.ceil(util_per * n * rate);
     var total_other = util_k + tc;
-    var svc_r      = Math.ceil(Math.min(n, OVER) * (base_rent_b / n) * rate * g_rrate);
-    var svc_o      = Math.ceil(total_other * g_orate);
+    var svc_r       = Math.ceil(Math.min(n, OVER) * (rn + extra_pax * ep) * rate * g_rrate);
+    var svc_o       = Math.ceil(total_other * g_orate);
     var guest_nodep = rent_k + total_other + svc_r + svc_o;
 
     var sfx = '_' + n;
@@ -3396,8 +3401,15 @@ function updateOPriceView() {
     var el_r = document.getElementById('o_pv_rent'   + sfx);
     if (el_a) el_a.textContent = formatOCurrency(guest_nodep);
     if (el_b) el_b.textContent = formatOCurrency(rent_k + util_k);
-    if (el_r) el_r.textContent = formatOCurrency(Math.ceil(base_rent_b * rate));
+    if (el_r) el_r.textContent = formatOCurrency(Math.ceil(rn * n * rate));
   });
+
+  var note = document.getElementById('o_pv_note');
+  if (note) {
+    note.textContent = oPvCurrency !== 'KRW'
+      ? '\u203b 환율 적용 (버퍼 2% 포함) \u00b7 1' + oPvCurrency + ' = ' + (EXCHANGE_RATES[oPvCurrency]||'').toLocaleString() + '원'
+      : '';
+  }
 }
 
 
