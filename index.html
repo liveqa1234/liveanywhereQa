@@ -1179,6 +1179,13 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
     <div class="grid2">
       <div class="card">
         <div class="card-title">기본 설정 (기준 통화)</div>
+        <div class="field" style="grid-column:1/-1;"><label>국가 선택</label>
+          <select id="o_country" onchange="setOCountry()" style="width:100%;padding:8px;background:#1a1f3a;color:#c8d0f0;border:1px solid #363d5e;border-radius:8px;">
+            <option value="TH">🇹🇭 태국 (바트, THB)</option>
+            <option value="ID">🇮🇩 인도네시아 (루피아, IDR)</option>
+            <option value="MY">🇲🇾 말레이시아 (링깃, MYR)</option>
+            <option value="VN">🇻🇳 베트남 (동, VND)</option>
+          </select></div>
         <div class="field"><label>적용 환율 (원/기준통화)</label><input type="number" id="o_rate" value="50.082" step="0.001" oninput="calcO()"></div>
         <div class="field"><label>박당 임대료</label><input type="number" id="o_rent" value="1234" oninput="calcO()"></div>
         <div class="field"><label>박당 공과금</label><input type="number" id="o_utility" value="111" oninput="calcO()"></div>
@@ -1264,6 +1271,13 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
     <div class="grid2">
       <div class="card">
         <div class="card-title orange">변경 후 조건</div>
+        <div class="field" style="grid-column:1/-1;"><label>국가 선택</label>
+          <select id="o_n2_country" onchange="setON2Country()" style="width:100%;padding:8px;background:#1a1f3a;color:#c8d0f0;border:1px solid #363d5e;border-radius:8px;">
+            <option value="TH">🇹🇭 태국 (바트, THB)</option>
+            <option value="ID">🇮🇩 인도네시아 (루피아, IDR)</option>
+            <option value="MY">🇲🇾 말레이시아 (링깃, MYR)</option>
+            <option value="VN">🇻🇳 베트남 (동, VND)</option>
+          </select></div>
         <div class="field"><label>적용 환율 (자동/수동)</label><input type="number" id="o_n2_rate" value="50.082" step="0.001" oninput="calcO2()"></div>
         <div class="field"><label>박수 (변경 후)</label><input type="number" id="o_n2_nights" value="7" oninput="calcO2()"></div>
         <div class="field"><label>인원수 (변경 후)</label><input type="number" id="o_n2_persons" value="1" oninput="calcO2()"></div>
@@ -1457,6 +1471,13 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
     <div class="cmp-inputs">
       <div class="card">
         <div class="card-title" style="color:#4f8ef7;">&#9632; VER1 조건 (기준 통화)</div>
+        <div class="field" style="grid-column:1/-1;"><label>국가 선택</label>
+          <select id="cO_country" onchange="setCOCountry()" style="width:100%;padding:8px;background:#1a1f3a;color:#c8d0f0;border:1px solid #363d5e;border-radius:8px;">
+            <option value="TH">🇹🇭 태국 (바트, THB)</option>
+            <option value="ID">🇮🇩 인도네시아 (루피아, IDR)</option>
+            <option value="MY">🇲🇾 말레이시아 (링깃, MYR)</option>
+            <option value="VN">🇻🇳 베트남 (동, VND)</option>
+          </select></div>
         <div class="field"><label>적용 환율</label><input type="number" id="cO_rate" value="50.082" step="0.001" oninput="calcCmpO()"></div>
         <div class="field"><label>박당 임대료 (기준 통화)</label><input type="number" id="cO_v1_rent" value="1234" step="0.01" oninput="calcCmpO()"></div>
         <div class="field"><label>보증금 (기준 통화)</label><input type="number" id="cO_v1_deposit" value="5819" step="0.01" oninput="calcCmpO()"></div>
@@ -2723,6 +2744,9 @@ function showToast(msg, type) {
     const data = JSON.parse(raw);
     // DOM 준비 후 적용
     document.addEventListener('DOMContentLoaded', function() {
+  setOCountry();
+  setON2Country();
+  setCOCountry();
       applyInputData(data);
       setTimeout(() => showToast('✅ 저장된 값을 불러왔습니다.'), 300);
     });
@@ -3260,6 +3284,41 @@ var V2O_COUNTRY_INFO = {
   MY: { name: '말레이시아', currency: '링깃',   code: 'MYR', rate: 411.0600},
   VN: { name: '베트남',     currency: '동',     code: 'VND', rate: 0.0640  }
 };
+
+// 기존 계산기 해외 국가별 수수료율 설정
+var O_RATE_INFO = {
+  TH: { g_r: 6,    g_o: 0, h_r: 0,   h_o: 0 },
+  ID: { g_r: 13,   g_o: 0, h_r: 4,   h_o: 0 },
+  MY: { g_r: 13,   g_o: 0, h_r: 0,   h_o: 0 },
+  VN: { g_r: 9.9,  g_o: 0, h_r: 3.3, h_o: 0 }
+};
+
+function applyORates(country, prefix, calcFn) {
+  var info = V2O_COUNTRY_INFO[country];
+  var rates = O_RATE_INFO[country];
+  if (info) document.getElementById(prefix + 'rate').value = info.rate;
+  if (rates) {
+    document.getElementById(prefix + 'g_rrate').value = rates.g_r;
+    document.getElementById(prefix + 'g_orate').value = rates.g_o;
+    document.getElementById(prefix + 'h_rrate').value = rates.h_r;
+    document.getElementById(prefix + 'h_orate').value = rates.h_o;
+  }
+  calcFn();
+}
+
+function setOCountry() {
+  applyORates(document.getElementById('o_country').value, 'o_', calcO);
+}
+function setON2Country() {
+  applyORates(document.getElementById('o_n2_country').value, 'o_n2_', calcO2);
+}
+function setCOCountry() {
+  var country = document.getElementById('cO_country').value;
+  var info = V2O_COUNTRY_INFO[country];
+  if (info) document.getElementById('cO_rate').value = info.rate;
+  calcCmpO();
+}
+
 
 function setV2OCountry() {
   var country = document.getElementById('v2o_country').value;
