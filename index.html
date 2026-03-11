@@ -707,7 +707,7 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         </div>
         <div class="field" style="grid-column:1/-1;">
           <label>적용 환율 <span id="v2o_rate_label" style="color:#4f8ef7;font-weight:700;">(원/바트)</span></label>
-          <input type="number" id="v2o_rate" value="49.8576" step="0.001" oninput="v2calcO();updateV2OKrw();updateV2ODiscHint();updateV2OPeakHint()">
+          <input type="number" id="v2o_rate" value="49.9290" step="0.001" oninput="v2calcO();updateV2OKrw();updateV2ODiscHint();updateV2OPeakHint()">
         </div>
         <!-- W 입력 -->
         <div class="field">
@@ -3052,7 +3052,7 @@ function v2calcSplitD() {
 ============================================================ */
 
 // 환율 (기준값, 실제 사용 시 변경 가능)
-var EXCHANGE_RATES = { KRW: 1, USD: 1500.5220, JPY: 9.6277, CNY: 224.6958 };
+var EXCHANGE_RATES = { KRW: 1, USD: 1528.5414, JPY: 9.6645, CNY: 229.1226 };
 var CURRENCY_SYMBOL = { KRW: '₩', USD: '$', JPY: '¥', CNY: '¥' };
 var CURRENCY_LABEL  = { KRW: 'KRW', USD: 'USD', JPY: 'JPY', CNY: 'CNY' };
 var BUFFER = 1.02; // 외화 버퍼 2%
@@ -3255,10 +3255,10 @@ function getV2Deposit(n) {
 
 /* ── VER2 해외 국가/통화 설정 ── */
 var V2O_COUNTRY_INFO = {
-  TH: { name: '태국',       currency: '바트',   code: 'THB', rate: 49.8576 },
-  ID: { name: '인도네시아', currency: '루피아', code: 'IDR', rate: 0.0965  },
-  MY: { name: '말레이시아', currency: '링깃',   code: 'MYR', rate: 406.7352},
-  VN: { name: '베트남',     currency: '동',     code: 'VND', rate: 0.0629  }
+  TH: { name: '태국',       currency: '바트',   code: 'THB', rate: 49.9290 },
+  ID: { name: '인도네시아', currency: '루피아', code: 'IDR', rate: 0.0980  },
+  MY: { name: '말레이시아', currency: '링깃',   code: 'MYR', rate: 411.0600},
+  VN: { name: '베트남',     currency: '동',     code: 'VND', rate: 0.0640  }
 };
 
 function setV2OCountry() {
