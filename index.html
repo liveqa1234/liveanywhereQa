@@ -3142,7 +3142,7 @@ function v2calcSplitD() {
 ============================================================ */
 
 // 환율 (기준값, 실제 사용 시 변경 가능)
-var EXCHANGE_RATES = { KRW: 1, USD: 1528.5414, JPY: 9.6645, CNY: 229.1226 };
+var EXCHANGE_RATES = { KRW: 1, USD: 1498.5700, JPY: 9.4750, CNY: 224.6300 };
 var CURRENCY_SYMBOL = { KRW: '₩', USD: '$', JPY: '¥', CNY: '¥' };
 var CURRENCY_LABEL  = { KRW: 'KRW', USD: 'USD', JPY: 'JPY', CNY: 'CNY' };
 var BUFFER = 1.02; // 외화 버퍼 2%
@@ -3355,9 +3355,9 @@ function setOCurrency(cur, btn) {
 function formatOCurrency(krw) {
   if (oPvCurrency === 'KRW') return '\u20a9' + Math.round(krw).toLocaleString('ko-KR');
   var exRate = EXCHANGE_RATES[oPvCurrency] || 1;
-  var buf = krw / exRate / 1.02;
-  if (oPvCurrency === 'JPY') return '\u00a5' + Math.round(buf).toLocaleString();
-  return (oPvCurrency === 'USD' ? '$' : '\u00a5') + buf.toFixed(2);
+  var buf = Math.round(krw / exRate);
+  if (oPvCurrency === 'JPY') return '\u00a5' + buf.toLocaleString();
+  return (oPvCurrency === 'USD' ? '$' : '\u00a5') + buf.toLocaleString();
 }
 function updateOPriceView() {
   var oW   = v('o_W');
