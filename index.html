@@ -1894,14 +1894,14 @@ function calcO() {
   const grr=v('o_g_rrate')/100, gor=v('o_g_orate')/100;
   const hrr=v('o_h_rrate')/100, hor=v('o_h_orate')/100;
   const c_rate=v('o_c_rate')/100, c_max=v('o_c_max');
-  // 구간별 임대료 계산 (박당 환산)
+  // 구간별 총 임대료 계산 (기준통화, 전체금액)
   const oM14=v('o_M14'), oM29=v('o_M29');
-  let totalRent;
-  if (nights <= 6) totalRent = oW;
-  else if (nights < 14) totalRent = oW + (oM14 - oW) / (14 - 6) * (nights - 6);
-  else if (nights < 29) totalRent = oM14 + (oM29 - oM14) / (29 - 14) * (nights - 14);
-  else totalRent = oM29 / 29 * nights;
-  const rent = totalRent / nights;
+  let totalRentB;  // 기준통화 총 임대료
+  if (nights <= 6) totalRentB = oW / 6 * nights;
+  else if (nights < 14) totalRentB = (oW + (oM14 - oW) / (14 - 6) * (nights - 6)) / Math.max(nights,1) * nights;
+  else if (nights < 29) totalRentB = (oM14 + (oM29 - oM14) / (29 - 14) * (nights - 14)) / Math.max(nights,1) * nights;
+  else totalRentB = oM29 / 29 * nights;
+  const rent = totalRentB / Math.max(nights, 1);  // 박당 기준통화
   document.getElementById('o_rent').value = rent;
 
   const r = oCalcCore(rate, nights, persons, pet, rent, util, clean, pc, ep, bp, dep, grr, gor, hrr, hor);
