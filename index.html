@@ -1718,21 +1718,22 @@ function calcD() {
   const h_rrate=v('d_h_rrate')/100, h_orate=v('d_h_orate')/100;
   const c_rate=v('d_c_rate')/100, c_max=v('d_c_max');
 
-  // 기간 할인 적용
+  // 기간 할인 - 임대료에 직접 적용 후 수수료 계산
   const disc_on = b('d_disc_on');
   const disc_rate = v('d_disc_rate') / 100;
-  const disc_amount = (disc_on && disc_rate > 0)
-    ? ceil1((rent_per * nights + extra_per * Math.max(persons - base_pax, 0) * nights) * disc_rate)
-    : 0;
+  const disc_rent_per = (disc_on && disc_rate > 0) ? Math.ceil(rent_per * (1 - disc_rate)) : rent_per;
+  const disc_extra_per = (disc_on && disc_rate > 0) ? Math.ceil(extra_per * (1 - disc_rate)) : extra_per;
+  const disc_amount = ceil1((rent_per - disc_rent_per) * nights
+    + (extra_per - disc_extra_per) * Math.max(persons - base_pax, 0) * nights);
 
-  const r = dCalcCore(nights, persons, pet, rent_per, utility_per, clean, pet_clean, extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate);
+  const r = dCalcCore(nights, persons, pet, disc_rent_per, utility_per, clean, pet_clean, disc_extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate);
   // 쿠폰 계산
   let coupon = 0;
   if(c_rate > 0) {
     const raw = ceil1(c_rate * (r.total_rent + r.total_svc));
     coupon = c_max > 0 ? Math.min(raw, c_max) : raw;
   }
-  const final = dCalcCore(nights, persons, pet, rent_per, utility_per, clean, pet_clean, extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate, coupon + disc_amount);
+  const final = dCalcCore(nights, persons, pet, disc_rent_per, utility_per, clean, pet_clean, disc_extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate, coupon);
 
   set('d_g_rent', fmt(final.total_rent));
   set('d_g_base_rent', fmt(final.base_rent));
@@ -1934,20 +1935,21 @@ function calcO() {
   else rent = oM29;
   const totalRentB = rent * nights;
   document.getElementById('o_rent').value = rent;
-  // 기간 할인 적용
+  // 기간 할인 - 임대료에 직접 적용 후 수수료 계산
   const o_disc_on = b('o_disc_on');
   const o_disc_rate = v('o_disc_rate') / 100;
-  const o_disc_amount = (o_disc_on && o_disc_rate > 0)
-    ? ceil1((rent * nights + ep * Math.max(persons - bp, 0) * nights) * rate * o_disc_rate)
-    : 0;
+  const disc_rent = (o_disc_on && o_disc_rate > 0) ? Math.ceil(rent * (1 - o_disc_rate)) : rent;
+  const disc_ep   = (o_disc_on && o_disc_rate > 0) ? Math.ceil(ep   * (1 - o_disc_rate)) : ep;
+  const o_disc_amount = ceil1((rent - disc_rent) * nights * rate
+    + (ep - disc_ep) * Math.max(persons - bp, 0) * nights * rate);
 
-  const r = oCalcCore(rate, nights, persons, pet, rent, util, clean, pc, ep, bp, dep, grr, gor, hrr, hor);
+  const r = oCalcCore(rate, nights, persons, pet, disc_rent, util, clean, pc, disc_ep, bp, dep, grr, gor, hrr, hor);
   let coupon = 0;
   if(c_rate > 0) {
     const raw = ceil1(c_rate * (r.total_rent_k + r.total_svc));
     coupon = c_max > 0 ? Math.min(raw, c_max) : raw;
   }
-  const f = oCalcCore(rate, nights, persons, pet, rent, util, clean, pc, ep, bp, dep, grr, gor, hrr, hor, coupon + o_disc_amount);
+  const f = oCalcCore(rate, nights, persons, pet, disc_rent, util, clean, pc, disc_ep, bp, dep, grr, gor, hrr, hor, coupon);
   set('o_g_rent', fmt(f.total_rent_k));
   set('o_g_base_rent', fmt(f.base_rent_k));
   set('o_g_extra', fmt(f.extra_k));
@@ -2119,21 +2121,27 @@ function v2CoreCalc(n, k, pet,
                     c_rate, c_max) {
   const extra_pax = Math.max(k - base_pax, 0);
 
-  // 기본 임대료 (추가인원 제외)
-  let base_rent;
+  // 기본 임대료 (추가인원 제외) - 박당 단가 계산
+  let rent_per_night;
   if (n < 30) {
-    base_rent = ((M - W) / (30 - 6)) * (n - 6) + W;
+    rent_per_night = ((M - W) / (30 - 6)) * (n - 6) / n + W / n;
   } else {
-    base_rent = (M / 30) * n;
+    rent_per_night = M / 30;
   }
 
-  const extra_cost = extra_pax * extra_per * n;
+  // [A] 기간 할인 - ceil(박당 × (1-할인율)) × nights
+  const disc_rent_per = (disc_on && disc_rate > 0)
+    ? Math.ceil(rent_per_night * (1 - disc_rate))
+    : rent_per_night;
+  const disc_extra_per = (disc_on && disc_rate > 0)
+    ? Math.ceil(extra_per * (1 - disc_rate))
+    : extra_per;
 
-  // [A] 기간 할인 (임대료 전체에 적용)
-  let disc_amount = 0;
-  if (disc_on && disc_rate > 0) {
-    disc_amount = (base_rent + extra_cost) * disc_rate;
-  }
+  const base_rent = disc_rent_per * n;
+  const extra_cost = extra_pax * disc_extra_per * n;
+  const disc_amount = (disc_on && disc_rate > 0)
+    ? (rent_per_night * n - base_rent) + (extra_pax > 0 ? extra_per * n - extra_cost : 0)
+    : 0;
 
   // [B] 90박 초과 추가 할인
   let extra_disc_amount = 0;
