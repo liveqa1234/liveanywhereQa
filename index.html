@@ -1008,6 +1008,15 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="field"><label>호스트 임대 수수료율 (%)</label><input type="number" id="d_h_rrate" value="5" step="0.1" oninput="calcD()"></div>
         <div class="field"><label>호스트 기타 수수료율 (%)</label><input type="number" id="d_h_orate" value="0" step="0.1" oninput="calcD()"></div>
         <hr class="section-divider">
+        <div class="card-title">기간 할인</div>
+        <div class="field" style="grid-column:1/-1;">
+          <label style="display:flex;justify-content:space-between;">
+            <span>기간 할인 적용</span>
+            <input type="checkbox" id="d_disc_on" onchange="calcD()" style="width:auto;margin:0;">
+          </label>
+        </div>
+        <div class="field"><label>할인율 (%)</label><input type="number" id="d_disc_rate" value="0" step="0.1" min="0" max="100" oninput="calcD()" placeholder="0"></div>
+        <hr class="section-divider">
         <div class="card-title">쿠폰</div>
         <div class="field"><label>쿠폰 할인율 (%)</label><input type="number" id="d_c_rate" value="0" step="0.1" oninput="calcD()"></div>
         <div class="field"><label>쿠폰 최대 할인 금액 (원, 0=무제한)</label><input type="number" id="d_c_max" value="0" oninput="calcD()"></div>
@@ -1234,6 +1243,15 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="field"><label>호스트 임대 수수료율 (%)</label><input type="number" id="o_h_rrate" value="0" step="0.1" oninput="calcO()"></div>
         <div class="field"><label>호스트 기타 수수료율 (%)</label><input type="number" id="o_h_orate" value="0" step="0.1" oninput="calcO()"></div>
         <hr class="section-divider">
+        <div class="card-title">기간 할인</div>
+        <div class="field" style="grid-column:1/-1;">
+          <label style="display:flex;justify-content:space-between;">
+            <span>기간 할인 적용</span>
+            <input type="checkbox" id="o_disc_on" onchange="calcO()" style="width:auto;margin:0;">
+          </label>
+        </div>
+        <div class="field"><label>할인율 (%)</label><input type="number" id="o_disc_rate" value="0" step="0.1" min="0" max="100" oninput="calcO()" placeholder="0"></div>
+        <hr class="section-divider">
         <div class="card-title">쿠폰</div>
         <div class="field"><label>쿠폰 할인율 (%)</label><input type="number" id="o_c_rate" value="0" step="0.1" oninput="calcO()"></div>
         <div class="field"><label>쿠폰 최대 할인 금액 (원, 0=무제한)</label><input type="number" id="o_c_max" value="1000000" oninput="calcO()"></div>
@@ -1257,6 +1275,7 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="rrow"><span class="rname">서비스 이용료</span><span class="rval" id="o_g_svc">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 임대 서비스이용료</span><span class="rval sub" id="o_g_svc_r">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 기타 서비스이용료</span><span class="rval sub" id="o_g_svc_o">-</span></div>
+        <div class="rrow" id="o_g_disc_row" style="display:none;"><span class="rname">기간 할인</span><span class="rval neg" id="o_g_disc">-</span></div>
         <div class="rrow"><span class="rname">쿠폰 할인</span><span class="rval neg" id="o_g_coupon">-</span></div>
         <div class="rrow"><span class="rname">보증금</span><span class="rval" id="o_g_dep">-</span></div>
         <div class="rrow total"><span class="rname">총 게스트 결제 금액</span><span class="rval" id="o_g_total">-</span></div>
@@ -1699,6 +1718,13 @@ function calcD() {
   const h_rrate=v('d_h_rrate')/100, h_orate=v('d_h_orate')/100;
   const c_rate=v('d_c_rate')/100, c_max=v('d_c_max');
 
+  // 기간 할인 적용
+  const disc_on = b('d_disc_on');
+  const disc_rate = v('d_disc_rate') / 100;
+  const disc_amount = (disc_on && disc_rate > 0)
+    ? ceil1((rent_per * nights + extra_per * Math.max(persons - base_pax, 0) * nights) * disc_rate)
+    : 0;
+
   const r = dCalcCore(nights, persons, pet, rent_per, utility_per, clean, pet_clean, extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate);
   // 쿠폰 계산
   let coupon = 0;
@@ -1706,7 +1732,7 @@ function calcD() {
     const raw = ceil1(c_rate * (r.total_rent + r.total_svc));
     coupon = c_max > 0 ? Math.min(raw, c_max) : raw;
   }
-  const final = dCalcCore(nights, persons, pet, rent_per, utility_per, clean, pet_clean, extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate, coupon);
+  const final = dCalcCore(nights, persons, pet, rent_per, utility_per, clean, pet_clean, extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate, coupon + disc_amount);
 
   set('d_g_rent', fmt(final.total_rent));
   set('d_g_base_rent', fmt(final.base_rent));
@@ -1717,6 +1743,9 @@ function calcD() {
   set('d_g_svc', fmt(final.total_svc));
   set('d_g_svc_r', fmt(final.svc_r));
   set('d_g_svc_o', fmt(final.svc_o));
+  const dDiscRow = document.getElementById('d_g_disc_row');
+  if (dDiscRow) dDiscRow.style.display = disc_amount > 0 ? '' : 'none';
+  set('d_g_disc', disc_amount > 0 ? '-' + fmt(disc_amount) : fmt(0));
   set('d_g_coupon', coupon > 0 ? '-' + fmt(coupon) : fmt(0));
   set('d_g_dep', fmt(deposit));
   set('d_g_total', fmt(final.guest_total));
@@ -1905,13 +1934,20 @@ function calcO() {
   else rent = oM29;
   const totalRentB = rent * nights;
   document.getElementById('o_rent').value = rent;
+  // 기간 할인 적용
+  const o_disc_on = b('o_disc_on');
+  const o_disc_rate = v('o_disc_rate') / 100;
+  const o_disc_amount = (o_disc_on && o_disc_rate > 0)
+    ? ceil1((rent * nights + ep * Math.max(persons - bp, 0) * nights) * rate * o_disc_rate)
+    : 0;
+
   const r = oCalcCore(rate, nights, persons, pet, rent, util, clean, pc, ep, bp, dep, grr, gor, hrr, hor);
   let coupon = 0;
   if(c_rate > 0) {
     const raw = ceil1(c_rate * (r.total_rent_k + r.total_svc));
     coupon = c_max > 0 ? Math.min(raw, c_max) : raw;
   }
-  const f = oCalcCore(rate, nights, persons, pet, rent, util, clean, pc, ep, bp, dep, grr, gor, hrr, hor, coupon);
+  const f = oCalcCore(rate, nights, persons, pet, rent, util, clean, pc, ep, bp, dep, grr, gor, hrr, hor, coupon + o_disc_amount);
   set('o_g_rent', fmt(f.total_rent_k));
   set('o_g_base_rent', fmt(f.base_rent_k));
   set('o_g_extra', fmt(f.extra_k));
@@ -1921,6 +1957,9 @@ function calcO() {
   set('o_g_svc', fmt(f.total_svc));
   set('o_g_svc_r', fmt(f.svc_r));
   set('o_g_svc_o', fmt(f.svc_o));
+  const oDiscRow = document.getElementById('o_g_disc_row');
+  if (oDiscRow) oDiscRow.style.display = o_disc_amount > 0 ? '' : 'none';
+  set('o_g_disc', o_disc_amount > 0 ? '-' + fmt(o_disc_amount) : fmt(0));
   set('o_g_coupon', coupon > 0 ? '-' + fmt(coupon) : fmt(0));
   set('o_g_dep', fmt(f.deposit_k));
   set('o_g_total', fmt(f.guest_total));
