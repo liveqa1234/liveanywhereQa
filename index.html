@@ -2262,6 +2262,8 @@ function v2calcD() {
   var extra_amt   = extra_pax_n * ep * n;
   var extra_svc   = Math.floor(extra_amt / n * Math.min(n, 90) * gr);
   window._v2d_split_total = r.guest_total - extra_amt - extra_svc;
+  window._v2d_total_rent  = r.total_rent;
+  window._v2d_total_svc   = r.total_svc;
   set('v2d_h_rent', fmt(r.total_rent));
   set('v2d_h_base_rent', fmt(r.base_rent));
   set('v2d_h_extra', fmt(r.extra_cost));
@@ -2960,6 +2962,9 @@ function calcSplitD() {
   var extra_per   = v('d_extra_per') || 0;
   var extra_pax   = Math.max(persons - base_pax, 0);
 
+  var coupon_rate = v('d_c_rate') / 100 || 0;
+  var coupon_max  = v('d_c_max') || 0;
+
   var UNIT       = 29;
   var OVER_LIMIT = 87;
   var total_full   = Math.floor(n / UNIT);
@@ -2973,6 +2978,14 @@ function calcSplitD() {
   var total_svc_rent  = Math.ceil((rent_per + extra_per * extra_pax) * rent_fee_nights * grr);
   // 기타수수료: 전체 공과금+청소비 기준
   var total_svc_other = Math.ceil((util * n + total_clean) * gor);
+
+  // 총 쿠폰 = ceil((임대료전체 + 전체svc) × rate), 마지막회차는 잔여분
+  var coupon_remain = 0;
+  if (coupon_rate > 0) {
+    var ls_rent_total = (rent_per + extra_per * extra_pax) * n;
+    var raw_coupon = Math.ceil((ls_rent_total + total_svc_rent + total_svc_other) * coupon_rate);
+    coupon_remain = (coupon_max > 0) ? Math.min(raw_coupon, coupon_max) : raw_coupon;
+  }
   var paid_svc_rent  = 0;
   var paid_svc_other = 0;
 
@@ -3009,7 +3022,17 @@ function calcSplitD() {
       paid_svc_other += svc_other;
     }
 
-    var coupon = 0; // 쿠폰은 회차별 미적용 (총액에만 반영)
+    // 쿠폰: 마지막 회차는 잔여분, 나머지는 독립계산
+    var coupon = 0;
+    if (coupon_rate > 0) {
+      if (isLast) {
+        coupon = Math.max(coupon_remain, 0);
+      } else {
+        coupon = Math.ceil((rent + svc_rent + svc_other) * coupon_rate);
+        if (coupon_max > 0) coupon = Math.min(coupon, coupon_max);
+      }
+      coupon_remain -= coupon;
+    }
 
     var items = [];
     items.push({ label: '임대료', val: rent });
@@ -3018,10 +3041,11 @@ function calcSplitD() {
     items.push({ label: '공과금', val: util_amt });
     if (svc_rent  > 0) items.push({ label: '임대 서비스이용료', val: svc_rent });
     if (svc_other > 0) items.push({ label: '기타 서비스이용료', val: svc_other });
+    if (coupon    > 0) items.push({ label: '쿠폰 할인', val: -coupon });
 
     var dep_1st   = (x === 1) ? dep : 0;
     var clean_1st = (x === 1) ? total_clean : 0;
-    var total_amt = rent + dep_1st + clean_1st + util_amt + svc_rent + svc_other;
+    var total_amt = rent + dep_1st + clean_1st + util_amt + svc_rent + svc_other - coupon;
 
     rounds.push({ x: x, isLast: isLast, nights: nights, withFee: has_rent_fee, items: items, total: total_amt });
   }
@@ -3071,6 +3095,9 @@ function v2calcSplitD() {
   var extra_pax   = Math.max(k - bp, 0);
   var total_clean = clean + (pet ? pc : 0);
 
+  var coupon_rate = v('v2d_c_rate') / 100 || 0;
+  var coupon_max  = v('v2d_c_max') || 0;
+
   var UNIT        = 30;
   var full_rounds = Math.floor(n / UNIT);
   var remain_N    = n - full_rounds * UNIT;
@@ -3078,6 +3105,15 @@ function v2calcSplitD() {
 
   // 한번에 결제 총액 (단건 계산 결과 사용)
   var onetime_total = window._v2d_split_total || 0;
+
+  // 총 쿠폰 = ceil((임대료전체 + 전체svc) × rate)
+  var coupon_remain = 0;
+  if (coupon_rate > 0) {
+    var v2_total_rent = (window._v2d_total_rent || 0);
+    var v2_total_svc  = (window._v2d_total_svc  || 0);
+    var raw_v2_coupon = Math.ceil((v2_total_rent + v2_total_svc) * coupon_rate);
+    coupon_remain = (coupon_max > 0) ? Math.min(raw_v2_coupon, coupon_max) : raw_v2_coupon;
+  }
 
   var rounds = [];
   var sum_prev = 0; // 이전 회차 누적합
@@ -3092,36 +3128,59 @@ function v2calcSplitD() {
       nights = UNIT;
       var r_a  = Math.floor(M * (1 + gr));
       var ot_a = Math.floor((util * UNIT + total_clean) * (1 + gr));
-      total_amt = r_a + ot_a + dep;
+      var coupon_1 = 0;
+      if (coupon_rate > 0) {
+        coupon_1 = Math.ceil((r_a + ot_a) * coupon_rate);
+        if (coupon_max > 0) coupon_1 = Math.min(coupon_1, coupon_max);
+        coupon_remain -= coupon_1;
+      }
+      total_amt = r_a + ot_a + dep - coupon_1;
       items = [
         { label: 'M × (1+' + (gr*100).toFixed(1) + '%)', val: r_a },
         { label: '(공과금×' + UNIT + '+청소비) × (1+수수료)', val: ot_a },
         { label: '보증금', val: dep }
       ];
+      if (coupon_1 > 0) items.push({ label: '쿠폰 할인', val: -coupon_1 });
     } else if (!isLast) {
       nights = UNIT;
       if (withFee) {
         // B. 2~3회차: M×(1+수수료) + 추가인원비(수수료없음) + 공과금×(1+수수료)
         var r_b  = Math.floor(M * (1 + gr));
         var ut_b = Math.floor(util * UNIT * (1 + gr));
-        total_amt = r_b + ut_b;
+        var coupon_b = 0;
+        if (coupon_rate > 0) {
+          coupon_b = Math.ceil((r_b + ut_b) * coupon_rate);
+          if (coupon_max > 0) coupon_b = Math.min(coupon_b, coupon_max);
+          coupon_remain -= coupon_b;
+        }
+        total_amt = r_b + ut_b - coupon_b;
         items = [
           { label: 'M × (1+' + (gr*100).toFixed(1) + '%)', val: r_b },
           { label: '공과금×' + UNIT + ' × (1+수수료)', val: ut_b }
         ];
+        if (coupon_b > 0) items.push({ label: '쿠폰 할인', val: -coupon_b });
       } else {
         // C. 4회차 이상: 수수료 없음
         var ut_c = util * UNIT;
-        total_amt = M + ut_c;
+        var coupon_c = 0;
+        if (coupon_rate > 0) {
+          coupon_c = Math.ceil((M + ut_c) * coupon_rate);
+          if (coupon_max > 0) coupon_c = Math.min(coupon_c, coupon_max);
+          coupon_remain -= coupon_c;
+        }
+        total_amt = M + ut_c - coupon_c;
         items = [
           { label: 'M (수수료 없음)', val: M },
           { label: '공과금 × ' + UNIT, val: ut_c }
         ];
+        if (coupon_c > 0) items.push({ label: '쿠폰 할인', val: -coupon_c });
       }
     } else {
       // D. 마지막 회차 = 한번에결제 총액 - 이전 회차 합산 (보정으로 총합 일치)
       nights = remain_N > 0 ? remain_N : UNIT;
-      total_amt = onetime_total - sum_prev;
+      var coupon_last = (coupon_rate > 0) ? Math.max(coupon_remain, 0) : 0;
+      total_amt = onetime_total - sum_prev - coupon_last;
+      if (coupon_last > 0) items.push({ label: '쿠폰 할인', val: -coupon_last });
       var N_last = nights;
       if (withFee) {
         var r_last  = Math.floor((M / UNIT * N_last) * (1 + gr));
