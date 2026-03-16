@@ -1722,18 +1722,16 @@ function calcD() {
   const disc_on = b('d_disc_on');
   const disc_rate = v('d_disc_rate') / 100;
   const disc_rent_per = (disc_on && disc_rate > 0) ? Math.ceil(rent_per * (1 - disc_rate)) : rent_per;
-  const disc_extra_per = (disc_on && disc_rate > 0) ? Math.ceil(extra_per * (1 - disc_rate)) : extra_per;
-  const disc_amount = ceil1((rent_per - disc_rent_per) * nights
-    + (extra_per - disc_extra_per) * Math.max(persons - base_pax, 0) * nights);
+  const disc_amount = ceil1((rent_per - disc_rent_per) * nights);
 
-  const r = dCalcCore(nights, persons, pet, disc_rent_per, utility_per, clean, pet_clean, disc_extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate);
+  const r = dCalcCore(nights, persons, pet, disc_rent_per, utility_per, clean, pet_clean, extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate);
   // 쿠폰 계산
   let coupon = 0;
   if(c_rate > 0) {
     const raw = ceil1(c_rate * (r.total_rent + r.total_svc));
     coupon = c_max > 0 ? Math.min(raw, c_max) : raw;
   }
-  const final = dCalcCore(nights, persons, pet, disc_rent_per, utility_per, clean, pet_clean, disc_extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate, coupon);
+  const final = dCalcCore(nights, persons, pet, disc_rent_per, utility_per, clean, pet_clean, extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate, coupon);
 
   set('d_g_rent', fmt(final.total_rent));
   set('d_g_base_rent', fmt(final.base_rent));
@@ -1939,17 +1937,15 @@ function calcO() {
   const o_disc_on = b('o_disc_on');
   const o_disc_rate = v('o_disc_rate') / 100;
   const disc_rent = (o_disc_on && o_disc_rate > 0) ? Math.ceil(rent * (1 - o_disc_rate)) : rent;
-  const disc_ep   = (o_disc_on && o_disc_rate > 0) ? Math.ceil(ep   * (1 - o_disc_rate)) : ep;
-  const o_disc_amount = ceil1((rent - disc_rent) * nights * rate
-    + (ep - disc_ep) * Math.max(persons - bp, 0) * nights * rate);
+  const o_disc_amount = ceil1((rent - disc_rent) * nights * rate);
 
-  const r = oCalcCore(rate, nights, persons, pet, disc_rent, util, clean, pc, disc_ep, bp, dep, grr, gor, hrr, hor);
+  const r = oCalcCore(rate, nights, persons, pet, disc_rent, util, clean, pc, ep, bp, dep, grr, gor, hrr, hor);
   let coupon = 0;
   if(c_rate > 0) {
     const raw = ceil1(c_rate * (r.total_rent_k + r.total_svc));
     coupon = c_max > 0 ? Math.min(raw, c_max) : raw;
   }
-  const f = oCalcCore(rate, nights, persons, pet, disc_rent, util, clean, pc, disc_ep, bp, dep, grr, gor, hrr, hor, coupon);
+  const f = oCalcCore(rate, nights, persons, pet, disc_rent, util, clean, pc, ep, bp, dep, grr, gor, hrr, hor, coupon);
   set('o_g_rent', fmt(f.total_rent_k));
   set('o_g_base_rent', fmt(f.base_rent_k));
   set('o_g_extra', fmt(f.extra_k));
@@ -2133,14 +2129,10 @@ function v2CoreCalc(n, k, pet,
   const disc_rent_per = (disc_on && disc_rate > 0)
     ? Math.ceil(rent_per_night * (1 - disc_rate))
     : rent_per_night;
-  const disc_extra_per = (disc_on && disc_rate > 0)
-    ? Math.ceil(extra_per * (1 - disc_rate))
-    : extra_per;
-
   const base_rent = disc_rent_per * n;
-  const extra_cost = extra_pax * disc_extra_per * n;
+  const extra_cost = extra_pax * extra_per * n;
   const disc_amount = (disc_on && disc_rate > 0)
-    ? (rent_per_night * n - base_rent) + (extra_pax > 0 ? extra_per * n - extra_cost : 0)
+    ? (rent_per_night * n - base_rent)
     : 0;
 
   // [B] 90박 초과 추가 할인
@@ -2967,8 +2959,6 @@ function calcSplitD() {
   var base_pax    = v('d_base_pax');
   var extra_per   = v('d_extra_per') || 0;
   var extra_pax   = Math.max(persons - base_pax, 0);
-  var coupon_rate = v('d_c_rate') / 100 || 0;
-  var coupon_max  = v('d_c_max') || 0;
 
   var UNIT       = 29;
   var OVER_LIMIT = 87;
@@ -3019,13 +3009,7 @@ function calcSplitD() {
       paid_svc_other += svc_other;
     }
 
-    // 쿠폰: 1회차에서 전체 적용
-    var coupon = 0;
-    if (x === 1 && coupon_rate > 0) {
-      var ls_rent  = (rent_per + extra_per * extra_pax) * n;
-      var ls_svc_r = Math.ceil(Math.min(n, OVER_LIMIT) * (rent_per + extra_per * extra_pax) * grr);
-      coupon = Math.min(Math.ceil((ls_rent + ls_svc_r) * coupon_rate), coupon_max);
-    }
+    var coupon = 0; // 쿠폰은 회차별 미적용 (총액에만 반영)
 
     var items = [];
     items.push({ label: '임대료', val: rent });
@@ -3034,11 +3018,10 @@ function calcSplitD() {
     items.push({ label: '공과금', val: util_amt });
     if (svc_rent  > 0) items.push({ label: '임대 서비스이용료', val: svc_rent });
     if (svc_other > 0) items.push({ label: '기타 서비스이용료', val: svc_other });
-    if (coupon    > 0) items.push({ label: '쿠폰 할인', val: -coupon });
 
     var dep_1st   = (x === 1) ? dep : 0;
     var clean_1st = (x === 1) ? total_clean : 0;
-    var total_amt = rent + dep_1st + clean_1st + util_amt + svc_rent + svc_other - coupon;
+    var total_amt = rent + dep_1st + clean_1st + util_amt + svc_rent + svc_other;
 
     rounds.push({ x: x, isLast: isLast, nights: nights, withFee: has_rent_fee, items: items, total: total_amt });
   }
@@ -3636,6 +3619,8 @@ document.addEventListener('DOMContentLoaded', function() {
   updateV2ODiscHint();
   updateV2OPeakHint();
 });
+
+
 
 </script>
 </body>
