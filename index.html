@@ -3030,6 +3030,7 @@ function calcSplitD() {
       } else {
         coupon = Math.ceil((rent + svc_rent + svc_other) * coupon_rate);
         if (coupon_max > 0) coupon = Math.min(coupon, coupon_max);
+        coupon = Math.min(coupon, coupon_remain); // 잔여분 초과 방지
       }
       coupon_remain -= coupon;
     }
@@ -3132,6 +3133,7 @@ function v2calcSplitD() {
       if (coupon_rate > 0) {
         coupon_1 = Math.ceil((r_a + ot_a) * coupon_rate);
         if (coupon_max > 0) coupon_1 = Math.min(coupon_1, coupon_max);
+        coupon_1 = Math.min(coupon_1, coupon_remain);
         coupon_remain -= coupon_1;
       }
       total_amt = r_a + ot_a + dep - coupon_1;
@@ -3151,6 +3153,7 @@ function v2calcSplitD() {
         if (coupon_rate > 0) {
           coupon_b = Math.ceil((r_b + ut_b) * coupon_rate);
           if (coupon_max > 0) coupon_b = Math.min(coupon_b, coupon_max);
+          coupon_b = Math.min(coupon_b, coupon_remain);
           coupon_remain -= coupon_b;
         }
         total_amt = r_b + ut_b - coupon_b;
@@ -3166,6 +3169,7 @@ function v2calcSplitD() {
         if (coupon_rate > 0) {
           coupon_c = Math.ceil((M + ut_c) * coupon_rate);
           if (coupon_max > 0) coupon_c = Math.min(coupon_c, coupon_max);
+          coupon_c = Math.min(coupon_c, coupon_remain);
           coupon_remain -= coupon_c;
         }
         total_amt = M + ut_c - coupon_c;
