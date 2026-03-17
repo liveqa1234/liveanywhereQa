@@ -1216,9 +1216,9 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
             <option value="VN">🇻🇳 베트남 (동, VND)</option>
           </select></div>
         <div class="field"><label>적용 환율 (원/기준통화)</label><input type="number" id="o_rate" value="50.082" step="0.001" oninput="calcO()"></div>
-        <div class="field"><label>박당 가격 - 일주일 기준 (기준 통화)</label><input type="number" id="o_W" value="1125" step="0.01" oninput="calcO()"></div>
-        <div class="field"><label>박당 가격 - 보름 기준 (기준 통화)</label><input type="number" id="o_M14" value="1062" step="0.01" oninput="calcO()"></div>
-        <div class="field"><label>박당 가격 - 한달 기준 (기준 통화)</label><input type="number" id="o_M29" value="944" step="0.01" oninput="calcO()"></div>
+        <div class="field"><label>박당 가격 - ≤13박 기준 W (기준 통화)</label><input type="number" id="o_W" value="1125" step="0.01" oninput="calcO()"></div>
+        <div class="field"><label>박당 가격 - 14~28박 기준 M14 (기준 통화)</label><input type="number" id="o_M14" value="1062" step="0.01" oninput="calcO()"></div>
+        <div class="field"><label>박당 가격 - ≥29박 기준 M29 (기준 통화)</label><input type="number" id="o_M29" value="944" step="0.01" oninput="calcO()"></div>
         <input type="hidden" id="o_rent" value="0">
         <input type="hidden" id="o_M" value="0">
         <div class="field"><label>박당 공과금</label><input type="number" id="o_utility" value="111" oninput="calcO()"></div>
@@ -1397,14 +1397,17 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
           <div class="compare-row"><span class="cn">총 게스트 결제</span><span class="cv old-v" id="o2_g_total_old">-</span><span class="cv new-v" id="o2_g_total_new">-</span></div>
         </div>
         <div class="result-card diff">
-          <div class="result-title">📊 호스트 기준 가격 비교 (기준 통화)</div>
-          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
+          <div class="result-title">📊 호스트 기준 가격 비교</div>
+          <div class="col-headers"><span>항목</span><span>기존 (원화)</span><span>변경</span></div>
           <div class="compare-row"><span class="cn">호스트 총 임대료</span><span class="cv old-v" id="o2_h_rent_old">-</span><span class="cv new-v" id="o2_h_rent_new">-</span></div>
           <div class="compare-row"><span class="cn sub">ㄴ 기본 임대료</span><span class="cv old-v" id="o2_h_base_old">-</span><span class="cv new-v" id="o2_h_base_new">-</span></div>
           <div class="compare-row"><span class="cn sub">ㄴ 추가인원비</span><span class="cv old-v" id="o2_h_extra_old">-</span><span class="cv new-v" id="o2_h_extra_new">-</span></div>
           <div class="compare-row"><span class="cn">호스트 서비스 이용료</span><span class="cv old-v" id="o2_h_svc_old">-</span><span class="cv new-v" id="o2_h_svc_new">-</span></div>
+          <div class="compare-row"><span class="cn">보증금</span><span class="cv old-v" id="o2_dep_old">-</span><span class="cv new-v" id="o2_dep_new">-</span></div>
           <div class="compare-row"><span class="cn">공과금</span><span class="cv old-v" id="o2_util_old">-</span><span class="cv new-v" id="o2_util_new">-</span></div>
           <div class="compare-row"><span class="cn">총 청소비</span><span class="cv old-v" id="o2_clean_old">-</span><span class="cv new-v" id="o2_clean_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 청소비</span><span class="cv old-v" id="o2_clean_base_old">-</span><span class="cv new-v" id="o2_clean_base_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 반려동물 청소비</span><span class="cv old-v" id="o2_clean_pet_old">-</span><span class="cv new-v" id="o2_clean_pet_new">-</span></div>
         </div>
         <div class="result-card diff" style="border-color:rgba(245,158,11,.5);">
           <div class="result-title">💸 차액 결과</div>
@@ -1707,7 +1710,8 @@ function dCalcCore(nights, persons, pet,
 /* ============================================================
    국내 ② 계약 세부 가격
 ============================================================ */
-let dState = {}; // 저장용
+let dState = {};
+let dStatePrev = {};
 
 function calcD() {
   const nights = v('d_nights'), persons = v('d_persons'), pet = b('d_pet');
@@ -1760,8 +1764,10 @@ function calcD() {
   set('d_h_total', fmt(final.host_total));
 
   // 저장
+  if (dBasis !== 'old') dStatePrev = { ...dState };
   dState = { ...final, coupon, g_rrate, g_orate, h_rrate, h_orate,
              rent_per, extra_per, base_pax, utility_per, pet_clean,
+             nights: v('d_nights'),
              g_total: final.guest_total, h_total: final.host_total };
 
   if(dBasis === 'old') syncD2FromState();
@@ -1782,24 +1788,30 @@ function dSetBasis(v2) {
   $('d_basis_new').className = 'basis-btn' + (v2==='new' ? ' active-new' : '');
   $('d_basis_old').className = 'basis-btn' + (v2==='old' ? ' active-old' : '');
   $('d_basis_old_hint').style.display = v2==='old' ? 'block' : 'none';
-  if(v2==='old') syncD2FromState();
+  if(v2==='old') {
+    dStatePrev = { ...dState };
+    syncD2FromState();
+  }
   highlightD2Inputs();
   calcD2();
 }
 
 function syncD2FromState() {
-  if(!dState.total_rent) return;
-  const nights1 = v('d_nights');
-  $('d_n2_rent').value = nights1 > 0 ? Math.round(dState.base_rent / nights1) : v('d_rent');
-  $('d_n2_utility').value = nights1 > 0 ? Math.round(dState.total_util / nights1) : v('d_utility');
-  $('d_n2_clean').value = dState.total_clean - (b('d_pet') ? v('d_pet_clean') : 0);
-  $('d_n2_deposit').value = dState.deposit;
+  if(!dStatePrev.total_rent) return;
+  const nights1 = dStatePrev.nights || v('d_nights');
+  // 박당 임대료: 기존 기본 임대료 / 이전 박수 (비례 계산)
+  $('d_n2_rent').value = nights1 > 0 ? Math.round(dStatePrev.base_rent / nights1) : v('d_rent');
+  $('d_n2_utility').value = nights1 > 0 ? Math.round(dStatePrev.total_util / nights1) : v('d_utility');
+  $('d_n2_clean').value = dStatePrev.total_clean - (b('d_pet') ? v('d_pet_clean') : 0);
+  if (dStatePrev.pet_clean > 0) $('d_n2_pet_clean').value = dStatePrev.pet_clean;
+  $('d_n2_extra_per').value = dStatePrev.extra_per || 0;
+  $('d_n2_deposit').value = dStatePrev.deposit;
   $('d_n2_base_pax').value = v('d_base_pax');
-  $('d_n2_g_rrate').value = (dState.g_rrate * 100).toFixed(1);
-  $('d_n2_g_orate').value = (dState.g_orate * 100).toFixed(1);
-  $('d_n2_h_rrate').value = (dState.h_rrate * 100).toFixed(1);
-  $('d_n2_h_orate').value = (dState.h_orate * 100).toFixed(1);
-  $('d_n2_coupon').value = dState.coupon;
+  $('d_n2_g_rrate').value = (dStatePrev.g_rrate * 100).toFixed(1);
+  $('d_n2_g_orate').value = (dStatePrev.g_orate * 100).toFixed(1);
+  $('d_n2_h_rrate').value = (dStatePrev.h_rrate * 100).toFixed(1);
+  $('d_n2_h_orate').value = (dStatePrev.h_orate * 100).toFixed(1);
+  $('d_n2_coupon').value = dStatePrev.coupon || 0;
 }
 
 function highlightD2Inputs() {
@@ -1822,35 +1834,35 @@ function calcD2() {
   const r2 = dCalcCore(nights2, persons2, pet2, rent2, util2, clean2, pc2, ep2, bp2, dep2, grr2, gor2, hrr2, hor2, coupon2);
 
   // 기존 값
-  const oldGTotal = dState.guest_total || 0;
-  const oldHTotal = dState.host_total || 0;
+  const oldGTotal = dStatePrev.guest_total || 0;
+  const oldHTotal = dStatePrev.host_total || 0;
 
   // 비교 테이블
   const fmtN = n => Math.round(n).toLocaleString('ko-KR');
-  set('d2_g_rent_old', fmtN(dState.total_rent||0));
-  set('d2_g_rent_new', fmtN(r2.total_rent));
-  set('d2_g_svc_old', fmtN(dState.total_svc||0));
+  set('d2_g_rent_old', fmtN((dStatePrev.total_rent||0) + (dStatePrev.total_svc||0)));
+  set('d2_g_rent_new', fmtN(r2.total_rent + r2.total_svc));
+  set('d2_g_svc_old', fmtN(dStatePrev.total_svc||0));
   set('d2_g_svc_new', fmtN(r2.total_svc));
-  set('d2_g_svcr_old', fmtN(dState.svc_r||0));
+  set('d2_g_svcr_old', fmtN(dStatePrev.svc_r||0));
   set('d2_g_svcr_new', fmtN(r2.svc_r));
-  set('d2_g_svco_old', fmtN(dState.svc_o||0));
+  set('d2_g_svco_old', fmtN(dStatePrev.svc_o||0));
   set('d2_g_svco_new', fmtN(r2.svc_o));
-  set('d2_coupon_old', '-' + fmtN(dState.coupon||0));
+  set('d2_coupon_old', coupon2 > 0 ? '-' + fmtN(coupon2) : '0');
   set('d2_coupon_new', '-' + fmtN(coupon2));
   set('d2_g_total_old', fmtN(oldGTotal));
   set('d2_g_total_new', fmtN(r2.guest_total));
 
-  set('d2_h_rent_old', fmtN(dState.total_rent||0));
+  set('d2_h_rent_old', fmtN(dStatePrev.total_rent||0));
   set('d2_h_rent_new', fmtN(r2.total_rent));
-  set('d2_h_base_old', fmtN(dState.base_rent||0));
+  set('d2_h_base_old', fmtN(dStatePrev.base_rent||0));
   set('d2_h_base_new', fmtN(r2.base_rent));
-  set('d2_h_extra_old', fmtN(dState.extra_cost||0));
+  set('d2_h_extra_old', fmtN(dStatePrev.extra_cost||0));
   set('d2_h_extra_new', fmtN(r2.extra_cost));
-  set('d2_h_svc_old', fmtN(dState.h_svc||0));
+  set('d2_h_svc_old', fmtN(dStatePrev.h_svc||0));
   set('d2_h_svc_new', fmtN(r2.h_svc));
-  set('d2_util_old', fmtN(dState.total_util||0));
+  set('d2_util_old', fmtN(dStatePrev.total_util||0));
   set('d2_util_new', fmtN(r2.total_util));
-  set('d2_clean_old', fmtN(dState.total_clean||0));
+  set('d2_clean_old', fmtN(dStatePrev.total_clean||0));
   set('d2_clean_new', fmtN(r2.total_clean));
 
   // 차액
@@ -1914,6 +1926,7 @@ function oCalcCore(rate, nights, persons, pet,
 }
 
 let oState = {};
+let oStatePrev = {};
 
 function calcO() {
   const rate=v('o_rate'), nights=v('o_nights'), persons=v('o_persons'), pet=b('o_pet');
@@ -1924,12 +1937,11 @@ function calcO() {
   const c_rate=v('o_c_rate')/100, c_max=v('o_c_max');
 
   // 입력값은 박당 가격 (oW=일주일기준 박당, oM14=보름기준 박당, oM29=한달기준 박당)
-  // 구간별 점진식으로 박당 가격 보간 후 총임대료 계산
+  // 구간별 고정 단가 적용 (보간 없음): <=13박 W, 14~28박 M14, >=29박 M29
   const oM14=v('o_M14');
   let rent;  // 박당 기준통화
-  if (nights <= 6) rent = oW;
-  else if (nights < 14) rent = oW + (oM14 - oW) / (14 - 6) * (nights - 6);
-  else if (nights < 29) rent = oM14 + (oM29 - oM14) / (29 - 14) * (nights - 14);
+  if (nights <= 13) rent = oW;
+  else if (nights <= 28) rent = oM14;
   else rent = oM29;
   const totalRentB = rent * nights;
   document.getElementById('o_rent').value = rent;
@@ -1979,8 +1991,10 @@ function calcO() {
   $('o_h_total_k').textContent = fmt(f.host_total_b * rate);
   $('o_h_total_b').textContent = fmtB(f.host_total_b);
 
+  if (oBasis !== 'old') oStatePrev = { ...oState };
   oState = { ...f, coupon, rate, grr, gor, hrr, hor,
              rent, util, clean, pc, ep, bp, dep,
+             oW, oM14, oM29, nights,
              guest_total: f.guest_total, host_total_b: f.host_total_b };
 
   if(oBasis === 'old') syncO2FromState();
@@ -1998,24 +2012,30 @@ function oSetBasis(v2) {
   $('o_basis_new').className = 'basis-btn' + (v2==='new' ? ' active-new' : '');
   $('o_basis_old').className = 'basis-btn' + (v2==='old' ? ' active-old' : '');
   $('o_basis_old_hint').style.display = v2==='old' ? 'block' : 'none';
-  if(v2==='old') syncO2FromState();
+  if(v2==='old') {
+    oStatePrev = { ...oState };
+    syncO2FromState();
+  }
   highlightO2Inputs();
   calcO2();
 }
 
 function syncO2FromState() {
-  if(!oState.rate) return;
-  $('o_n2_rate').value = oState.rate;
-  $('o_n2_rent').value = oState.rent;
-  $('o_n2_utility').value = oState.util;
-  $('o_n2_clean').value = oState.clean;
-  $('o_n2_base_pax').value = oState.bp;
-  $('o_n2_deposit').value = oState.dep;
-  $('o_n2_g_rrate').value = (oState.grr * 100).toFixed(1);
-  $('o_n2_g_orate').value = (oState.gor * 100).toFixed(1);
-  $('o_n2_h_rrate').value = (oState.hrr * 100).toFixed(1);
-  $('o_n2_h_orate').value = (oState.hor * 100).toFixed(1);
-  $('o_n2_coupon').value = oState.coupon;
+  if(!oStatePrev.rate) return;
+  $('o_n2_rate').value = oStatePrev.rate;
+  // 박당 임대료는 calcO2에서 변경 후 박수에 맞게 자동 보간
+  $('o_n2_utility').value = oStatePrev.util;
+  $('o_n2_clean').value = oStatePrev.clean;
+  // 기존에 반려동물이 있었던 경우 반려동물 청소비 자동 채움
+  if (oStatePrev.pc > 0) $('o_n2_pet_clean').value = oStatePrev.pc;
+  $('o_n2_extra_per').value = oStatePrev.ep;
+  $('o_n2_base_pax').value = oStatePrev.bp;
+  $('o_n2_deposit').value = oStatePrev.dep;
+  $('o_n2_g_rrate').value = (oStatePrev.grr * 100).toFixed(1);
+  $('o_n2_g_orate').value = (oStatePrev.gor * 100).toFixed(1);
+  $('o_n2_h_rrate').value = (oStatePrev.hrr * 100).toFixed(1);
+  $('o_n2_h_orate').value = (oStatePrev.hor * 100).toFixed(1);
+  $('o_n2_coupon').value = oStatePrev.coupon || 0;
 }
 
 function highlightO2Inputs() {
@@ -2026,53 +2046,72 @@ function highlightO2Inputs() {
 
 function calcO2() {
   const rate2=v('o_n2_rate'), nights2=v('o_n2_nights'), persons2=v('o_n2_persons'), pet2=b('o_n2_pet');
-  const rent2=v('o_n2_rent'), util2=v('o_n2_utility'), clean2=v('o_n2_clean'), pc2=v('o_n2_pet_clean');
+  const util2=v('o_n2_utility'), clean2=v('o_n2_clean'), pc2=v('o_n2_pet_clean');
   const ep2=v('o_n2_extra_per'), bp2=v('o_n2_base_pax'), dep2=v('o_n2_deposit');
   const grr2=v('o_n2_g_rrate')/100, gor2=v('o_n2_g_orate')/100;
   const hrr2=v('o_n2_h_rrate')/100, hor2=v('o_n2_h_orate')/100;
   const coupon2=v('o_n2_coupon');
 
+  // 변경 후 박당 임대료: 기존 기본 임대료(기준 통화)를 박수 비례로 재계산
+  // 변경 호스트 기본 임대료 = round(기존 기본 임대료 / 이전 박수 × 변경 박수)
+  // → 박당 단가 = round(기존 기본 임대료 / 이전 박수 × 변경 박수) / 변경 박수
+  //             = round(기존 기본 임대료 / 이전 박수) ← 사실상 기존 박당 단가 그대로
+  let rent2;
+  if (oBasis === 'old' && oStatePrev.base_rent_b !== undefined && oStatePrev.nights) {
+    // 기존 박당 단가 그대로 유지 (비례 계산이므로 박당 단가 동일)
+    rent2 = oStatePrev.base_rent_b / oStatePrev.nights;
+    $('o_n2_rent').value = rent2.toFixed(2);
+  } else {
+    rent2 = v('o_n2_rent');
+  }
+
   const r2 = oCalcCore(rate2, nights2, persons2, pet2, rent2, util2, clean2, pc2, ep2, bp2, dep2, grr2, gor2, hrr2, hor2, coupon2);
 
-  const oldGTotal = oState.guest_total || 0;
-  const oldHTotal_b = oState.host_total_b || 0;
+  const oldGTotal = oStatePrev.guest_total || 0;
+  const oldHTotal_b = oStatePrev.host_total_b || 0;
 
   const fmtN = n => Math.round(n).toLocaleString('ko-KR');
   const fmtNB = n => n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 
-  set('o2_g_rent_old', fmtN(oState.total_rent_k||0));
-  set('o2_g_rent_new', fmtN(r2.total_rent_k));
-  set('o2_g_svc_old', fmtN(oState.total_svc||0));
+  set('o2_g_rent_old', fmtN((oStatePrev.total_rent_k||0) + (oStatePrev.total_svc||0)));
+  set('o2_g_rent_new', fmtN(r2.total_rent_k + r2.total_svc));
+  set('o2_g_svc_old', fmtN(oStatePrev.total_svc||0));
   set('o2_g_svc_new', fmtN(r2.total_svc));
-  set('o2_g_svcr_old', fmtN(oState.svc_r||0));
+  set('o2_g_svcr_old', fmtN(oStatePrev.svc_r||0));
   set('o2_g_svcr_new', fmtN(r2.svc_r));
-  set('o2_g_svco_old', fmtN(oState.svc_o||0));
+  set('o2_g_svco_old', fmtN(oStatePrev.svc_o||0));
   set('o2_g_svco_new', fmtN(r2.svc_o));
-  set('o2_coupon_old', '-' + fmtN(oState.coupon||0));
+  set('o2_coupon_old', coupon2 > 0 ? '-' + fmtN(coupon2) : '0');
   set('o2_coupon_new', '-' + fmtN(coupon2));
   set('o2_g_total_old', fmtN(oldGTotal));
   set('o2_g_total_new', fmtN(r2.guest_total));
 
-  set('o2_h_rent_old', fmtNB(oState.total_rent_b||0));
-  set('o2_h_rent_new', fmtNB(r2.total_rent_b));
-  set('o2_h_base_old', fmtNB(oState.base_rent_b||0));
+  set('o2_h_rent_old', fmtN(oStatePrev.total_rent_k||0));
+  set('o2_h_rent_new', fmtN(r2.total_rent_k));
+  set('o2_h_base_old', fmtN((oStatePrev.base_rent_b||0) * (oStatePrev.rate||1)));
   set('o2_h_base_new', fmtNB(r2.base_rent_b));
-  set('o2_h_extra_old', fmtNB(oState.extra_b||0));
+  set('o2_h_extra_old', fmtN((oStatePrev.extra_b||0) * (oStatePrev.rate||1)));
   set('o2_h_extra_new', fmtNB(r2.extra_b));
-  set('o2_h_svc_old', fmtNB(oState.h_svc_b||0));
-  set('o2_h_svc_new', fmtNB(r2.h_svc_b));
-  set('o2_util_old', fmtNB(oState.util_b||0));
+  set('o2_h_svc_old', fmtN(oStatePrev.h_svc_k||0));
+  set('o2_h_svc_new', fmtN(r2.h_svc_k));
+  set('o2_dep_old', fmtN(oStatePrev.deposit_k||0));
+  set('o2_dep_new', fmtNB(oStatePrev.dep||0));
+  set('o2_util_old', fmtN(oStatePrev.util_k||0));
   set('o2_util_new', fmtNB(r2.util_b));
-  set('o2_clean_old', fmtNB(oState.clean_b||0));
-  set('o2_clean_new', fmtNB(r2.clean_b));
+  set('o2_clean_old', fmtN(oStatePrev.total_clean_k||0));
+  set('o2_clean_new', fmtN(r2.total_clean_k));
+  set('o2_clean_base_old', fmtN(oStatePrev.clean_k||0));
+  set('o2_clean_base_new', fmtNB(oStatePrev.clean||0));
+  set('o2_clean_pet_old', fmtN(oStatePrev.pet_k||0));
+  set('o2_clean_pet_new', fmtNB(oStatePrev.pc||0));
 
   const gDiff = r2.guest_total - oldGTotal;
-  const hDiff_b = r2.host_total_b - oldHTotal_b;
+  const hDiff_k = (r2.total_rent_k + r2.util_k) - ((oStatePrev.total_rent_k||0) + (oStatePrev.util_k||0));
 
   $('o2_guest_label').textContent = diffLabel(gDiff, 'guest') + ' (원화)';
-  $('o2_host_label').textContent = diffLabel(hDiff_b, 'host') + ' (기준 통화)';
+  $('o2_host_label').textContent = diffLabel(hDiff_k, 'host') + ' (원화)';
   $('o2_guest_diff').innerHTML = diffBadge(gDiff, '원');
-  $('o2_host_diff').innerHTML = diffBadge(hDiff_b, '');
+  $('o2_host_diff').innerHTML = diffBadge(hDiff_k, '원');
 }
 
 /* ============================================================
@@ -2193,6 +2232,7 @@ function v2CoreCalc(n, k, pet,
 ============================================================ */
 let v2dState = {};
 let v2dBasis = 'new';
+let v2dStatePrev = {};
 
 function v2calcD() {
   const n=v('v2d_nights'), k=v('v2d_persons'), pet=b('v2d_pet');
@@ -2283,6 +2323,7 @@ function v2calcD() {
   set('v2d_svc_nights_check', Math.min(n,90) + '');
   set('v2d_over90', n > 90 ? '✅ ' + (n-90) + '박 초과' : '❌ 해당없음');
 
+  if (v2dBasis !== 'old') v2dStatePrev = { ...v2dState };
   v2dState = { ...r, n, gr, hr, W, M, util, clean, pc, ep, bp, dep };
   if(v2dBasis === 'old') v2dSyncFromState();
   v2calcD2();
@@ -2294,20 +2335,25 @@ function v2dSetBasis(val) {
   v2dBasis = val;
   $('v2d_basis_new').className = 'basis-btn' + (val==='new'?' active-new':'');
   $('v2d_basis_old').className = 'basis-btn' + (val==='old'?' active-old':'');
-  if(val==='old') v2dSyncFromState();
+  if(val==='old') {
+    v2dStatePrev = { ...v2dState };
+    v2dSyncFromState();
+  }
   v2calcD2();
 }
 
 function v2dSyncFromState() {
-  if(!v2dState.W) return;
-  $('v2d_n2_W').value = v2dState.W;
-  $('v2d_n2_M').value = v2dState.M;
-  $('v2d_n2_utility').value = v2dState.util;
-  $('v2d_n2_clean').value = v2dState.clean;
-  $('v2d_n2_base_pax').value = v2dState.bp;
-  $('v2d_n2_deposit').value = v2dState.dep;
-  $('v2d_n2_g_rate').value = (v2dState.gr*100).toFixed(1);
-  $('v2d_n2_h_rate').value = (v2dState.hr*100).toFixed(1);
+  if(!v2dStatePrev.W) return;
+  $('v2d_n2_W').value = v2dStatePrev.W;
+  $('v2d_n2_M').value = v2dStatePrev.M;
+  $('v2d_n2_utility').value = v2dStatePrev.util;
+  $('v2d_n2_clean').value = v2dStatePrev.clean;
+  if (v2dStatePrev.pc > 0) $('v2d_n2_pet_clean').value = v2dStatePrev.pc;
+  $('v2d_n2_extra_per').value = v2dStatePrev.ep || 0;
+  $('v2d_n2_base_pax').value = v2dStatePrev.bp;
+  $('v2d_n2_deposit').value = v2dStatePrev.dep;
+  $('v2d_n2_g_rate').value = (v2dStatePrev.gr*100).toFixed(1);
+  $('v2d_n2_h_rate').value = (v2dStatePrev.hr*100).toFixed(1);
 }
 
 function v2calcD2() {
@@ -2320,23 +2366,23 @@ function v2calcD2() {
 
   const r2 = v2CoreCalc(n2,k2,pet2,W2,M2,util2,clean2,pc2,ep2,bp2,dep2,gr2,hr2,ed2_on,ed2);
 
-  const oldG = v2dState.guest_total || 0;
-  const oldH = v2dState.host_total || 0;
+  const oldG = v2dStatePrev.guest_total || 0;
+  const oldH = v2dStatePrev.host_total || 0;
 
   const fN = n => Math.round(n).toLocaleString('ko-KR');
-  set('v2d2_rent_old', fN(v2dState.total_rent||0));
-  set('v2d2_rent_new', fN(r2.total_rent));
-  set('v2d2_svcr_old', fN(v2dState.svc_rent||0));
+  set('v2d2_rent_old', fN((v2dStatePrev.total_rent||0) + (v2dStatePrev.svc_rent||0) + (v2dStatePrev.svc_other||0)));
+  set('v2d2_rent_new', fN(r2.total_rent + r2.svc_rent + r2.svc_other));
+  set('v2d2_svcr_old', fN(v2dStatePrev.svc_rent||0));
   set('v2d2_svcr_new', fN(r2.svc_rent));
-  set('v2d2_svco_old', fN(v2dState.svc_other||0));
+  set('v2d2_svco_old', fN(v2dStatePrev.svc_other||0));
   set('v2d2_svco_new', fN(r2.svc_other));
   set('v2d2_g_total_old', fN(oldG));
   set('v2d2_g_total_new', fN(r2.guest_total));
-  set('v2d2_h_rent_old', fN(v2dState.total_rent||0));
+  set('v2d2_h_rent_old', fN(v2dStatePrev.total_rent||0));
   set('v2d2_h_rent_new', fN(r2.total_rent));
-  set('v2d2_h_svc_old', fN(v2dState.h_svc||0));
+  set('v2d2_h_svc_old', fN(v2dStatePrev.h_svc||0));
   set('v2d2_h_svc_new', fN(r2.h_svc));
-  set('v2d2_h_other_old', fN(v2dState.total_other||0));
+  set('v2d2_h_other_old', fN(v2dStatePrev.total_other||0));
   set('v2d2_h_other_new', fN(r2.total_other));
 
   const gDiff = r2.guest_total - oldG;
@@ -2352,6 +2398,7 @@ function v2calcD2() {
 ============================================================ */
 let v2oState = {};
 let v2oBasis = 'new';
+let v2oStatePrev = {};
 
 function v2CoreCalcOverseas(rate, n, k, pet,
                              W, M, utility, clean, pet_clean, extra_per, base_pax, deposit_base,
@@ -2499,6 +2546,7 @@ function v2calcO() {
   $('v2o_h_total_k').textContent = fmt(r.host_total_b * rate);
   $('v2o_h_total_b').textContent = fmtB(r.host_total_b);
 
+  if (v2oBasis !== 'old') v2oStatePrev = { ...v2oState };
   v2oState = { ...r, rate, gr, hr, W, M, util, clean, pc, ep, bp, dep };
   if(v2oBasis === 'old') v2oSyncFromState();
   v2calcO2();
@@ -2509,21 +2557,26 @@ function v2oSetBasis(val) {
   v2oBasis = val;
   $('v2o_basis_new').className = 'basis-btn' + (val==='new'?' active-new':'');
   $('v2o_basis_old').className = 'basis-btn' + (val==='old'?' active-old':'');
-  if(val==='old') v2oSyncFromState();
+  if(val==='old') {
+    v2oStatePrev = { ...v2oState };
+    v2oSyncFromState();
+  }
   v2calcO2();
 }
 
 function v2oSyncFromState() {
-  if(!v2oState.rate) return;
-  $('v2o_n2_rate').value = v2oState.rate;
-  $('v2o_n2_W').value = v2oState.W;
-  $('v2o_n2_M').value = v2oState.M;
-  $('v2o_n2_utility').value = v2oState.util;
-  $('v2o_n2_clean').value = v2oState.clean;
-  $('v2o_n2_base_pax').value = v2oState.bp;
-  $('v2o_n2_deposit').value = v2oState.dep;
-  $('v2o_n2_g_rate').value = (v2oState.gr*100).toFixed(1);
-  $('v2o_n2_h_rate').value = (v2oState.hr*100).toFixed(1);
+  if(!v2oStatePrev.rate) return;
+  $('v2o_n2_rate').value = v2oStatePrev.rate;
+  $('v2o_n2_W').value = v2oStatePrev.W;
+  $('v2o_n2_M').value = v2oStatePrev.M;
+  $('v2o_n2_utility').value = v2oStatePrev.util;
+  $('v2o_n2_clean').value = v2oStatePrev.clean;
+  if (v2oStatePrev.pc > 0) $('v2o_n2_pet_clean').value = v2oStatePrev.pc;
+  $('v2o_n2_extra_per').value = v2oStatePrev.ep || 0;
+  $('v2o_n2_base_pax').value = v2oStatePrev.bp;
+  $('v2o_n2_deposit').value = v2oStatePrev.dep;
+  $('v2o_n2_g_rate').value = (v2oStatePrev.gr*100).toFixed(1);
+  $('v2o_n2_h_rate').value = (v2oStatePrev.hr*100).toFixed(1);
 }
 
 function v2calcO2() {
@@ -2536,31 +2589,31 @@ function v2calcO2() {
 
   const r2 = v2CoreCalcOverseas(rate2,n2,k2,pet2,W2,M2,util2,clean2,pc2,ep2,bp2,dep2,gr2,hr2,ed2_on,ed2);
 
-  const oldG = v2oState.guest_total || 0;
-  const oldH = v2oState.host_total_b || 0;
+  const oldG = v2oStatePrev.guest_total || 0;
+  const oldH = v2oStatePrev.host_total_b || 0;
 
   const fN = n => Math.round(n).toLocaleString('ko-KR');
   const fNB = n => n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 
-  set('v2o2_rent_old', fN(v2oState.total_rent_k||0));
-  set('v2o2_rent_new', fN(r2.total_rent_k));
-  set('v2o2_svcr_old', fN(v2oState.svc_rent_k||0));
+  set('v2o2_rent_old', fN((v2oStatePrev.total_rent_k||0) + (v2oStatePrev.svc_rent_k||0) + (v2oStatePrev.svc_other_k||0)));
+  set('v2o2_rent_new', fN(r2.total_rent_k + r2.svc_rent_k + r2.svc_other_k));
+  set('v2o2_svcr_old', fN(v2oStatePrev.svc_rent_k||0));
   set('v2o2_svcr_new', fN(r2.svc_rent_k));
-  set('v2o2_svco_old', fN(v2oState.svc_other_k||0));
+  set('v2o2_svco_old', fN(v2oStatePrev.svc_other_k||0));
   set('v2o2_svco_new', fN(r2.svc_other_k));
   set('v2o2_g_total_old', fN(oldG));
   set('v2o2_g_total_new', fN(r2.guest_total));
-  set('v2o2_h_rent_old', fNB(v2oState.total_rent_b||0));
+  set('v2o2_h_rent_old', fNB(v2oStatePrev.total_rent_b||0));
   set('v2o2_h_rent_new', fNB(r2.total_rent_b));
-  set('v2o2_h_svc_old', fNB(v2oState.h_svc_b||0));
+  set('v2o2_h_svc_old', fNB(v2oStatePrev.h_svc_b||0));
   set('v2o2_h_svc_new', fNB(r2.h_svc_b));
 
   const gDiff = r2.guest_total - oldG;
-  const hDiff = r2.host_total_b - oldH;
+  const hDiff_k = r2.total_rent_k - (v2oStatePrev.total_rent_k||0);
   $('v2o2_guest_label').textContent = diffLabel(gDiff,'guest') + ' (원화)';
-  $('v2o2_host_label').textContent = diffLabel(hDiff,'host') + ' (기준 통화)';
+  $('v2o2_host_label').textContent = diffLabel(hDiff_k,'host') + ' (원화)';
   $('v2o2_guest_diff').innerHTML = diffBadge(gDiff,'원');
-  $('v2o2_host_diff').innerHTML = diffBadge(hDiff,'');
+  $('v2o2_host_diff').innerHTML = diffBadge(hDiff_k,'원');
 }
 
 
@@ -3474,11 +3527,10 @@ function updateOPriceView() {
 
   var periods = [6, 14, 29];
   periods.forEach(function(n) {
-    // 입력값은 박당 가격 → 구간별 보간 후 총임대료 계산
+    // 구간별 고정 단가 적용: <=13박 W, 14~28박 M14, >=29박 M29
     var rent_per_n;
-    if (n <= 6) rent_per_n = oW;
-    else if (n < 14) rent_per_n = oW + (oM14 - oW) / (14 - 6) * (n - 6);
-    else if (n < 29) rent_per_n = oM14 + (oM29 - oM14) / (29 - 14) * (n - 14);
+    if (n <= 13) rent_per_n = oW;
+    else if (n <= 28) rent_per_n = oM14;
     else rent_per_n = oM29;
     var totalRentB = rent_per_n * n;
     var rent_k      = Math.ceil((totalRentB + extra_pax * ep * n) * rate);
