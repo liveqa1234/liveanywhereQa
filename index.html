@@ -626,15 +626,11 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
     </div>
   </div>
 
-  <!-- ③ 변경 후 가격 -->
+  <!-- ③ 기존 세부 가격 기준 - 연장 -->
   <div class="section">
-    <div class="section-header"><span class="section-badge badge-teal">③ 변경 후 가격</span></div>
-    <div class="card" style="margin-bottom:14px;">
-      <div class="card-title teal">변경 기준 선택</div>
-      <div class="basis-toggle">
-        <button class="basis-btn active-new" id="v2d_basis_new" onclick="v2dSetBasis('new')">신규 입력값 기준 (①번 설정)</button>
-        <button class="basis-btn" id="v2d_basis_old" onclick="v2dSetBasis('old')">기존 세부 가격 기준 (②번 결과)</button>
-      </div>
+    <div class="section-header">
+      <span class="section-badge badge-teal">③ 기존 세부 가격 기준 - 연장</span>
+      <span class="section-title" style="color:var(--muted);font-size:12px;">②번 결과 기준 · 박수 늘릴 때</span>
     </div>
     <div class="grid2">
       <div class="card">
@@ -677,6 +673,56 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
           <div class="result-title">💸 차액 결과</div>
           <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="v2d2_guest_label">게스트 추가결제/환불</span><span class="rval" id="v2d2_guest_diff">-</span></div>
           <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="v2d2_host_label">호스트 추가정산/지불</span><span class="rval" id="v2d2_host_diff">-</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 기존 세부 가격 기준 - 단축 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-badge badge-teal">④ 기존 세부 가격 기준 - 단축</span>
+      <span class="section-title" style="color:var(--muted);font-size:12px;">③번 연장 결과 기준 · 박수 줄일 때</span>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title teal">변경 후 조건</div>
+        <div class="field"><label>총 박수 n (변경 후)</label><input type="number" id="v2d_n3_nights" value="7" oninput="v2calcD3()"></div>
+        <div class="field"><label>인원수 k (변경 후)</label><input type="number" id="v2d_n3_persons" value="1" oninput="v2calcD3()"></div>
+        <div class="field"><div class="checkbox-row"><input type="checkbox" id="v2d_n3_pet" onchange="v2calcD3()"><label for="v2d_n3_pet">반려동물 있음 (변경 후)</label></div></div>
+        <hr class="section-divider">
+        <div class="card-title teal">변경 후 기준 (③번 자동)</div>
+        <div class="field"><label>W (일주일 기준 임대료, 원)</label><input type="number" id="v2d_n3_W" value="0" oninput="v2calcD3()"></div>
+        <div class="field"><label>M (한달 기준 임대료, 원)</label><input type="number" id="v2d_n3_M" value="0" oninput="v2calcD3()"></div>
+        <div class="field"><label>박당 공과금 (원)</label><input type="number" id="v2d_n3_utility" value="0" oninput="v2calcD3()"></div>
+        <div class="field"><label>청소비 (원)</label><input type="number" id="v2d_n3_clean" value="0" oninput="v2calcD3()"></div>
+        <div class="field"><label>반려동물 청소비 (원)</label><input type="number" id="v2d_n3_pet_clean" value="0" oninput="v2calcD3()"></div>
+        <div class="field"><label>박당 추가 인원비 (원)</label><input type="number" id="v2d_n3_extra_per" value="0" oninput="v2calcD3()"></div>
+        <div class="field"><label>기준 인원 j</label><input type="number" id="v2d_n3_base_pax" value="1" oninput="v2calcD3()"></div>
+        <div class="field"><label>보증금 (원)</label><input type="number" id="v2d_n3_deposit" value="0" oninput="v2calcD3()"></div>
+        <div class="field"><label>게스트 수수료율 (%)</label><input type="number" id="v2d_n3_g_rate" value="9.9" step="0.1" oninput="v2calcD3()"></div>
+        <div class="field"><label>호스트 수수료율 (%)</label><input type="number" id="v2d_n3_h_rate" value="3.3" step="0.1" oninput="v2calcD3()"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="result-card diff">
+          <div class="result-title">📊 게스트 기준 가격 비교</div>
+          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
+          <div class="compare-row"><span class="cn">총 임대료</span><span class="cv old-v" id="v2d3_rent_old">-</span><span class="cv new-v" id="v2d3_rent_new">-</span></div>
+          <div class="compare-row"><span class="cn">임대 서비스 이용료</span><span class="cv old-v" id="v2d3_svcr_old">-</span><span class="cv new-v" id="v2d3_svcr_new">-</span></div>
+          <div class="compare-row"><span class="cn">기타 서비스 이용료</span><span class="cv old-v" id="v2d3_svco_old">-</span><span class="cv new-v" id="v2d3_svco_new">-</span></div>
+          <div class="compare-row"><span class="cn">총 게스트 결제</span><span class="cv old-v" id="v2d3_g_total_old">-</span><span class="cv new-v" id="v2d3_g_total_new">-</span></div>
+        </div>
+        <div class="result-card diff">
+          <div class="result-title">📊 호스트 기준 가격 비교</div>
+          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
+          <div class="compare-row"><span class="cn">총 임대료</span><span class="cv old-v" id="v2d3_h_rent_old">-</span><span class="cv new-v" id="v2d3_h_rent_new">-</span></div>
+          <div class="compare-row"><span class="cn">호스트 서비스 이용료</span><span class="cv old-v" id="v2d3_h_svc_old">-</span><span class="cv new-v" id="v2d3_h_svc_new">-</span></div>
+          <div class="compare-row"><span class="cn">공과금+청소비</span><span class="cv old-v" id="v2d3_h_other_old">-</span><span class="cv new-v" id="v2d3_h_other_new">-</span></div>
+        </div>
+        <div class="result-card diff" style="border-color:rgba(245,158,11,.5);">
+          <div class="result-title">💸 차액 결과</div>
+          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="v2d3_guest_label">게스트 추가결제/환불</span><span class="rval" id="v2d3_guest_diff">-</span></div>
+          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="v2d3_host_label">호스트 추가정산/지불</span><span class="rval" id="v2d3_host_diff">-</span></div>
         </div>
       </div>
     </div>
@@ -899,15 +945,11 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
     </div>
   </div>
 
-  <!-- ③ 변경 후 -->
+  <!-- ③ 기존 세부 가격 기준 - 연장 -->
   <div class="section">
-    <div class="section-header"><span class="section-badge badge-teal">③ 변경 후 가격</span></div>
-    <div class="card" style="margin-bottom:14px;">
-      <div class="card-title teal">변경 기준 선택</div>
-      <div class="basis-toggle">
-        <button class="basis-btn active-new" id="v2o_basis_new" onclick="v2oSetBasis('new')">신규 입력값 기준 (①번 설정)</button>
-        <button class="basis-btn" id="v2o_basis_old" onclick="v2oSetBasis('old')">기존 세부 가격 기준 (②번 결과)</button>
-      </div>
+    <div class="section-header">
+      <span class="section-badge badge-teal">③ 기존 세부 가격 기준 - 연장</span>
+      <span class="section-title" style="color:var(--muted);font-size:12px;">②번 결과 기준 · 박수 늘릴 때</span>
     </div>
     <div class="grid2">
       <div class="card">
@@ -948,7 +990,56 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="result-card diff" style="border-color:rgba(245,158,11,.5);">
           <div class="result-title">💸 차액 결과</div>
           <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="v2o2_guest_label">게스트 추가결제/환불 (원화)</span><span class="rval" id="v2o2_guest_diff">-</span></div>
-          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="v2o2_host_label">호스트 추가정산/지불 (기준 통화)</span><span class="rval" id="v2o2_host_diff">-</span></div>
+          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="v2o2_host_label">호스트 추가정산/지불 (원화)</span><span class="rval" id="v2o2_host_diff">-</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 기존 세부 가격 기준 - 단축 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-badge badge-teal">④ 기존 세부 가격 기준 - 단축</span>
+      <span class="section-title" style="color:var(--muted);font-size:12px;">③번 연장 결과 기준 · 박수 줄일 때</span>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title teal">변경 후 조건 (기준 통화)</div>
+        <div class="field"><label>적용 환율</label><input type="number" id="v2o_n3_rate" value="0" step="0.001" oninput="v2calcO3()"></div>
+        <div class="field"><label>총 박수 n (변경 후)</label><input type="number" id="v2o_n3_nights" value="7" oninput="v2calcO3()"></div>
+        <div class="field"><label>인원수 k</label><input type="number" id="v2o_n3_persons" value="1" oninput="v2calcO3()"></div>
+        <div class="field"><div class="checkbox-row"><input type="checkbox" id="v2o_n3_pet" onchange="v2calcO3()"><label for="v2o_n3_pet">반려동물 있음 (변경 후)</label></div></div>
+        <hr class="section-divider">
+        <div class="field"><label>W (일주일 기준 임대료)</label><input type="number" id="v2o_n3_W" value="0" step="0.01" oninput="v2calcO3()"></div>
+        <div class="field"><label>M (한달 기준 임대료)</label><input type="number" id="v2o_n3_M" value="0" step="0.01" oninput="v2calcO3()"></div>
+        <div class="field"><label>박당 공과금</label><input type="number" id="v2o_n3_utility" value="0" step="0.01" oninput="v2calcO3()"></div>
+        <div class="field"><label>청소비</label><input type="number" id="v2o_n3_clean" value="0" step="0.01" oninput="v2calcO3()"></div>
+        <div class="field"><label>반려동물 청소비</label><input type="number" id="v2o_n3_pet_clean" value="0" step="0.01" oninput="v2calcO3()"></div>
+        <div class="field"><label>박당 추가 인원비</label><input type="number" id="v2o_n3_extra_per" value="0" step="0.01" oninput="v2calcO3()"></div>
+        <div class="field"><label>기준 인원 j</label><input type="number" id="v2o_n3_base_pax" value="1" oninput="v2calcO3()"></div>
+        <div class="field"><label>보증금 (기준 통화)</label><input type="number" id="v2o_n3_deposit" value="0" step="0.01" oninput="v2calcO3()"></div>
+        <div class="field"><label>게스트 수수료율 (%)</label><input type="number" id="v2o_n3_g_rate" value="9.9" step="0.1" oninput="v2calcO3()"></div>
+        <div class="field"><label>호스트 수수료율 (%)</label><input type="number" id="v2o_n3_h_rate" value="3.3" step="0.1" oninput="v2calcO3()"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="result-card diff">
+          <div class="result-title">📊 게스트 기준 가격 비교 (원화)</div>
+          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
+          <div class="compare-row"><span class="cn">총 임대료</span><span class="cv old-v" id="v2o3_rent_old">-</span><span class="cv new-v" id="v2o3_rent_new">-</span></div>
+          <div class="compare-row"><span class="cn">임대 서비스 이용료</span><span class="cv old-v" id="v2o3_svcr_old">-</span><span class="cv new-v" id="v2o3_svcr_new">-</span></div>
+          <div class="compare-row"><span class="cn">기타 서비스 이용료</span><span class="cv old-v" id="v2o3_svco_old">-</span><span class="cv new-v" id="v2o3_svco_new">-</span></div>
+          <div class="compare-row"><span class="cn">총 게스트 결제</span><span class="cv old-v" id="v2o3_g_total_old">-</span><span class="cv new-v" id="v2o3_g_total_new">-</span></div>
+        </div>
+        <div class="result-card diff">
+          <div class="result-title">📊 호스트 기준 가격 비교 (기준 통화)</div>
+          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
+          <div class="compare-row"><span class="cn">총 임대료</span><span class="cv old-v" id="v2o3_h_rent_old">-</span><span class="cv new-v" id="v2o3_h_rent_new">-</span></div>
+          <div class="compare-row"><span class="cn">호스트 서비스 이용료</span><span class="cv old-v" id="v2o3_h_svc_old">-</span><span class="cv new-v" id="v2o3_h_svc_new">-</span></div>
+        </div>
+        <div class="result-card diff" style="border-color:rgba(245,158,11,.5);">
+          <div class="result-title">💸 차액 결과</div>
+          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="v2o3_guest_label">게스트 추가결제/환불 (원화)</span><span class="rval" id="v2o3_guest_diff">-</span></div>
+          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="v2o3_host_label">호스트 추가정산/지불 (원화)</span><span class="rval" id="v2o3_host_diff">-</span></div>
         </div>
       </div>
     </div>
@@ -1109,20 +1200,8 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
 
 <div class="section">
     <div class="section-header">
-      <span class="section-badge badge-orange">③ 변경 후 가격</span>
-      <span class="section-title" style="color:var(--muted);font-size:12px;">일정/조건 변경 시 차액 계산</span>
-    </div>
-
-    <!-- 기준 선택 -->
-    <div class="card" style="margin-bottom:14px;">
-      <div class="card-title orange">변경 기준 선택</div>
-      <div class="basis-toggle">
-        <button class="basis-btn active-new" id="d_basis_new" onclick="dSetBasis('new')">신규 입력값 기준 (①번 설정)</button>
-        <button class="basis-btn" id="d_basis_old" onclick="dSetBasis('old')">기존 세부 가격 기준 (②번 결과)</button>
-      </div>
-      <div id="d_basis_old_hint" style="display:none;" class="hint" style="color:var(--orange);">
-        ⚠️ 기존 세부 가격 기준: 보증금·수수료율·청소비 등을 ②번 결과에서 자동으로 가져옵니다. 변경된 항목(반려동물 청소비, 추가인원비 등)은 아래에서 직접 입력하세요.
-      </div>
+      <span class="section-badge badge-orange">③ 기존 세부 가격 기준 - 연장</span>
+      <span class="section-title" style="color:var(--muted);font-size:12px;">②번 결과 기준 · 박수 늘릴 때</span>
     </div>
 
     <div class="grid2">
@@ -1134,7 +1213,7 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
           <div class="checkbox-row"><input type="checkbox" id="d_n2_pet" onchange="calcD2()"><label for="d_n2_pet">반려동물 있음 (변경 후)</label></div>
         </div>
         <hr class="section-divider">
-        <div class="card-title orange">변경 후 기준 (자동/수동)</div>
+        <div class="card-title orange">변경 후 기준 (②번 자동)</div>
         <div class="field"><label>박당 임대료 (원)</label><input type="number" id="d_n2_rent" value="25000" oninput="calcD2()"></div>
         <div class="field"><label>박당 공과금 (원)</label><input type="number" id="d_n2_utility" value="0" oninput="calcD2()"></div>
         <div class="field"><label>청소비 (원)</label><input type="number" id="d_n2_clean" value="0" oninput="calcD2()"></div>
@@ -1194,7 +1273,76 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
       </div>
     </div>
   </div>
-</div>
+
+  <!-- ④ 기존 세부 가격 기준 - 단축 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-badge badge-orange">④ 기존 세부 가격 기준 - 단축</span>
+      <span class="section-title" style="color:var(--muted);font-size:12px;">②번 결과 기준 · 박수 줄일 때</span>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title orange">변경 후 조건</div>
+        <div class="field"><label>박수 (변경 후)</label><input type="number" id="d_n3_nights" value="7" oninput="calcD3()"></div>
+        <div class="field"><label>인원수 (변경 후)</label><input type="number" id="d_n3_persons" value="1" oninput="calcD3()"></div>
+        <div class="field">
+          <div class="checkbox-row"><input type="checkbox" id="d_n3_pet" onchange="calcD3()"><label for="d_n3_pet">반려동물 있음 (변경 후)</label></div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-title orange">변경 후 기준 (②번 자동)</div>
+        <div class="field"><label>박당 임대료 (원)</label><input type="number" id="d_n3_rent" value="0" oninput="calcD3()"></div>
+        <div class="field"><label>박당 공과금 (원)</label><input type="number" id="d_n3_utility" value="0" oninput="calcD3()"></div>
+        <div class="field"><label>청소비 (원)</label><input type="number" id="d_n3_clean" value="0" oninput="calcD3()"></div>
+        <div class="field">
+          <label>반려동물 청소비 (원)</label>
+          <input type="number" id="d_n3_pet_clean" value="0" oninput="calcD3()">
+        </div>
+        <div class="field">
+          <label>박당 추가 인원비 (원)</label>
+          <input type="number" id="d_n3_extra_per" value="0" oninput="calcD3()">
+        </div>
+        <div class="field"><label>기준 인원</label><input type="number" id="d_n3_base_pax" value="1" oninput="calcD3()"></div>
+        <div class="field"><label>보증금 (원)</label><input type="number" id="d_n3_deposit" value="0" oninput="calcD3()"></div>
+        <hr class="section-divider">
+        <div class="card-title orange">수수료율 (변경 후)</div>
+        <div class="field"><label>게스트 임대 수수료율 (%)</label><input type="number" id="d_n3_g_rrate" value="11" step="0.1" oninput="calcD3()"></div>
+        <div class="field"><label>게스트 기타 수수료율 (%)</label><input type="number" id="d_n3_g_orate" value="5" step="0.1" oninput="calcD3()"></div>
+        <div class="field"><label>호스트 임대 수수료율 (%)</label><input type="number" id="d_n3_h_rrate" value="5" step="0.1" oninput="calcD3()"></div>
+        <div class="field"><label>호스트 기타 수수료율 (%)</label><input type="number" id="d_n3_h_orate" value="0" step="0.1" oninput="calcD3()"></div>
+        <hr class="section-divider">
+        <div class="card-title orange">쿠폰 (변경 후)</div>
+        <div class="field"><label>쿠폰 할인 금액 (원)</label><input type="number" id="d_n3_coupon" value="0" oninput="calcD3()"></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="result-card diff">
+          <div class="result-title">📊 게스트 기준 가격 비교</div>
+          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
+          <div class="compare-row"><span class="cn">게스트 임대료</span><span class="cv old-v" id="d3_g_rent_old">-</span><span class="cv new-v" id="d3_g_rent_new">-</span></div>
+          <div class="compare-row"><span class="cn">게스트 서비스 이용료</span><span class="cv old-v" id="d3_g_svc_old">-</span><span class="cv new-v" id="d3_g_svc_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 임대 서비스이용료</span><span class="cv old-v" id="d3_g_svcr_old">-</span><span class="cv new-v" id="d3_g_svcr_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 기타 서비스이용료</span><span class="cv old-v" id="d3_g_svco_old">-</span><span class="cv new-v" id="d3_g_svco_new">-</span></div>
+          <div class="compare-row"><span class="cn">쿠폰 할인</span><span class="cv old-v" id="d3_coupon_old">-</span><span class="cv new-v" id="d3_coupon_new">-</span></div>
+          <div class="compare-row"><span class="cn">총 게스트 결제</span><span class="cv old-v" id="d3_g_total_old">-</span><span class="cv new-v" id="d3_g_total_new">-</span></div>
+        </div>
+        <div class="result-card diff">
+          <div class="result-title">📊 호스트 기준 가격 비교</div>
+          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
+          <div class="compare-row"><span class="cn">호스트 총 임대료</span><span class="cv old-v" id="d3_h_rent_old">-</span><span class="cv new-v" id="d3_h_rent_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 기본 임대료</span><span class="cv old-v" id="d3_h_base_old">-</span><span class="cv new-v" id="d3_h_base_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 추가인원비</span><span class="cv old-v" id="d3_h_extra_old">-</span><span class="cv new-v" id="d3_h_extra_new">-</span></div>
+          <div class="compare-row"><span class="cn">호스트 서비스 이용료</span><span class="cv old-v" id="d3_h_svc_old">-</span><span class="cv new-v" id="d3_h_svc_new">-</span></div>
+          <div class="compare-row"><span class="cn">공과금</span><span class="cv old-v" id="d3_util_old">-</span><span class="cv new-v" id="d3_util_new">-</span></div>
+          <div class="compare-row"><span class="cn">총 청소비</span><span class="cv old-v" id="d3_clean_old">-</span><span class="cv new-v" id="d3_clean_new">-</span></div>
+        </div>
+        <div class="result-card diff" style="border-color:rgba(245,158,11,.5);">
+          <div class="result-title">💸 차액 결과</div>
+          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="d3_guest_label">게스트 추가결제/환불</span><span class="rval" id="d3_guest_diff">-</span></div>
+          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="d3_host_label">호스트 추가정산/지불</span><span class="rval" id="d3_host_diff">-</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <!-- ═══════════════════════════════════════════════════════
      해외
@@ -1331,16 +1479,6 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
     <div class="section-header">
       <span class="section-badge badge-orange">③ 변경 후 가격</span>
     </div>
-    <div class="card" style="margin-bottom:14px;">
-      <div class="card-title orange">변경 기준 선택</div>
-      <div class="basis-toggle">
-        <button class="basis-btn active-new" id="o_basis_new" onclick="oSetBasis('new')">신규 입력값 기준 (①번 설정)</button>
-        <button class="basis-btn" id="o_basis_old" onclick="oSetBasis('old')">기존 세부 가격 기준 (②번 결과)</button>
-      </div>
-      <div id="o_basis_old_hint" style="display:none;" class="hint">
-        ⚠️ 기존 세부 가격 기준: 환율·보증금·수수료율 등을 ②번 결과에서 자동으로 가져옵니다. 변경된 항목은 아래에서 직접 입력하세요.
-      </div>
-    </div>
     <div class="grid2">
       <div class="card">
         <div class="card-title orange">변경 후 조건</div>
@@ -1412,14 +1550,73 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="result-card diff" style="border-color:rgba(245,158,11,.5);">
           <div class="result-title">💸 차액 결과</div>
           <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="o2_guest_label">게스트 추가결제/환불 (원화)</span><span class="rval" id="o2_guest_diff">-</span></div>
-          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="o2_host_label">호스트 추가정산/지불 (기준 통화)</span><span class="rval" id="o2_host_diff">-</span></div>
+          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="o2_host_label">호스트 추가정산/지불 (원화)</span><span class="rval" id="o2_host_diff">-</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 기존 세부 가격 기준 - 단축 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-badge badge-orange">④ 기존 세부 가격 기준 - 단축</span>
+      <span class="section-title" style="color:var(--muted);font-size:12px;">③번 연장 결과 기준 · 박수 줄일 때</span>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title orange">변경 후 조건</div>
+        <div class="field"><label>박수 (변경 후)</label><input type="number" id="o_n3_nights" value="7" oninput="calcO3()"></div>
+        <div class="field"><label>인원수 (변경 후)</label><input type="number" id="o_n3_persons" value="1" oninput="calcO3()"></div>
+        <div class="field"><div class="checkbox-row"><input type="checkbox" id="o_n3_pet" onchange="calcO3()"><label for="o_n3_pet">반려동물 있음 (변경 후)</label></div></div>
+        <hr class="section-divider">
+        <div class="card-title orange">변경 후 기준 (③번 자동)</div>
+        <div class="field"><label>적용 환율</label><input type="number" id="o_n3_rate" value="0" step="0.001" oninput="calcO3()"></div>
+        <div class="field"><label>박당 공과금</label><input type="number" id="o_n3_utility" value="0" oninput="calcO3()"></div>
+        <div class="field"><label>청소비</label><input type="number" id="o_n3_clean" value="0" oninput="calcO3()"></div>
+        <div class="field"><label>반려동물 청소비</label><input type="number" id="o_n3_pet_clean" value="0" oninput="calcO3()"></div>
+        <div class="field"><label>박당 추가 인원비</label><input type="number" id="o_n3_extra_per" value="0" oninput="calcO3()"></div>
+        <div class="field"><label>기준 인원</label><input type="number" id="o_n3_base_pax" value="1" oninput="calcO3()"></div>
+        <div class="field"><label>보증금 (기준 통화)</label><input type="number" id="o_n3_deposit" value="0" oninput="calcO3()"></div>
+        <hr class="section-divider">
+        <div class="card-title orange">수수료율 (변경 후)</div>
+        <div class="field"><label>게스트 임대 수수료율 (%)</label><input type="number" id="o_n3_g_rrate" value="6" step="0.1" oninput="calcO3()"></div>
+        <div class="field"><label>게스트 기타 수수료율 (%)</label><input type="number" id="o_n3_g_orate" value="5" step="0.1" oninput="calcO3()"></div>
+        <div class="field"><label>호스트 임대 수수료율 (%)</label><input type="number" id="o_n3_h_rrate" value="0" step="0.1" oninput="calcO3()"></div>
+        <div class="field"><label>호스트 기타 수수료율 (%)</label><input type="number" id="o_n3_h_orate" value="0" step="0.1" oninput="calcO3()"></div>
+        <hr class="section-divider">
+        <div class="card-title orange">쿠폰 (변경 후)</div>
+        <div class="field"><label>쿠폰 할인 금액 (원)</label><input type="number" id="o_n3_coupon" value="0" oninput="calcO3()"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="result-card diff">
+          <div class="result-title">📊 게스트 기준 가격 비교 (원화)</div>
+          <div class="col-headers"><span>항목</span><span>기존</span><span>변경</span></div>
+          <div class="compare-row"><span class="cn">게스트 임대료</span><span class="cv old-v" id="o3_g_rent_old">-</span><span class="cv new-v" id="o3_g_rent_new">-</span></div>
+          <div class="compare-row"><span class="cn">게스트 서비스 이용료</span><span class="cv old-v" id="o3_g_svc_old">-</span><span class="cv new-v" id="o3_g_svc_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 임대 서비스이용료</span><span class="cv old-v" id="o3_g_svcr_old">-</span><span class="cv new-v" id="o3_g_svcr_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 기타 서비스이용료</span><span class="cv old-v" id="o3_g_svco_old">-</span><span class="cv new-v" id="o3_g_svco_new">-</span></div>
+          <div class="compare-row"><span class="cn">쿠폰 할인</span><span class="cv old-v" id="o3_coupon_old">-</span><span class="cv new-v" id="o3_coupon_new">-</span></div>
+          <div class="compare-row"><span class="cn">총 게스트 결제</span><span class="cv old-v" id="o3_g_total_old">-</span><span class="cv new-v" id="o3_g_total_new">-</span></div>
+        </div>
+        <div class="result-card diff">
+          <div class="result-title">📊 호스트 기준 가격 비교</div>
+          <div class="col-headers"><span>항목</span><span>기존 (원화)</span><span>변경</span></div>
+          <div class="compare-row"><span class="cn">호스트 총 임대료</span><span class="cv old-v" id="o3_h_rent_old">-</span><span class="cv new-v" id="o3_h_rent_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 기본 임대료</span><span class="cv old-v" id="o3_h_base_old">-</span><span class="cv new-v" id="o3_h_base_new">-</span></div>
+          <div class="compare-row"><span class="cn sub">ㄴ 추가인원비</span><span class="cv old-v" id="o3_h_extra_old">-</span><span class="cv new-v" id="o3_h_extra_new">-</span></div>
+          <div class="compare-row"><span class="cn">호스트 서비스 이용료</span><span class="cv old-v" id="o3_h_svc_old">-</span><span class="cv new-v" id="o3_h_svc_new">-</span></div>
+          <div class="compare-row"><span class="cn">공과금</span><span class="cv old-v" id="o3_util_old">-</span><span class="cv new-v" id="o3_util_new">-</span></div>
+          <div class="compare-row"><span class="cn">총 청소비</span><span class="cv old-v" id="o3_clean_old">-</span><span class="cv new-v" id="o3_clean_new">-</span></div>
+        </div>
+        <div class="result-card diff" style="border-color:rgba(245,158,11,.5);">
+          <div class="result-title">💸 차액 결과</div>
+          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="o3_guest_label">게스트 추가결제/환불 (원화)</span><span class="rval" id="o3_guest_diff">-</span></div>
+          <div class="rrow"><span class="rname" style="color:var(--text);font-weight:600;" id="o3_host_label">호스트 추가정산/지불 (원화)</span><span class="rval" id="o3_host_diff">-</span></div>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-<div class="compare-section">
   <div class="compare-header">
     <span class="cmp-title">VER1 vs VER2 · 요금 비교</span>
     <small>동일 조건에서 기존 계산식 vs 신규 계산식 게스트 결제 금액 비교</small>
@@ -1711,7 +1908,8 @@ function dCalcCore(nights, persons, pet,
    국내 ② 계약 세부 가격
 ============================================================ */
 let dState = {};
-let dStatePrev = {};
+
+let dExtState = {}; // ③번 연장 결과 (④번 단축의 기존값)
 
 function calcD() {
   const nights = v('d_nights'), persons = v('d_persons'), pet = b('d_pet');
@@ -1764,13 +1962,12 @@ function calcD() {
   set('d_h_total', fmt(final.host_total));
 
   // 저장
-  if (dBasis !== 'old') dStatePrev = { ...dState };
   dState = { ...final, coupon, g_rrate, g_orate, h_rrate, h_orate,
              rent_per, extra_per, base_pax, utility_per, pet_clean,
              nights: v('d_nights'),
              g_total: final.guest_total, h_total: final.host_total };
 
-  if(dBasis === 'old') syncD2FromState();
+  syncD2FromState();
   calcD2();
   if(typeof calcSplitD === 'function') calcSplitD();
   updatePriceView();
@@ -1781,45 +1978,25 @@ function calcD() {
 /* ============================================================
    국내 ③ 변경 후
 ============================================================ */
-let dBasis = 'new';
-
-function dSetBasis(v2) {
-  dBasis = v2;
-  $('d_basis_new').className = 'basis-btn' + (v2==='new' ? ' active-new' : '');
-  $('d_basis_old').className = 'basis-btn' + (v2==='old' ? ' active-old' : '');
-  $('d_basis_old_hint').style.display = v2==='old' ? 'block' : 'none';
-  if(v2==='old') {
-    dStatePrev = { ...dState };
-    syncD2FromState();
-  }
-  highlightD2Inputs();
-  calcD2();
-}
-
 function syncD2FromState() {
-  if(!dStatePrev.total_rent) return;
-  const nights1 = dStatePrev.nights || v('d_nights');
-  // 박당 임대료: 기존 기본 임대료 / 이전 박수 (비례 계산)
-  $('d_n2_rent').value = nights1 > 0 ? Math.round(dStatePrev.base_rent / nights1) : v('d_rent');
-  $('d_n2_utility').value = nights1 > 0 ? Math.round(dStatePrev.total_util / nights1) : v('d_utility');
-  $('d_n2_clean').value = dStatePrev.total_clean - (b('d_pet') ? v('d_pet_clean') : 0);
-  if (dStatePrev.pet_clean > 0) $('d_n2_pet_clean').value = dStatePrev.pet_clean;
-  $('d_n2_extra_per').value = dStatePrev.extra_per || 0;
-  $('d_n2_deposit').value = dStatePrev.deposit;
-  $('d_n2_base_pax').value = v('d_base_pax');
-  $('d_n2_g_rrate').value = (dStatePrev.g_rrate * 100).toFixed(1);
-  $('d_n2_g_orate').value = (dStatePrev.g_orate * 100).toFixed(1);
-  $('d_n2_h_rrate').value = (dStatePrev.h_rrate * 100).toFixed(1);
-  $('d_n2_h_orate').value = (dStatePrev.h_orate * 100).toFixed(1);
-  $('d_n2_coupon').value = dStatePrev.coupon || 0;
-}
-
-function highlightD2Inputs() {
-  const ids = ['d_n2_rent','d_n2_utility','d_n2_clean','d_n2_deposit',
-               'd_n2_base_pax','d_n2_g_rrate','d_n2_g_orate','d_n2_h_rrate','d_n2_h_orate','d_n2_coupon'];
-  ids.forEach(id => {
-    $(id).className = dBasis==='old' ? 'from-detail' : '';
-  });
+  if(!dState.total_rent) return;
+  const nights1 = dState.nights || v('d_nights');
+  $('d_n2_rent').value = nights1 > 0 ? Math.round(dState.base_rent / nights1) : v('d_rent');
+  $('d_n2_utility').value = nights1 > 0 ? Math.round(dState.total_util / nights1) : v('d_utility');
+  $('d_n2_clean').value = dState.total_clean - (b('d_pet') ? v('d_pet_clean') : 0);
+  if (dState.pet_clean > 0) $('d_n2_pet_clean').value = dState.pet_clean;
+  $('d_n2_extra_per').value = dState.extra_per || 0;
+  $('d_n2_deposit').value = dState.deposit;
+  $('d_n2_base_pax').value = dState.base_pax || v('d_base_pax');
+  $('d_n2_g_rrate').value = (dState.g_rrate * 100).toFixed(1);
+  $('d_n2_g_orate').value = (dState.g_orate * 100).toFixed(1);
+  $('d_n2_h_rrate').value = (dState.h_rrate * 100).toFixed(1);
+  $('d_n2_h_orate').value = (dState.h_orate * 100).toFixed(1);
+  $('d_n2_coupon').value = dState.coupon || 0;
+  // 박수/인원/반려동물은 ②번과 동일하게
+  $('d_n2_persons').value = v('d_persons');
+  const petChecked = b('d_pet');
+  $('d_n2_pet').checked = petChecked;
 }
 
 function calcD2() {
@@ -1834,35 +2011,37 @@ function calcD2() {
   const r2 = dCalcCore(nights2, persons2, pet2, rent2, util2, clean2, pc2, ep2, bp2, dep2, grr2, gor2, hrr2, hor2, coupon2);
 
   // 기존 값
-  const oldGTotal = dStatePrev.guest_total || 0;
-  const oldHTotal = dStatePrev.host_total || 0;
+  const oldGTotal = (dState.guest_nodep !== undefined)
+    ? dState.guest_nodep - (dState.coupon||0) + coupon2 + (dState.deposit||0)
+    : (dState.guest_total || 0);
+  const oldHTotal = dState.host_total || 0;
 
   // 비교 테이블
   const fmtN = n => Math.round(n).toLocaleString('ko-KR');
-  set('d2_g_rent_old', fmtN((dStatePrev.total_rent||0) + (dStatePrev.total_svc||0)));
+  set('d2_g_rent_old', fmtN((dState.total_rent||0) + (dState.total_svc||0)));
   set('d2_g_rent_new', fmtN(r2.total_rent + r2.total_svc));
-  set('d2_g_svc_old', fmtN(dStatePrev.total_svc||0));
+  set('d2_g_svc_old', fmtN(dState.total_svc||0));
   set('d2_g_svc_new', fmtN(r2.total_svc));
-  set('d2_g_svcr_old', fmtN(dStatePrev.svc_r||0));
+  set('d2_g_svcr_old', fmtN(dState.svc_r||0));
   set('d2_g_svcr_new', fmtN(r2.svc_r));
-  set('d2_g_svco_old', fmtN(dStatePrev.svc_o||0));
+  set('d2_g_svco_old', fmtN(dState.svc_o||0));
   set('d2_g_svco_new', fmtN(r2.svc_o));
   set('d2_coupon_old', coupon2 > 0 ? '-' + fmtN(coupon2) : '0');
   set('d2_coupon_new', '-' + fmtN(coupon2));
   set('d2_g_total_old', fmtN(oldGTotal));
   set('d2_g_total_new', fmtN(r2.guest_total));
 
-  set('d2_h_rent_old', fmtN(dStatePrev.total_rent||0));
+  set('d2_h_rent_old', fmtN(dState.total_rent||0));
   set('d2_h_rent_new', fmtN(r2.total_rent));
-  set('d2_h_base_old', fmtN(dStatePrev.base_rent||0));
+  set('d2_h_base_old', fmtN(dState.base_rent||0));
   set('d2_h_base_new', fmtN(r2.base_rent));
-  set('d2_h_extra_old', fmtN(dStatePrev.extra_cost||0));
+  set('d2_h_extra_old', fmtN(dState.extra_cost||0));
   set('d2_h_extra_new', fmtN(r2.extra_cost));
-  set('d2_h_svc_old', fmtN(dStatePrev.h_svc||0));
+  set('d2_h_svc_old', fmtN(dState.h_svc||0));
   set('d2_h_svc_new', fmtN(r2.h_svc));
-  set('d2_util_old', fmtN(dStatePrev.total_util||0));
+  set('d2_util_old', fmtN(dState.total_util||0));
   set('d2_util_new', fmtN(r2.total_util));
-  set('d2_clean_old', fmtN(dStatePrev.total_clean||0));
+  set('d2_clean_old', fmtN(dState.total_clean||0));
   set('d2_clean_new', fmtN(r2.total_clean));
 
   // 차액
@@ -1873,6 +2052,88 @@ function calcD2() {
   $('d2_host_label').textContent = diffLabel(hDiff, 'host');
   $('d2_guest_diff').innerHTML = diffBadge(gDiff);
   $('d2_host_diff').innerHTML = diffBadge(hDiff);
+
+  // ④번 단축을 위해 연장 결과 저장
+  dExtState = { ...r2,
+    nights: nights2, coupon: coupon2,
+    g_rrate: grr2, g_orate: gor2, h_rrate: hrr2, h_orate: hor2,
+    rent_per: rent2, extra_per: ep2, base_pax: bp2,
+    utility_per: util2, pet_clean: pc2, deposit: dep2,
+    clean_base: clean2, clean_pet: pc2 };
+  syncD3FromState();
+  calcD3();
+}
+
+/* ============================================================
+   국내 ④ 기존 세부 가격 기준 - 단축
+============================================================ */
+function syncD3FromState() {
+  if(!dExtState.total_rent) return;
+  const nights1 = dExtState.nights || 0;
+  $('d_n3_rent').value = nights1 > 0 ? Math.round(dExtState.base_rent / nights1) : 0;
+  $('d_n3_utility').value = nights1 > 0 ? Math.round(dExtState.total_util / nights1) : 0;
+  $('d_n3_clean').value = dExtState.clean_base || 0;
+  $('d_n3_pet_clean').value = dExtState.clean_pet || 0;
+  $('d_n3_extra_per').value = dExtState.extra_per || 0;
+  $('d_n3_base_pax').value = dExtState.base_pax || 0;
+  $('d_n3_deposit').value = dExtState.deposit || 0;
+  $('d_n3_persons').value = v('d_n2_persons');
+  $('d_n3_pet').checked = b('d_n2_pet');
+  $('d_n3_g_rrate').value = (dExtState.g_rrate * 100).toFixed(1);
+  $('d_n3_g_orate').value = (dExtState.g_orate * 100).toFixed(1);
+  $('d_n3_h_rrate').value = (dExtState.h_rrate * 100).toFixed(1);
+  $('d_n3_h_orate').value = (dExtState.h_orate * 100).toFixed(1);
+  $('d_n3_coupon').value = dExtState.coupon || 0;
+}
+
+function calcD3() {
+  const nights3 = v('d_n3_nights'), persons3 = v('d_n3_persons'), pet3 = b('d_n3_pet');
+  const rent3=v('d_n3_rent'), util3=v('d_n3_utility'), clean3=v('d_n3_clean');
+  const pc3=v('d_n3_pet_clean'), ep3=v('d_n3_extra_per'), bp3=v('d_n3_base_pax');
+  const dep3=v('d_n3_deposit');
+  const grr3=v('d_n3_g_rrate')/100, gor3=v('d_n3_g_orate')/100;
+  const hrr3=v('d_n3_h_rrate')/100, hor3=v('d_n3_h_orate')/100;
+  const coupon3=v('d_n3_coupon');
+
+  const r3 = dCalcCore(nights3, persons3, pet3, rent3, util3, clean3, pc3, ep3, bp3, dep3, grr3, gor3, hrr3, hor3, coupon3);
+
+  const fmtN = n => Math.round(n).toLocaleString('ko-KR');
+  const oldGTotal3 = (dExtState.guest_nodep !== undefined)
+    ? dExtState.guest_nodep - (dExtState.coupon||0) + coupon3 + (dExtState.deposit||0)
+    : (dExtState.guest_total || 0);
+  const oldHTotal3 = dExtState.host_total || 0;
+
+  set('d3_g_rent_old', fmtN((dExtState.total_rent||0) + (dExtState.total_svc||0)));
+  set('d3_g_rent_new', fmtN(r3.total_rent + r3.total_svc));
+  set('d3_g_svc_old', fmtN(dExtState.total_svc||0));
+  set('d3_g_svc_new', fmtN(r3.total_svc));
+  set('d3_g_svcr_old', fmtN(dExtState.svc_r||0));
+  set('d3_g_svcr_new', fmtN(r3.svc_r));
+  set('d3_g_svco_old', fmtN(dExtState.svc_o||0));
+  set('d3_g_svco_new', fmtN(r3.svc_o));
+  set('d3_coupon_old', coupon3 > 0 ? '-' + fmtN(coupon3) : '0');
+  set('d3_coupon_new', '-' + fmtN(coupon3));
+  set('d3_g_total_old', fmtN(oldGTotal3));
+  set('d3_g_total_new', fmtN(r3.guest_total));
+  set('d3_h_rent_old', fmtN(dExtState.total_rent||0));
+  set('d3_h_rent_new', fmtN(r3.total_rent));
+  set('d3_h_base_old', fmtN(dExtState.base_rent||0));
+  set('d3_h_base_new', fmtN(r3.base_rent));
+  set('d3_h_extra_old', fmtN(dExtState.extra_cost||0));
+  set('d3_h_extra_new', fmtN(r3.extra_cost));
+  set('d3_h_svc_old', fmtN(dExtState.h_svc||0));
+  set('d3_h_svc_new', fmtN(r3.h_svc));
+  set('d3_util_old', fmtN(dState.total_util||0));
+  set('d3_util_new', fmtN(r3.total_util));
+  set('d3_clean_old', fmtN(dState.total_clean||0));
+  set('d3_clean_new', fmtN(r3.total_clean));
+
+  const gDiff3 = r3.guest_total - oldGTotal3;
+  const hDiff3 = r3.host_total - oldHTotal3;
+  $('d3_guest_label').textContent = diffLabel(gDiff3, 'guest');
+  $('d3_host_label').textContent = diffLabel(hDiff3, 'host');
+  $('d3_guest_diff').innerHTML = diffBadge(gDiff3);
+  $('d3_host_diff').innerHTML = diffBadge(hDiff3);
 }
 
 /* ============================================================
@@ -1926,7 +2187,7 @@ function oCalcCore(rate, nights, persons, pet,
 }
 
 let oState = {};
-let oStatePrev = {};
+
 
 function calcO() {
   const rate=v('o_rate'), nights=v('o_nights'), persons=v('o_persons'), pet=b('o_pet');
@@ -1991,57 +2252,37 @@ function calcO() {
   $('o_h_total_k').textContent = fmt(f.host_total_b * rate);
   $('o_h_total_b').textContent = fmtB(f.host_total_b);
 
-  if (oBasis !== 'old') oStatePrev = { ...oState };
   oState = { ...f, coupon, rate, grr, gor, hrr, hor,
              rent, util, clean, pc, ep, bp, dep,
              oW, oM14, oM29, nights,
              guest_total: f.guest_total, host_total_b: f.host_total_b };
 
-  if(oBasis === 'old') syncO2FromState();
+  syncO2FromState();
   calcO2();
   updateOPriceView();
 }
 
 /* ============================================================
-   해외 ③ 변경 후
+   해외 ③ 연장 / ④ 단축
 ============================================================ */
-let oBasis = 'new';
-
-function oSetBasis(v2) {
-  oBasis = v2;
-  $('o_basis_new').className = 'basis-btn' + (v2==='new' ? ' active-new' : '');
-  $('o_basis_old').className = 'basis-btn' + (v2==='old' ? ' active-old' : '');
-  $('o_basis_old_hint').style.display = v2==='old' ? 'block' : 'none';
-  if(v2==='old') {
-    oStatePrev = { ...oState };
-    syncO2FromState();
-  }
-  highlightO2Inputs();
-  calcO2();
-}
+let oExtState = {};
 
 function syncO2FromState() {
-  if(!oStatePrev.rate) return;
-  $('o_n2_rate').value = oStatePrev.rate;
-  // 박당 임대료는 calcO2에서 변경 후 박수에 맞게 자동 보간
-  $('o_n2_utility').value = oStatePrev.util;
-  $('o_n2_clean').value = oStatePrev.clean;
-  // 기존에 반려동물이 있었던 경우 반려동물 청소비 자동 채움
-  if (oStatePrev.pc > 0) $('o_n2_pet_clean').value = oStatePrev.pc;
-  $('o_n2_extra_per').value = oStatePrev.ep;
-  $('o_n2_base_pax').value = oStatePrev.bp;
-  $('o_n2_deposit').value = oStatePrev.dep;
-  $('o_n2_g_rrate').value = (oStatePrev.grr * 100).toFixed(1);
-  $('o_n2_g_orate').value = (oStatePrev.gor * 100).toFixed(1);
-  $('o_n2_h_rrate').value = (oStatePrev.hrr * 100).toFixed(1);
-  $('o_n2_h_orate').value = (oStatePrev.hor * 100).toFixed(1);
-  $('o_n2_coupon').value = oStatePrev.coupon || 0;
-}
-
-function highlightO2Inputs() {
-  const ids = ['o_n2_rate','o_n2_rent','o_n2_utility','o_n2_clean','o_n2_base_pax',
-               'o_n2_deposit','o_n2_g_rrate','o_n2_g_orate','o_n2_h_rrate','o_n2_h_orate','o_n2_coupon'];
-  ids.forEach(id => { $(id).className = oBasis==='old' ? 'from-detail' : ''; });
+  if(!oState.rate) return;
+  $('o_n2_rate').value = oState.rate;
+  $('o_n2_utility').value = oState.util;
+  $('o_n2_clean').value = oState.clean;
+  if (oState.pc > 0) $('o_n2_pet_clean').value = oState.pc;
+  $('o_n2_extra_per').value = oState.ep;
+  $('o_n2_base_pax').value = oState.bp;
+  $('o_n2_deposit').value = oState.dep;
+  $('o_n2_g_rrate').value = (oState.grr * 100).toFixed(1);
+  $('o_n2_g_orate').value = (oState.gor * 100).toFixed(1);
+  $('o_n2_h_rrate').value = (oState.hrr * 100).toFixed(1);
+  $('o_n2_h_orate').value = (oState.hor * 100).toFixed(1);
+  $('o_n2_coupon').value = oState.coupon || 0;
+  $('o_n2_persons').value = v('o_persons');
+  $('o_n2_pet').checked = b('o_pet');
 }
 
 function calcO2() {
@@ -2057,9 +2298,9 @@ function calcO2() {
   // → 박당 단가 = round(기존 기본 임대료 / 이전 박수 × 변경 박수) / 변경 박수
   //             = round(기존 기본 임대료 / 이전 박수) ← 사실상 기존 박당 단가 그대로
   let rent2;
-  if (oBasis === 'old' && oStatePrev.base_rent_b !== undefined && oStatePrev.nights) {
+  if (oState.base_rent_b !== undefined && oState.nights) {
     // 기존 박당 단가 그대로 유지 (비례 계산이므로 박당 단가 동일)
-    rent2 = oStatePrev.base_rent_b / oStatePrev.nights;
+    rent2 = oState.base_rent_b / oState.nights;
     $('o_n2_rent').value = rent2.toFixed(2);
   } else {
     rent2 = v('o_n2_rent');
@@ -2067,51 +2308,134 @@ function calcO2() {
 
   const r2 = oCalcCore(rate2, nights2, persons2, pet2, rent2, util2, clean2, pc2, ep2, bp2, dep2, grr2, gor2, hrr2, hor2, coupon2);
 
-  const oldGTotal = oStatePrev.guest_total || 0;
-  const oldHTotal_b = oStatePrev.host_total_b || 0;
+  const oldGTotal = (oState.guest_nodep !== undefined)
+    ? oState.guest_nodep - (oState.coupon||0) + coupon2 + (oState.deposit_k||0)
+    : (oState.guest_total || 0);
+  const oldHTotal_b = oState.host_total_b || 0;
 
   const fmtN = n => Math.round(n).toLocaleString('ko-KR');
   const fmtNB = n => n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 
-  set('o2_g_rent_old', fmtN((oStatePrev.total_rent_k||0) + (oStatePrev.total_svc||0)));
+  set('o2_g_rent_old', fmtN((oState.total_rent_k||0) + (oState.total_svc||0)));
   set('o2_g_rent_new', fmtN(r2.total_rent_k + r2.total_svc));
-  set('o2_g_svc_old', fmtN(oStatePrev.total_svc||0));
+  set('o2_g_svc_old', fmtN(oState.total_svc||0));
   set('o2_g_svc_new', fmtN(r2.total_svc));
-  set('o2_g_svcr_old', fmtN(oStatePrev.svc_r||0));
+  set('o2_g_svcr_old', fmtN(oState.svc_r||0));
   set('o2_g_svcr_new', fmtN(r2.svc_r));
-  set('o2_g_svco_old', fmtN(oStatePrev.svc_o||0));
+  set('o2_g_svco_old', fmtN(oState.svc_o||0));
   set('o2_g_svco_new', fmtN(r2.svc_o));
   set('o2_coupon_old', coupon2 > 0 ? '-' + fmtN(coupon2) : '0');
   set('o2_coupon_new', '-' + fmtN(coupon2));
   set('o2_g_total_old', fmtN(oldGTotal));
   set('o2_g_total_new', fmtN(r2.guest_total));
 
-  set('o2_h_rent_old', fmtN(oStatePrev.total_rent_k||0));
+  set('o2_h_rent_old', fmtN(oState.total_rent_k||0));
   set('o2_h_rent_new', fmtN(r2.total_rent_k));
-  set('o2_h_base_old', fmtN((oStatePrev.base_rent_b||0) * (oStatePrev.rate||1)));
+  set('o2_h_base_old', fmtN((oState.base_rent_b||0) * (oState.rate||1)));
   set('o2_h_base_new', fmtNB(r2.base_rent_b));
-  set('o2_h_extra_old', fmtN((oStatePrev.extra_b||0) * (oStatePrev.rate||1)));
+  set('o2_h_extra_old', fmtN((oState.extra_b||0) * (oState.rate||1)));
   set('o2_h_extra_new', fmtNB(r2.extra_b));
-  set('o2_h_svc_old', fmtN(oStatePrev.h_svc_k||0));
+  set('o2_h_svc_old', fmtN(oState.h_svc_k||0));
   set('o2_h_svc_new', fmtN(r2.h_svc_k));
-  set('o2_dep_old', fmtN(oStatePrev.deposit_k||0));
-  set('o2_dep_new', fmtNB(oStatePrev.dep||0));
-  set('o2_util_old', fmtN(oStatePrev.util_k||0));
+  set('o2_dep_old', fmtN(oState.deposit_k||0));
+  set('o2_dep_new', fmtNB(oState.dep||0));
+  set('o2_util_old', fmtN(oState.util_k||0));
   set('o2_util_new', fmtNB(r2.util_b));
-  set('o2_clean_old', fmtN(oStatePrev.total_clean_k||0));
+  set('o2_clean_old', fmtN(oState.total_clean_k||0));
   set('o2_clean_new', fmtN(r2.total_clean_k));
-  set('o2_clean_base_old', fmtN(oStatePrev.clean_k||0));
-  set('o2_clean_base_new', fmtNB(oStatePrev.clean||0));
-  set('o2_clean_pet_old', fmtN(oStatePrev.pet_k||0));
-  set('o2_clean_pet_new', fmtNB(oStatePrev.pc||0));
+  set('o2_clean_base_old', fmtN(oState.clean_k||0));
+  set('o2_clean_base_new', fmtNB(oState.clean||0));
+  set('o2_clean_pet_old', fmtN(oState.pet_k||0));
+  set('o2_clean_pet_new', fmtNB(oState.pc||0));
 
   const gDiff = r2.guest_total - oldGTotal;
-  const hDiff_k = (r2.total_rent_k + r2.util_k) - ((oStatePrev.total_rent_k||0) + (oStatePrev.util_k||0));
+  const hDiff_k = (r2.total_rent_k + r2.util_k) - ((oState.total_rent_k||0) + (oState.util_k||0));
 
   $('o2_guest_label').textContent = diffLabel(gDiff, 'guest') + ' (원화)';
   $('o2_host_label').textContent = diffLabel(hDiff_k, 'host') + ' (원화)';
   $('o2_guest_diff').innerHTML = diffBadge(gDiff, '원');
   $('o2_host_diff').innerHTML = diffBadge(hDiff_k, '원');
+
+  // ④번 단축을 위해 연장 결과 저장
+  oExtState = { ...r2, rate: rate2, nights: nights2, coupon: coupon2,
+    grr: grr2, gor: gor2, hrr: hrr2, hor: hor2,
+    util: util2, clean: clean2, pc: pc2, ep: ep2, bp: bp2, dep: dep2,
+    oW: oState.oW, oM14: oState.oM14, oM29: oState.oM29 };
+  syncO3FromState();
+  calcO3();
+}
+
+function syncO3FromState() {
+  if(!oExtState.rate) return;
+  $('o_n3_rate').value = oExtState.rate;
+  $('o_n3_utility').value = oExtState.util;
+  $('o_n3_clean').value = oExtState.clean;
+  $('o_n3_pet_clean').value = oExtState.pc || 0;
+  $('o_n3_extra_per').value = oExtState.ep || 0;
+  $('o_n3_base_pax').value = oExtState.bp;
+  $('o_n3_deposit').value = oExtState.dep;
+  $('o_n3_persons').value = v('o_n2_persons');
+  $('o_n3_pet').checked = b('o_n2_pet');
+  $('o_n3_g_rrate').value = (oExtState.grr * 100).toFixed(1);
+  $('o_n3_g_orate').value = (oExtState.gor * 100).toFixed(1);
+  $('o_n3_h_rrate').value = (oExtState.hrr * 100).toFixed(1);
+  $('o_n3_h_orate').value = (oExtState.hor * 100).toFixed(1);
+  $('o_n3_coupon').value = oExtState.coupon || 0;
+}
+
+function calcO3() {
+  if(!oExtState.rate) return;
+  const rate3=v('o_n3_rate'), nights3=v('o_n3_nights'), persons3=v('o_n3_persons'), pet3=b('o_n3_pet');
+  const util3=v('o_n3_utility'), clean3=v('o_n3_clean'), pc3=v('o_n3_pet_clean');
+  const ep3=v('o_n3_extra_per'), bp3=v('o_n3_base_pax'), dep3=v('o_n3_deposit');
+  const grr3=v('o_n3_g_rrate')/100, gor3=v('o_n3_g_orate')/100;
+  const hrr3=v('o_n3_h_rrate')/100, hor3=v('o_n3_h_orate')/100;
+  const coupon3=v('o_n3_coupon');
+
+  // 박수 비례 계산
+  const nights2 = oExtState.nights || 1;
+  const rent3 = oExtState.base_rent_b / nights2;
+
+  const r3 = oCalcCore(rate3, nights3, persons3, pet3, rent3, util3, clean3, pc3, ep3, bp3, dep3, grr3, gor3, hrr3, hor3, coupon3);
+
+  const fmtN = n => Math.round(n).toLocaleString('ko-KR');
+  const fmtNB = n => n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+
+  const oldGTotal3 = (oExtState.guest_nodep !== undefined)
+    ? oExtState.guest_nodep - (oExtState.coupon||0) + coupon3 + (oExtState.deposit_k||0)
+    : (oExtState.guest_total || 0);
+
+  set('o3_g_rent_old', fmtN((oExtState.total_rent_k||0) + (oExtState.total_svc||0)));
+  set('o3_g_rent_new', fmtN(r3.total_rent_k + r3.total_svc));
+  set('o3_g_svc_old', fmtN(oExtState.total_svc||0));
+  set('o3_g_svc_new', fmtN(r3.total_svc));
+  set('o3_g_svcr_old', fmtN(oExtState.svc_r||0));
+  set('o3_g_svcr_new', fmtN(r3.svc_r));
+  set('o3_g_svco_old', fmtN(oExtState.svc_o||0));
+  set('o3_g_svco_new', fmtN(r3.svc_o));
+  set('o3_coupon_old', coupon3 > 0 ? '-' + fmtN(coupon3) : '0');
+  set('o3_coupon_new', '-' + fmtN(coupon3));
+  set('o3_g_total_old', fmtN(oldGTotal3));
+  set('o3_g_total_new', fmtN(r3.guest_total));
+  set('o3_h_rent_old', fmtN(oExtState.total_rent_k||0));
+  set('o3_h_rent_new', fmtN(r3.total_rent_k));
+  set('o3_h_base_old', fmtN((oExtState.base_rent_b||0) * (oExtState.rate||1)));
+  set('o3_h_base_new', fmtNB(r3.base_rent_b));
+  set('o3_h_extra_old', fmtN((oExtState.extra_b||0) * (oExtState.rate||1)));
+  set('o3_h_extra_new', fmtNB(r3.extra_b));
+  set('o3_h_svc_old', fmtN(oExtState.h_svc_k||0));
+  set('o3_h_svc_new', fmtN(r3.h_svc_k));
+  set('o3_util_old', fmtN(oExtState.util_k||0));
+  set('o3_util_new', fmtNB(r3.util_b));
+  set('o3_clean_old', fmtN(oExtState.total_clean_k||0));
+  set('o3_clean_new', fmtN(r3.total_clean_k));
+
+  const gDiff3 = r3.guest_total - oldGTotal3;
+  const hDiff3 = (r3.total_rent_k + r3.util_k) - ((oExtState.total_rent_k||0) + (oExtState.util_k||0));
+  $('o3_guest_label').textContent = diffLabel(gDiff3, 'guest') + ' (원화)';
+  $('o3_host_label').textContent = diffLabel(hDiff3, 'host') + ' (원화)';
+  $('o3_guest_diff').innerHTML = diffBadge(gDiff3, '원');
+  $('o3_host_diff').innerHTML = diffBadge(hDiff3, '원');
 }
 
 /* ============================================================
@@ -2231,8 +2555,8 @@ function v2CoreCalc(n, k, pet,
    VER2 국내
 ============================================================ */
 let v2dState = {};
-let v2dBasis = 'new';
-let v2dStatePrev = {};
+
+
 
 function v2calcD() {
   const n=v('v2d_nights'), k=v('v2d_persons'), pet=b('v2d_pet');
@@ -2323,38 +2647,30 @@ function v2calcD() {
   set('v2d_svc_nights_check', Math.min(n,90) + '');
   set('v2d_over90', n > 90 ? '✅ ' + (n-90) + '박 초과' : '❌ 해당없음');
 
-  if (v2dBasis !== 'old') v2dStatePrev = { ...v2dState };
   v2dState = { ...r, n, gr, hr, W, M, util, clean, pc, ep, bp, dep };
-  if(v2dBasis === 'old') v2dSyncFromState();
+  v2dSyncFromState();
   v2calcD2();
   if(typeof v2calcSplitD === 'function') v2calcSplitD();
   updateV2PriceView();
 }
 
-function v2dSetBasis(val) {
-  v2dBasis = val;
-  $('v2d_basis_new').className = 'basis-btn' + (val==='new'?' active-new':'');
-  $('v2d_basis_old').className = 'basis-btn' + (val==='old'?' active-old':'');
-  if(val==='old') {
-    v2dStatePrev = { ...v2dState };
-    v2dSyncFromState();
-  }
-  v2calcD2();
+function v2dSyncFromState() {
+  if(!v2dState.W) return;
+  $('v2d_n2_W').value = v2dState.W;
+  $('v2d_n2_M').value = v2dState.M;
+  $('v2d_n2_utility').value = v2dState.util;
+  $('v2d_n2_clean').value = v2dState.clean;
+  if (v2dState.pc > 0) $('v2d_n2_pet_clean').value = v2dState.pc;
+  $('v2d_n2_extra_per').value = v2dState.ep || 0;
+  $('v2d_n2_base_pax').value = v2dState.bp;
+  $('v2d_n2_deposit').value = v2dState.dep;
+  $('v2d_n2_g_rate').value = (v2dState.gr*100).toFixed(1);
+  $('v2d_n2_h_rate').value = (v2dState.hr*100).toFixed(1);
+  $('v2d_n2_persons').value = v('v2d_persons');
+  $('v2d_n2_pet').checked = b('v2d_pet');
 }
 
-function v2dSyncFromState() {
-  if(!v2dStatePrev.W) return;
-  $('v2d_n2_W').value = v2dStatePrev.W;
-  $('v2d_n2_M').value = v2dStatePrev.M;
-  $('v2d_n2_utility').value = v2dStatePrev.util;
-  $('v2d_n2_clean').value = v2dStatePrev.clean;
-  if (v2dStatePrev.pc > 0) $('v2d_n2_pet_clean').value = v2dStatePrev.pc;
-  $('v2d_n2_extra_per').value = v2dStatePrev.ep || 0;
-  $('v2d_n2_base_pax').value = v2dStatePrev.bp;
-  $('v2d_n2_deposit').value = v2dStatePrev.dep;
-  $('v2d_n2_g_rate').value = (v2dStatePrev.gr*100).toFixed(1);
-  $('v2d_n2_h_rate').value = (v2dStatePrev.hr*100).toFixed(1);
-}
+let v2ExtDState = {};
 
 function v2calcD2() {
   const n2=v('v2d_n2_nights'), k2=v('v2d_n2_persons'), pet2=b('v2d_n2_pet');
@@ -2366,23 +2682,23 @@ function v2calcD2() {
 
   const r2 = v2CoreCalc(n2,k2,pet2,W2,M2,util2,clean2,pc2,ep2,bp2,dep2,gr2,hr2,ed2_on,ed2);
 
-  const oldG = v2dStatePrev.guest_total || 0;
-  const oldH = v2dStatePrev.host_total || 0;
+  const oldG = v2dState.guest_total || 0;
+  const oldH = v2dState.host_total || 0;
 
   const fN = n => Math.round(n).toLocaleString('ko-KR');
-  set('v2d2_rent_old', fN((v2dStatePrev.total_rent||0) + (v2dStatePrev.svc_rent||0) + (v2dStatePrev.svc_other||0)));
+  set('v2d2_rent_old', fN((v2dState.total_rent||0) + (v2dState.svc_rent||0) + (v2dState.svc_other||0)));
   set('v2d2_rent_new', fN(r2.total_rent + r2.svc_rent + r2.svc_other));
-  set('v2d2_svcr_old', fN(v2dStatePrev.svc_rent||0));
+  set('v2d2_svcr_old', fN(v2dState.svc_rent||0));
   set('v2d2_svcr_new', fN(r2.svc_rent));
-  set('v2d2_svco_old', fN(v2dStatePrev.svc_other||0));
+  set('v2d2_svco_old', fN(v2dState.svc_other||0));
   set('v2d2_svco_new', fN(r2.svc_other));
   set('v2d2_g_total_old', fN(oldG));
   set('v2d2_g_total_new', fN(r2.guest_total));
-  set('v2d2_h_rent_old', fN(v2dStatePrev.total_rent||0));
+  set('v2d2_h_rent_old', fN(v2dState.total_rent||0));
   set('v2d2_h_rent_new', fN(r2.total_rent));
-  set('v2d2_h_svc_old', fN(v2dStatePrev.h_svc||0));
+  set('v2d2_h_svc_old', fN(v2dState.h_svc||0));
   set('v2d2_h_svc_new', fN(r2.h_svc));
-  set('v2d2_h_other_old', fN(v2dStatePrev.total_other||0));
+  set('v2d2_h_other_old', fN(v2dState.total_other||0));
   set('v2d2_h_other_new', fN(r2.total_other));
 
   const gDiff = r2.guest_total - oldG;
@@ -2391,14 +2707,74 @@ function v2calcD2() {
   $('v2d2_host_label').textContent = diffLabel(hDiff,'host');
   $('v2d2_guest_diff').innerHTML = diffBadge(gDiff,'원');
   $('v2d2_host_diff').innerHTML = diffBadge(hDiff,'원');
+
+  // ④번 단축을 위해 연장 결과 저장
+  v2ExtDState = { ...r2, n: n2, W: W2, M: M2, util: util2,
+    clean: clean2, pc: pc2, ep: ep2, bp: bp2, dep: dep2,
+    gr: gr2, hr: hr2 };
+  v2syncD3FromState();
+  v2calcD3();
+}
+
+function v2syncD3FromState() {
+  if(!v2ExtDState.W) return;
+  $('v2d_n3_W').value = v2ExtDState.W;
+  $('v2d_n3_M').value = v2ExtDState.M;
+  $('v2d_n3_utility').value = v2ExtDState.util;
+  $('v2d_n3_clean').value = v2ExtDState.clean;
+  $('v2d_n3_pet_clean').value = v2ExtDState.pc || 0;
+  $('v2d_n3_extra_per').value = v2ExtDState.ep || 0;
+  $('v2d_n3_base_pax').value = v2ExtDState.bp;
+  $('v2d_n3_deposit').value = v2ExtDState.dep;
+  $('v2d_n3_persons').value = v('v2d_n2_persons');
+  $('v2d_n3_pet').checked = b('v2d_n2_pet');
+  $('v2d_n3_g_rate').value = (v2ExtDState.gr*100).toFixed(1);
+  $('v2d_n3_h_rate').value = (v2ExtDState.hr*100).toFixed(1);
+}
+
+function v2calcD3() {
+  const n3=v('v2d_n3_nights'), k3=v('v2d_n3_persons'), pet3=b('v2d_n3_pet');
+  const W3=v('v2d_n3_W'), M3=v('v2d_n3_M'), util3=v('v2d_n3_utility');
+  const clean3=v('v2d_n3_clean'), pc3=v('v2d_n3_pet_clean'), ep3=v('v2d_n3_extra_per');
+  const bp3=v('v2d_n3_base_pax'), dep3=v('v2d_n3_deposit');
+  const gr3=v('v2d_n3_g_rate')/100, hr3=v('v2d_n3_h_rate')/100;
+
+  if(!v2ExtDState.W) return;
+  const r3 = v2CoreCalc(n3,k3,pet3,W3,M3,util3,clean3,pc3,ep3,bp3,dep3,gr3,hr3,false,0);
+
+  const oldG3 = v2ExtDState.guest_total || 0;
+  const oldH3 = v2ExtDState.host_total || 0;
+  const fN = n => Math.round(n).toLocaleString('ko-KR');
+
+  set('v2d3_rent_old', fN((v2ExtDState.total_rent||0) + (v2ExtDState.svc_rent||0) + (v2ExtDState.svc_other||0)));
+  set('v2d3_rent_new', fN(r3.total_rent + r3.svc_rent + r3.svc_other));
+  set('v2d3_svcr_old', fN(v2ExtDState.svc_rent||0));
+  set('v2d3_svcr_new', fN(r3.svc_rent));
+  set('v2d3_svco_old', fN(v2ExtDState.svc_other||0));
+  set('v2d3_svco_new', fN(r3.svc_other));
+  set('v2d3_g_total_old', fN(oldG3));
+  set('v2d3_g_total_new', fN(r3.guest_total));
+  set('v2d3_h_rent_old', fN(v2ExtDState.total_rent||0));
+  set('v2d3_h_rent_new', fN(r3.total_rent));
+  set('v2d3_h_svc_old', fN(v2ExtDState.h_svc||0));
+  set('v2d3_h_svc_new', fN(r3.h_svc));
+  set('v2d3_h_other_old', fN(v2ExtDState.total_other||0));
+  set('v2d3_h_other_new', fN(r3.total_other));
+
+  const gDiff3 = r3.guest_total - oldG3;
+  const hDiff3 = r3.host_total - oldH3;
+  $('v2d3_guest_label').textContent = diffLabel(gDiff3,'guest');
+  $('v2d3_host_label').textContent = diffLabel(hDiff3,'host');
+  $('v2d3_guest_diff').innerHTML = diffBadge(gDiff3,'원');
+  $('v2d3_host_diff').innerHTML = diffBadge(hDiff3,'원');
 }
 
 /* ============================================================
    VER2 해외
 ============================================================ */
 let v2oState = {};
-let v2oBasis = 'new';
-let v2oStatePrev = {};
+
+
 
 function v2CoreCalcOverseas(rate, n, k, pet,
                              W, M, utility, clean, pet_clean, extra_per, base_pax, deposit_base,
@@ -2546,38 +2922,31 @@ function v2calcO() {
   $('v2o_h_total_k').textContent = fmt(r.host_total_b * rate);
   $('v2o_h_total_b').textContent = fmtB(r.host_total_b);
 
-  if (v2oBasis !== 'old') v2oStatePrev = { ...v2oState };
+
   v2oState = { ...r, rate, gr, hr, W, M, util, clean, pc, ep, bp, dep };
-  if(v2oBasis === 'old') v2oSyncFromState();
+  v2oSyncFromState();
   v2calcO2();
   updateV2OPriceView();
 }
 
-function v2oSetBasis(val) {
-  v2oBasis = val;
-  $('v2o_basis_new').className = 'basis-btn' + (val==='new'?' active-new':'');
-  $('v2o_basis_old').className = 'basis-btn' + (val==='old'?' active-old':'');
-  if(val==='old') {
-    v2oStatePrev = { ...v2oState };
-    v2oSyncFromState();
-  }
-  v2calcO2();
+function v2oSyncFromState() {
+  if(!v2oState.rate) return;
+  $('v2o_n2_rate').value = v2oState.rate;
+  $('v2o_n2_W').value = v2oState.W;
+  $('v2o_n2_M').value = v2oState.M;
+  $('v2o_n2_utility').value = v2oState.util;
+  $('v2o_n2_clean').value = v2oState.clean;
+  if (v2oState.pc > 0) $('v2o_n2_pet_clean').value = v2oState.pc;
+  $('v2o_n2_extra_per').value = v2oState.ep || 0;
+  $('v2o_n2_base_pax').value = v2oState.bp;
+  $('v2o_n2_deposit').value = v2oState.dep;
+  $('v2o_n2_g_rate').value = (v2oState.gr*100).toFixed(1);
+  $('v2o_n2_h_rate').value = (v2oState.hr*100).toFixed(1);
+  $('v2o_n2_persons').value = v('v2o_persons');
+  $('v2o_n2_pet').checked = b('v2o_pet');
 }
 
-function v2oSyncFromState() {
-  if(!v2oStatePrev.rate) return;
-  $('v2o_n2_rate').value = v2oStatePrev.rate;
-  $('v2o_n2_W').value = v2oStatePrev.W;
-  $('v2o_n2_M').value = v2oStatePrev.M;
-  $('v2o_n2_utility').value = v2oStatePrev.util;
-  $('v2o_n2_clean').value = v2oStatePrev.clean;
-  if (v2oStatePrev.pc > 0) $('v2o_n2_pet_clean').value = v2oStatePrev.pc;
-  $('v2o_n2_extra_per').value = v2oStatePrev.ep || 0;
-  $('v2o_n2_base_pax').value = v2oStatePrev.bp;
-  $('v2o_n2_deposit').value = v2oStatePrev.dep;
-  $('v2o_n2_g_rate').value = (v2oStatePrev.gr*100).toFixed(1);
-  $('v2o_n2_h_rate').value = (v2oStatePrev.hr*100).toFixed(1);
-}
+let v2ExtOState = {};
 
 function v2calcO2() {
   const rate2=v('v2o_n2_rate'), n2=v('v2o_n2_nights'), k2=v('v2o_n2_persons'), pet2=b('v2o_n2_pet');
@@ -2589,31 +2958,87 @@ function v2calcO2() {
 
   const r2 = v2CoreCalcOverseas(rate2,n2,k2,pet2,W2,M2,util2,clean2,pc2,ep2,bp2,dep2,gr2,hr2,ed2_on,ed2);
 
-  const oldG = v2oStatePrev.guest_total || 0;
-  const oldH = v2oStatePrev.host_total_b || 0;
-
+  const oldG = v2oState.guest_total || 0;
   const fN = n => Math.round(n).toLocaleString('ko-KR');
   const fNB = n => n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 
-  set('v2o2_rent_old', fN((v2oStatePrev.total_rent_k||0) + (v2oStatePrev.svc_rent_k||0) + (v2oStatePrev.svc_other_k||0)));
+  set('v2o2_rent_old', fN((v2oState.total_rent_k||0) + (v2oState.svc_rent_k||0) + (v2oState.svc_other_k||0)));
   set('v2o2_rent_new', fN(r2.total_rent_k + r2.svc_rent_k + r2.svc_other_k));
-  set('v2o2_svcr_old', fN(v2oStatePrev.svc_rent_k||0));
+  set('v2o2_svcr_old', fN(v2oState.svc_rent_k||0));
   set('v2o2_svcr_new', fN(r2.svc_rent_k));
-  set('v2o2_svco_old', fN(v2oStatePrev.svc_other_k||0));
+  set('v2o2_svco_old', fN(v2oState.svc_other_k||0));
   set('v2o2_svco_new', fN(r2.svc_other_k));
   set('v2o2_g_total_old', fN(oldG));
   set('v2o2_g_total_new', fN(r2.guest_total));
-  set('v2o2_h_rent_old', fNB(v2oStatePrev.total_rent_b||0));
-  set('v2o2_h_rent_new', fNB(r2.total_rent_b));
-  set('v2o2_h_svc_old', fNB(v2oStatePrev.h_svc_b||0));
-  set('v2o2_h_svc_new', fNB(r2.h_svc_b));
+  set('v2o2_h_rent_old', fN(r2.total_rent_k)); // 기존도 원화로 표시
+  set('v2o2_h_rent_new', fN(r2.total_rent_k));
+  set('v2o2_h_svc_old', fN((v2oState.h_svc_b||0) * (v2oState.rate||1)));
+  set('v2o2_h_svc_new', fN(r2.h_svc_b * rate2));
 
   const gDiff = r2.guest_total - oldG;
-  const hDiff_k = r2.total_rent_k - (v2oStatePrev.total_rent_k||0);
+  const hDiff_k = r2.total_rent_k - (v2oState.total_rent_k||0);
   $('v2o2_guest_label').textContent = diffLabel(gDiff,'guest') + ' (원화)';
   $('v2o2_host_label').textContent = diffLabel(hDiff_k,'host') + ' (원화)';
   $('v2o2_guest_diff').innerHTML = diffBadge(gDiff,'원');
   $('v2o2_host_diff').innerHTML = diffBadge(hDiff_k,'원');
+
+  // ④번 단축을 위해 연장 결과 저장
+  v2ExtOState = { ...r2, rate: rate2, n: n2, W: W2, M: M2,
+    util: util2, clean: clean2, pc: pc2, ep: ep2, bp: bp2, dep: dep2,
+    gr: gr2, hr: hr2 };
+  v2syncO3FromState();
+  v2calcO3();
+}
+
+function v2syncO3FromState() {
+  if(!v2ExtOState.rate) return;
+  $('v2o_n3_rate').value = v2ExtOState.rate;
+  $('v2o_n3_W').value = v2ExtOState.W;
+  $('v2o_n3_M').value = v2ExtOState.M;
+  $('v2o_n3_utility').value = v2ExtOState.util;
+  $('v2o_n3_clean').value = v2ExtOState.clean;
+  $('v2o_n3_pet_clean').value = v2ExtOState.pc || 0;
+  $('v2o_n3_extra_per').value = v2ExtOState.ep || 0;
+  $('v2o_n3_base_pax').value = v2ExtOState.bp;
+  $('v2o_n3_deposit').value = v2ExtOState.dep;
+  $('v2o_n3_persons').value = v('v2o_n2_persons');
+  $('v2o_n3_pet').checked = b('v2o_n2_pet');
+  $('v2o_n3_g_rate').value = (v2ExtOState.gr*100).toFixed(1);
+  $('v2o_n3_h_rate').value = (v2ExtOState.hr*100).toFixed(1);
+}
+
+function v2calcO3() {
+  const rate3=v('v2o_n3_rate'), n3=v('v2o_n3_nights'), k3=v('v2o_n3_persons'), pet3=b('v2o_n3_pet');
+  const W3=v('v2o_n3_W'), M3=v('v2o_n3_M'), util3=v('v2o_n3_utility');
+  const clean3=v('v2o_n3_clean'), pc3=v('v2o_n3_pet_clean'), ep3=v('v2o_n3_extra_per');
+  const bp3=v('v2o_n3_base_pax'), dep3=v('v2o_n3_deposit');
+  const gr3=v('v2o_n3_g_rate')/100, hr3=v('v2o_n3_h_rate')/100;
+
+  if(!v2ExtOState.rate) return;
+  const r3 = v2CoreCalcOverseas(rate3,n3,k3,pet3,W3,M3,util3,clean3,pc3,ep3,bp3,dep3,gr3,hr3,false,0);
+
+  const oldG3 = v2ExtOState.guest_total || 0;
+  const fN = n => Math.round(n).toLocaleString('ko-KR');
+
+  set('v2o3_rent_old', fN((v2ExtOState.total_rent_k||0) + (v2ExtOState.svc_rent_k||0) + (v2ExtOState.svc_other_k||0)));
+  set('v2o3_rent_new', fN(r3.total_rent_k + r3.svc_rent_k + r3.svc_other_k));
+  set('v2o3_svcr_old', fN(v2ExtOState.svc_rent_k||0));
+  set('v2o3_svcr_new', fN(r3.svc_rent_k));
+  set('v2o3_svco_old', fN(v2ExtOState.svc_other_k||0));
+  set('v2o3_svco_new', fN(r3.svc_other_k));
+  set('v2o3_g_total_old', fN(oldG3));
+  set('v2o3_g_total_new', fN(r3.guest_total));
+  set('v2o3_h_rent_old', fN(v2ExtOState.total_rent_k||0));
+  set('v2o3_h_rent_new', fN(r3.total_rent_k));
+  set('v2o3_h_svc_old', fN((v2ExtOState.h_svc_b||0) * (v2ExtOState.rate||1)));
+  set('v2o3_h_svc_new', fN(r3.h_svc_b * rate3));
+
+  const gDiff3 = r3.guest_total - oldG3;
+  const hDiff3 = r3.total_rent_k - (v2ExtOState.total_rent_k||0);
+  $('v2o3_guest_label').textContent = diffLabel(gDiff3,'guest') + ' (원화)';
+  $('v2o3_host_label').textContent = diffLabel(hDiff3,'host') + ' (원화)';
+  $('v2o3_guest_diff').innerHTML = diffBadge(gDiff3,'원');
+  $('v2o3_host_diff').innerHTML = diffBadge(hDiff3,'원');
 }
 
 
