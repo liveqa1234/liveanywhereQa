@@ -4127,7 +4127,7 @@ function updateOPriceView() {
   var k         = v('o_persons');
   var ep        = v('o_extra_per') || 0;
   var extra_pax = Math.max(k - bp, 0);
-  var tc        = Math.ceil((clean + (pet ? pc : 0)) * rate);
+  var tc        = ceil1((clean + (pet ? pc : 0)) * rate);
   var OVER      = 87;
 
   var periods = [6, 14, 29];
@@ -4138,11 +4138,11 @@ function updateOPriceView() {
     else if (n <= 28) rent_per_n = oM14;
     else rent_per_n = oM29;
     var totalRentB = rent_per_n * n;
-    var rent_k      = Math.ceil((totalRentB + extra_pax * ep * n) * rate);
-    var util_k      = Math.ceil(util_per * n * rate);
+    var rent_k      = ceil1((totalRentB + extra_pax * ep * n) * rate);
+    var util_k      = ceil1(util_per * n * rate);
     var total_other = util_k + tc;
-    var svc_r       = Math.ceil(Math.min(n, OVER) * (rent_per_n + extra_pax * ep) * rate * g_rrate);
-    var svc_o       = Math.ceil(total_other * g_orate);
+    var svc_r       = ceil1(Math.min(n, OVER) * (rent_per_n + extra_pax * ep) * rate * g_rrate);
+    var svc_o       = ceil1(total_other * g_orate);
     var guest_nodep = rent_k + total_other + svc_r + svc_o;
 
     var sfx = '_' + n;
@@ -4151,7 +4151,7 @@ function updateOPriceView() {
     var el_r = document.getElementById('o_pv_rent'   + sfx);
     if (el_a) el_a.textContent = formatOCurrency(guest_nodep);
     if (el_b) el_b.textContent = formatOCurrency(rent_k + util_k);
-    if (el_r) el_r.textContent = formatOCurrency(Math.ceil(totalRentB * rate));
+    if (el_r) el_r.textContent = formatOCurrency(ceil1(totalRentB * rate));
   });
 
   var note = document.getElementById('o_pv_note');
