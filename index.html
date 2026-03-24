@@ -1883,7 +1883,7 @@ const b = id => $(id).checked;
 const set = (id, val) => { const el = $(id); if(el) el.textContent = val; };
 const fmt = n => isNaN(n) ? '-' : Math.round(n).toLocaleString('ko-KR') + '원';
 const fmtB = n => n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-const ceil1 = n => Math.ceil(n);
+const ceil1 = n => Math.ceil(Math.round(n * 1e10) / 1e10);
 
 function diffBadge(val, suffix='원') {
   const r = Math.round(val);
