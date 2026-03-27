@@ -1108,18 +1108,20 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
     <div class="grid2">
       <div class="card">
         <div class="card-title">기본 설정</div>
-        <div class="field"><label>박당 임대료 (원)</label><input type="number" id="d_rent" value="25000" oninput="calcD()"></div>
+        <div class="field"><label>박당 임대료 (원)</label><input type="number" id="d_rent" value="0" oninput="calcD()"></div>
         <div class="field"><label>박당 공과금 (원)</label><input type="number" id="d_utility" value="0" oninput="calcD()"></div>
         <div class="field"><label>청소비 (원)</label><input type="number" id="d_clean" value="0" oninput="calcD()"></div>
         <div class="field"><label>반려동물 청소비 (원)</label><input type="number" id="d_pet_clean" value="0" oninput="calcD()"></div>
         <div class="field"><label>박당 추가 인원비 (원)</label><input type="number" id="d_extra_per" value="0" oninput="calcD()"></div>
-        <div class="field"><label>기준 인원</label><input type="number" id="d_base_pax" value="1" oninput="calcD()"></div>
-        <div class="field"><label>최대 인원</label><input type="number" id="d_max_pax" value="2" oninput="calcD()"></div>
-        <div class="field"><label>보증금 (원)</label><input type="number" id="d_deposit" value="200000" oninput="calcD()"></div>
+        <div class="field"><label>기준 인원</label><input type="number" id="d_base_pax" value="3" oninput="calcD()"></div>
+        <div class="field"><label>최대 인원</label><input type="number" id="d_max_pax" value="5" oninput="calcD()"></div>
+        <div class="field"><label>보증금 (원)</label><input type="number" id="d_deposit" value="0" oninput="calcD()"></div>
       </div>
       <div class="card">
         <div class="card-title">예약 조건</div>
-        <div class="field"><label>박수</label><input type="number" id="d_nights" value="139" oninput="calcD()"></div>
+        <div class="field"><label>체크인</label><input type="date" id="d_checkin" oninput="dUpdateNights();calcD()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;color-scheme:dark;"></div>
+        <div class="field"><label>체크아웃</label><input type="date" id="d_checkout" oninput="dUpdateNights();calcD()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;color-scheme:dark;"></div>
+        <div class="field"><label>박수 (날짜 선택 시 자동 계산)</label><input type="number" id="d_nights" value="6" oninput="calcD()"></div>
         <div class="field"><label>인원수</label><input type="number" id="d_persons" value="1" oninput="calcD()"></div>
         <div class="field">
           <div class="checkbox-row"><input type="checkbox" id="d_pet" onchange="calcD()"><label for="d_pet">반려동물 있음</label></div>
@@ -1135,10 +1137,61 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="field" style="grid-column:1/-1;">
           <label style="display:flex;justify-content:space-between;">
             <span>기간 할인 적용</span>
-            <input type="checkbox" id="d_disc_on" onchange="calcD()" style="width:auto;margin:0;">
+            <input type="checkbox" id="d_disc_on" onchange="toggleDDisc();calcD()" style="width:auto;margin:0;">
           </label>
         </div>
-        <div class="field"><label>할인율 (%)</label><input type="number" id="d_disc_rate" value="0" step="0.1" min="0" max="100" oninput="calcD()" placeholder="0"></div>
+        <div id="d_disc_fields" style="display:none;">
+          <div class="field"><label>할인율 (%)</label><input type="number" id="d_disc_rate" value="0" step="0.1" min="0" max="100" oninput="calcD()" placeholder="0"></div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:8px;">할인 기간을 설정하면 해당 기간과 체크인/체크아웃이 겹치는 박수에만 할인 적용. 비워두면 전체 기간 할인.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
+            <div><label style="font-size:10px;color:var(--muted);">할인 시작일</label><input type="date" id="d_disc_s" oninput="calcD()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+            <div><label style="font-size:10px;color:var(--muted);">할인 종료일</label><input type="date" id="d_disc_e" oninput="calcD()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+          </div>
+          <div class="hint" id="d_disc_hint" style="margin-bottom:8px;"></div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-title">성수기 요금</div>
+        <div class="field" style="grid-column:1/-1;">
+          <label style="display:flex;justify-content:space-between;">
+            <span>성수기 요금 적용</span>
+            <input type="checkbox" id="d_peak_on" onchange="toggleDPeak();calcD();" style="width:auto;margin:0;">
+          </label>
+        </div>
+        <div id="d_peak_fields" style="display:none;grid-column:1/-1;">
+          <div style="display:grid;gap:10px;">
+            <div style="font-size:10px;color:var(--muted);">성수기 기간을 설정하면 체크인/체크아웃 날짜 기준으로 겹치는 박수를 자동 계산합니다.</div>
+            <!-- 1구간 -->
+            <div style="background:var(--surface2);border-radius:9px;padding:10px;display:grid;gap:6px;">
+              <span style="font-size:11px;color:var(--orange);font-weight:700;">1구간</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                <div><label style="font-size:10px;color:var(--muted);">시작일</label><input type="date" id="d_peak1_s" oninput="calcD()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+                <div><label style="font-size:10px;color:var(--muted);">종료일</label><input type="date" id="d_peak1_e" oninput="calcD()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+              </div>
+              <div><label style="font-size:10px;color:var(--muted);">1박당 금액 (원)</label><input type="number" id="d_peak1_r" value="0" min="0" placeholder="1박당 금액" oninput="calcD()" style="width:100%;"></div>
+              <div class="hint" id="d_peak1_hint" style="margin:0;"></div>
+            </div>
+            <!-- 2구간 -->
+            <div style="background:var(--surface2);border-radius:9px;padding:10px;display:grid;gap:6px;">
+              <span style="font-size:11px;color:var(--orange);font-weight:700;">2구간</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                <div><label style="font-size:10px;color:var(--muted);">시작일</label><input type="date" id="d_peak2_s" oninput="calcD()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+                <div><label style="font-size:10px;color:var(--muted);">종료일</label><input type="date" id="d_peak2_e" oninput="calcD()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+              </div>
+              <div><label style="font-size:10px;color:var(--muted);">1박당 금액 (원)</label><input type="number" id="d_peak2_r" value="0" min="0" placeholder="1박당 금액" oninput="calcD()" style="width:100%;"></div>
+              <div class="hint" id="d_peak2_hint" style="margin:0;"></div>
+            </div>
+            <!-- 3구간 -->
+            <div style="background:var(--surface2);border-radius:9px;padding:10px;display:grid;gap:6px;">
+              <span style="font-size:11px;color:var(--orange);font-weight:700;">3구간</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                <div><label style="font-size:10px;color:var(--muted);">시작일</label><input type="date" id="d_peak3_s" oninput="calcD()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+                <div><label style="font-size:10px;color:var(--muted);">종료일</label><input type="date" id="d_peak3_e" oninput="calcD()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+              </div>
+              <div><label style="font-size:10px;color:var(--muted);">1박당 금액 (원)</label><input type="number" id="d_peak3_r" value="0" min="0" placeholder="1박당 금액" oninput="calcD()" style="width:100%;"></div>
+              <div class="hint" id="d_peak3_hint" style="margin:0;"></div>
+            </div>
+          </div>
+        </div>
         <hr class="section-divider">
         <div class="card-title">쿠폰</div>
         <div class="field"><label>쿠폰 할인율 (%)</label><input type="number" id="d_c_rate" value="0" step="0.1" oninput="calcD()"></div>
@@ -1158,11 +1211,11 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="rrow"><span class="rname">임대료</span><span class="rval" id="d_g_rent">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 기본 임대료</span><span class="rval sub" id="d_g_base_rent">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 추가인원비</span><span class="rval sub" id="d_g_extra">-</span></div>
+        <div class="rrow" id="d_g_peak_row" style="display:none;"><span class="rname sub">ㄴ 성수기 임대료 차액</span><span class="rval sub" id="d_g_peak_cost">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 임대 서비스이용료</span><span class="rval sub" id="d_g_svc_r">-</span></div>
         <div class="rrow"><span class="rname">기타 비용</span><span class="rval" id="d_g_other">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 총 청소비</span><span class="rval sub" id="d_g_clean">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 총 공과금</span><span class="rval sub" id="d_g_util">-</span></div>
-        <div class="rrow"><span class="rname">서비스 이용료</span><span class="rval" id="d_g_svc">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 임대 서비스이용료</span><span class="rval sub" id="d_g_svc_r">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 기타 서비스이용료</span><span class="rval sub" id="d_g_svc_o">-</span></div>
         <div class="rrow"><span class="rname">쿠폰 할인</span><span class="rval neg" id="d_g_coupon">-</span></div>
         <div class="rrow"><span class="rname">보증금</span><span class="rval" id="d_g_dep">-</span></div>
@@ -1412,7 +1465,9 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
       </div>
       <div class="card">
         <div class="card-title">예약 조건</div>
-        <div class="field"><label>박수</label><input type="number" id="o_nights" value="6" oninput="calcO()"></div>
+        <div class="field"><label>체크인</label><input type="date" id="o_checkin" oninput="oUpdateNights();calcO()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;color-scheme:dark;"></div>
+        <div class="field"><label>체크아웃</label><input type="date" id="o_checkout" oninput="oUpdateNights();calcO()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;color-scheme:dark;"></div>
+        <div class="field"><label>박수 (날짜 선택 시 자동 계산)</label><input type="number" id="o_nights" value="6" oninput="calcO()"></div>
         <div class="field"><label>인원수</label><input type="number" id="o_persons" value="1" oninput="calcO()"></div>
         <div class="field">
           <div class="checkbox-row"><input type="checkbox" id="o_pet" onchange="calcO()"><label for="o_pet">반려동물 있음</label></div>
@@ -1428,10 +1483,58 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="field" style="grid-column:1/-1;">
           <label style="display:flex;justify-content:space-between;">
             <span>기간 할인 적용</span>
-            <input type="checkbox" id="o_disc_on" onchange="calcO()" style="width:auto;margin:0;">
+            <input type="checkbox" id="o_disc_on" onchange="toggleODisc();calcO()" style="width:auto;margin:0;">
           </label>
         </div>
-        <div class="field"><label>할인율 (%)</label><input type="number" id="o_disc_rate" value="0" step="0.1" min="0" max="100" oninput="calcO()" placeholder="0"></div>
+        <div id="o_disc_fields" style="display:none;">
+          <div class="field"><label>할인율 (%)</label><input type="number" id="o_disc_rate" value="0" step="0.1" min="0" max="100" oninput="calcO()" placeholder="0"></div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:8px;">할인 기간을 설정하면 해당 기간과 체크인/체크아웃이 겹치는 박수에만 할인 적용. 비워두면 전체 기간 할인.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
+            <div><label style="font-size:10px;color:var(--muted);">할인 시작일</label><input type="date" id="o_disc_s" oninput="calcO()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+            <div><label style="font-size:10px;color:var(--muted);">할인 종료일</label><input type="date" id="o_disc_e" oninput="calcO()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+          </div>
+          <div class="hint" id="o_disc_hint" style="margin-bottom:8px;"></div>
+        </div>
+        <hr class="section-divider">
+        <div class="card-title">성수기 요금</div>
+        <div class="field" style="grid-column:1/-1;">
+          <label style="display:flex;justify-content:space-between;">
+            <span>성수기 요금 적용</span>
+            <input type="checkbox" id="o_peak_on" onchange="toggleOPeak();calcO();" style="width:auto;margin:0;">
+          </label>
+        </div>
+        <div id="o_peak_fields" style="display:none;grid-column:1/-1;">
+          <div style="display:grid;gap:10px;">
+            <div style="font-size:10px;color:var(--muted);">성수기 기간을 설정하면 체크인/체크아웃 날짜 기준으로 겹치는 박수를 자동 계산합니다.</div>
+            <div style="background:var(--surface2);border-radius:9px;padding:10px;display:grid;gap:6px;">
+              <span style="font-size:11px;color:var(--orange);font-weight:700;">1구간</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                <div><label style="font-size:10px;color:var(--muted);">시작일</label><input type="date" id="o_peak1_s" oninput="calcO()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+                <div><label style="font-size:10px;color:var(--muted);">종료일</label><input type="date" id="o_peak1_e" oninput="calcO()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+              </div>
+              <div><label style="font-size:10px;color:var(--muted);">1박당 금액 (기준 통화)</label><input type="number" id="o_peak1_r" value="0" min="0" step="0.01" placeholder="1박당 금액" oninput="calcO()" style="width:100%;"></div>
+              <div class="hint" id="o_peak1_hint" style="margin:0;"></div>
+            </div>
+            <div style="background:var(--surface2);border-radius:9px;padding:10px;display:grid;gap:6px;">
+              <span style="font-size:11px;color:var(--orange);font-weight:700;">2구간</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                <div><label style="font-size:10px;color:var(--muted);">시작일</label><input type="date" id="o_peak2_s" oninput="calcO()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+                <div><label style="font-size:10px;color:var(--muted);">종료일</label><input type="date" id="o_peak2_e" oninput="calcO()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+              </div>
+              <div><label style="font-size:10px;color:var(--muted);">1박당 금액 (기준 통화)</label><input type="number" id="o_peak2_r" value="0" min="0" step="0.01" placeholder="1박당 금액" oninput="calcO()" style="width:100%;"></div>
+              <div class="hint" id="o_peak2_hint" style="margin:0;"></div>
+            </div>
+            <div style="background:var(--surface2);border-radius:9px;padding:10px;display:grid;gap:6px;">
+              <span style="font-size:11px;color:var(--orange);font-weight:700;">3구간</span>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                <div><label style="font-size:10px;color:var(--muted);">시작일</label><input type="date" id="o_peak3_s" oninput="calcO()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+                <div><label style="font-size:10px;color:var(--muted);">종료일</label><input type="date" id="o_peak3_e" oninput="calcO()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:12px;outline:none;color-scheme:dark;"></div>
+              </div>
+              <div><label style="font-size:10px;color:var(--muted);">1박당 금액 (기준 통화)</label><input type="number" id="o_peak3_r" value="0" min="0" step="0.01" placeholder="1박당 금액" oninput="calcO()" style="width:100%;"></div>
+              <div class="hint" id="o_peak3_hint" style="margin:0;"></div>
+            </div>
+          </div>
+        </div>
         <hr class="section-divider">
         <div class="card-title">쿠폰</div>
         <div class="field"><label>쿠폰 할인율 (%)</label><input type="number" id="o_c_rate" value="0" step="0.1" oninput="calcO()"></div>
@@ -1450,11 +1553,11 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="rrow"><span class="rname">임대료</span><span class="rval" id="o_g_rent">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 기본 임대료</span><span class="rval sub" id="o_g_base_rent">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 추가인원비</span><span class="rval sub" id="o_g_extra">-</span></div>
+        <div class="rrow" id="o_g_peak_row" style="display:none;"><span class="rname sub">ㄴ 성수기 임대료 차액</span><span class="rval sub" id="o_g_peak_cost">-</span></div>
+        <div class="rrow"><span class="rname sub">ㄴ 임대 서비스이용료</span><span class="rval sub" id="o_g_svc_r">-</span></div>
         <div class="rrow"><span class="rname">기타 비용</span><span class="rval" id="o_g_other">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 총 청소비</span><span class="rval sub" id="o_g_clean">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 총 공과금</span><span class="rval sub" id="o_g_util">-</span></div>
-        <div class="rrow"><span class="rname">서비스 이용료</span><span class="rval" id="o_g_svc">-</span></div>
-        <div class="rrow"><span class="rname sub">ㄴ 임대 서비스이용료</span><span class="rval sub" id="o_g_svc_r">-</span></div>
         <div class="rrow"><span class="rname sub">ㄴ 기타 서비스이용료</span><span class="rval sub" id="o_g_svc_o">-</span></div>
         <div class="rrow" id="o_g_disc_row" style="display:none;"><span class="rname">기간 할인</span><span class="rval neg" id="o_g_disc">-</span></div>
         <div class="rrow"><span class="rname">쿠폰 할인</span><span class="rval neg" id="o_g_coupon">-</span></div>
@@ -1918,8 +2021,8 @@ function dCalcCore(nights, persons, pet,
   const total_util = utility_per * nights;
   const total_other = total_clean + total_util;
 
-  // 게스트 수수료: MIN(nights,87) 기반 임대 수수료
-  const svc_r = ceil1(Math.min(nights, 87) * (rent_per + extra_pax * extra_per) * g_rrate);
+  // 게스트 수수료: 총 임대료 기준
+  const svc_r = ceil1(total_rent * g_rrate);
   const svc_o = ceil1(total_other * g_orate);
   const total_svc = svc_r + svc_o;
 
@@ -1945,6 +2048,170 @@ let dState = {};
 
 let dExtState = {}; // ③번 연장 결과 (④번 단축의 기존값)
 
+function toggleDPeak() {
+  var el = document.getElementById('d_peak_fields');
+  if (el) el.style.display = document.getElementById('d_peak_on').checked ? '' : 'none';
+}
+function toggleOPeak() {
+  var el = document.getElementById('o_peak_fields');
+  if (el) el.style.display = document.getElementById('o_peak_on').checked ? '' : 'none';
+}
+function toggleDDisc() {
+  var el = document.getElementById('d_disc_fields');
+  if (el) el.style.display = document.getElementById('d_disc_on').checked ? '' : 'none';
+}
+function toggleODisc() {
+  var el = document.getElementById('o_disc_fields');
+  if (el) el.style.display = document.getElementById('o_disc_on').checked ? '' : 'none';
+}
+
+/*
+ * 3방향 교집합 박수: 체크인/아웃 ∩ 성수기 ∩ 할인기간
+ */
+function calcDiscPeakOverlap(checkin, checkout, peakStart, peakEnd, discStart, discEnd) {
+  if (!checkin || !checkout || !peakStart || !peakEnd || !discStart || !discEnd) return 0;
+  var ci = new Date(checkin), co = new Date(checkout);
+  var ps = new Date(peakStart), pe = new Date(peakEnd);
+  var ds = new Date(discStart), de = new Date(discEnd);
+  pe.setDate(pe.getDate() + 1);
+  de.setDate(de.getDate() + 1);
+  var start = new Date(Math.max(ci, ps, ds));
+  var end   = new Date(Math.min(co, pe, de));
+  var diff  = Math.round((end - start) / 86400000);
+  return diff > 0 ? diff : 0;
+}
+
+/*
+ * 핵심 임대료 총액 계산 — 4가지 케이스를 날짜 교집합으로 정확히 분리
+ *
+ *   A: 성수기 ∩ 할인기간  → ceil(성수기요금 × (1-할인율))
+ *   B: 성수기만            → 성수기요금
+ *   C: 할인기간만          → ceil(기본임대료 × (1-할인율))
+ *   D: 해당없음            → 기본임대료
+ *
+ * prefix: 'd' | 'o'
+ * 반환: { totalCost, effectiveRentPer, discSaving }
+ */
+function calcTotalRentCost(prefix, totalNights, rentPer, discOn, discRate, peakOn) {
+  var ci = (document.getElementById(prefix + '_checkin') || {}).value || '';
+  var co = (document.getElementById(prefix + '_checkout') || {}).value || '';
+  var ds = (document.getElementById(prefix + '_disc_s') || {}).value || '';
+  var de = (document.getElementById(prefix + '_disc_e') || {}).value || '';
+  var hintEl = document.getElementById(prefix + '_disc_hint');
+
+  var useDisc = discOn && discRate > 0;
+  var hasDates = !!(ci && co);
+  var hasDiscDates = !!(ds && de);
+
+  // 성수기 구간 수집
+  var peakSegs = [];
+  if (peakOn) {
+    [1,2,3].forEach(function(i) {
+      var ps = (document.getElementById(prefix + '_peak' + i + '_s') || {}).value || '';
+      var pe = (document.getElementById(prefix + '_peak' + i + '_e') || {}).value || '';
+      var pr = v(prefix + '_peak' + i + '_r') || 0;
+      if (ps && pe && pr > 0) peakSegs.push({s:ps, e:pe, r:pr});
+    });
+  }
+
+  var totalCost = 0;
+  var discSaving = 0;
+
+  if (hasDates) {
+    // ── 날짜 기반 정확한 계산 ──
+
+    // 성수기 박수 합산 (각 구간은 독립적으로 체크인/아웃과 교집합)
+    // 구간 간 날짜 중복은 없다고 가정 (사용자 입력 책임)
+    var totalPeakNights = 0;
+
+    peakSegs.forEach(function(seg) {
+      var segN = calcOverlapNights(ci, co, seg.s, seg.e);
+      if (segN <= 0) return;
+      totalPeakNights += segN;
+
+      var segDiscN = 0;
+      if (useDisc) {
+        segDiscN = hasDiscDates
+          ? calcDiscPeakOverlap(ci, co, seg.s, seg.e, ds, de)
+          : segN; // 할인 날짜 미지정 → 성수기 전체에 할인
+      }
+      var segFullN = segN - segDiscN;
+
+      // A: 성수기 + 할인
+      var cA = Math.ceil(seg.r * (1 - discRate)) * segDiscN;
+      // B: 성수기만
+      var cB = seg.r * segFullN;
+      totalCost += cA + cB;
+      discSaving += (seg.r - Math.ceil(seg.r * (1 - discRate))) * segDiscN;
+    });
+
+    // 일반 박수 (성수기 아닌 날)
+    var normalTotal = Math.max(totalNights - totalPeakNights, 0);
+    var normalDiscN = 0;
+    if (useDisc && normalTotal > 0) {
+      if (hasDiscDates) {
+        // (할인기간 ∩ 체크인/아웃) 에서 (성수기 ∩ 할인기간 ∩ 체크인/아웃) 빼기
+        var discCiCoOverlap = calcOverlapNights(ci, co, ds, de);
+        var discPeakOverlap = peakSegs.reduce(function(acc, seg) {
+          return acc + calcDiscPeakOverlap(ci, co, seg.s, seg.e, ds, de);
+        }, 0);
+        normalDiscN = Math.max(Math.min(discCiCoOverlap - discPeakOverlap, normalTotal), 0);
+      } else {
+        normalDiscN = normalTotal; // 할인 날짜 미지정 → 일반 전체에 할인
+      }
+    }
+    var normalFullN = normalTotal - normalDiscN;
+
+    // C: 일반 + 할인
+    var cC = Math.ceil(rentPer * (1 - discRate)) * normalDiscN;
+    // D: 일반만
+    var cD = rentPer * normalFullN;
+    totalCost += cC + cD;
+    discSaving += (rentPer - Math.ceil(rentPer * (1 - discRate))) * normalDiscN;
+
+    // 힌트 업데이트
+    if (hintEl && useDisc) {
+      var totalDiscN = normalDiscN + peakSegs.reduce(function(acc, seg) {
+        return acc + (hasDiscDates ? calcDiscPeakOverlap(ci, co, seg.s, seg.e, ds, de)
+                                   : calcOverlapNights(ci, co, seg.s, seg.e));
+      }, 0);
+      if (!hasDiscDates) {
+        hintEl.textContent = '할인 기간 미설정 → 전체 ' + totalNights + '박 할인 (절감 약 ₩' + Math.round(discSaving).toLocaleString('ko-KR') + ')';
+      } else if (totalDiscN > 0) {
+        hintEl.textContent = '→ ' + totalDiscN + '박 할인 / ' + (totalNights - totalDiscN) + '박 정가 (절감 약 ₩' + Math.round(discSaving).toLocaleString('ko-KR') + ')';
+      } else {
+        hintEl.textContent = '→ 체크인/아웃 기간과 할인 기간이 겹치지 않음';
+      }
+    }
+
+  } else {
+    // ── 날짜 없는 경우: 기존 getPeakBreakdown 활용 ──
+    if (peakSegs.length > 0) {
+      var bd = getPeakBreakdown(prefix, totalNights, rentPer, useDisc ? discRate : 0);
+      totalCost = bd.totalCost;
+      discSaving = useDisc ? Math.max(rentPer * totalNights - totalCost, 0) : 0;
+    } else {
+      if (useDisc) {
+        totalCost = Math.ceil(rentPer * (1 - discRate)) * totalNights;
+        discSaving = rentPer * totalNights - totalCost;
+      } else {
+        totalCost = rentPer * totalNights;
+      }
+    }
+    if (hintEl && useDisc) {
+      hintEl.textContent = !hasDiscDates
+        ? '할인 기간 미설정 → 전체 ' + totalNights + '박 할인 적용'
+        : '체크인/아웃 미설정 → 전체 ' + totalNights + '박 할인 적용';
+    }
+  }
+
+  return {
+    totalCost: totalCost,
+    effectiveRentPer: totalNights > 0 ? totalCost / totalNights : rentPer,
+    discSaving: discSaving
+  };
+}
+
 function calcD() {
   const nights = v('d_nights'), persons = v('d_persons'), pet = b('d_pet');
   const rent_per=v('d_rent'), utility_per=v('d_utility'), clean=v('d_clean');
@@ -1954,32 +2221,46 @@ function calcD() {
   const h_rrate=v('d_h_rrate')/100, h_orate=v('d_h_orate')/100;
   const c_rate=v('d_c_rate')/100, c_max=v('d_c_max');
 
-  // 기간 할인 - 임대료에 직접 적용 후 수수료 계산
   const disc_on = b('d_disc_on');
   const disc_rate = v('d_disc_rate') / 100;
-  const disc_rent_per = (disc_on && disc_rate > 0) ? Math.ceil(rent_per * (1 - disc_rate)) : rent_per;
-  const disc_amount = ceil1((rent_per - disc_rent_per) * nights);
+  const d_peak_on = b('d_peak_on');
 
-  const r = dCalcCore(nights, persons, pet, disc_rent_per, utility_per, clean, pet_clean, extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate);
+  // 4가지 케이스 통합 계산
+  const rc = calcTotalRentCost('d', nights, rent_per, disc_on, disc_rate, d_peak_on);
+  const effective_rent_per = rc.effectiveRentPer;
+  const disc_amount = Math.round(rc.discSaving);
+
+  // 성수기 차액 표시: 할인 없을 때 기본 임대료 대비 성수기 프리미엄
+  // = (성수기 포함 정가 총액) - (기본 임대료 × 박수)
+  // 할인이 있을 때는 할인 절감을 별도 행으로 보여주므로, 성수기 행은 정가 기준 프리미엄만
+  let peak_display = 0;
+  if (d_peak_on) {
+    const rcNoDis = calcTotalRentCost('d', nights, rent_per, false, 0, true);
+    peak_display = Math.round(rcNoDis.totalCost - rent_per * nights);
+  }
+
+  const r = dCalcCore(nights, persons, pet, effective_rent_per, utility_per, clean, pet_clean, extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate);
   // 쿠폰 계산
   let coupon = 0;
   if(c_rate > 0) {
     const raw = ceil1(c_rate * (r.total_rent + r.total_svc));
     coupon = c_max > 0 ? Math.min(raw, c_max) : raw;
   }
-  const final = dCalcCore(nights, persons, pet, disc_rent_per, utility_per, clean, pet_clean, extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate, coupon);
+  const final = dCalcCore(nights, persons, pet, effective_rent_per, utility_per, clean, pet_clean, extra_per, base_pax, deposit, g_rrate, g_orate, h_rrate, h_orate, coupon);
 
-  set('d_g_rent', fmt(final.total_rent));
+  set('d_g_rent', fmt(final.total_rent + final.svc_r));
   set('d_g_base_rent', fmt(final.base_rent));
   set('d_g_extra', fmt(final.extra_cost));
+  const dPeakRow = document.getElementById('d_g_peak_row');
+  if (dPeakRow) dPeakRow.style.display = (d_peak_on && peak_display !== 0) ? '' : 'none';
+  set('d_g_peak_cost', peak_display !== 0 ? (peak_display > 0 ? '+' : '') + fmt(peak_display) : fmt(0));
+  set('d_g_svc_r', fmt(final.svc_r));
   set('d_g_other', fmt(final.total_other));
   set('d_g_clean', fmt(final.total_clean));
   set('d_g_util', fmt(final.total_util));
-  set('d_g_svc', fmt(final.total_svc));
-  set('d_g_svc_r', fmt(final.svc_r));
   set('d_g_svc_o', fmt(final.svc_o));
   const dDiscRow = document.getElementById('d_g_disc_row');
-  if (dDiscRow) dDiscRow.style.display = disc_amount > 0 ? '' : 'none';
+  if (dDiscRow) dDiscRow.style.display = (disc_amount > 0) ? '' : 'none';
   set('d_g_disc', disc_amount > 0 ? '-' + fmt(disc_amount) : fmt(0));
   set('d_g_coupon', coupon > 0 ? '-' + fmt(coupon) : fmt(0));
   set('d_g_dep', fmt(deposit));
@@ -2240,30 +2521,42 @@ function calcO() {
   else rent = oM29;
   const totalRentB = rent * nights;
   document.getElementById('o_rent').value = rent;
-  // 기간 할인 - 임대료에 직접 적용 후 수수료 계산
+  // 기간 할인 + 성수기 통합 계산
   const o_disc_on = b('o_disc_on');
   const o_disc_rate = v('o_disc_rate') / 100;
-  const disc_rent = (o_disc_on && o_disc_rate > 0) ? Math.ceil(rent * (1 - o_disc_rate)) : rent;
-  const o_disc_amount = ceil1((rent - disc_rent) * nights * rate);
+  const o_peak_on = b('o_peak_on');
 
-  const r = oCalcCore(rate, nights, persons, pet, disc_rent, util, clean, pc, ep, bp, dep, grr, gor, hrr, hor);
+  const orc = calcTotalRentCost('o', nights, rent, o_disc_on, o_disc_rate, o_peak_on);
+  const o_effective_rent = orc.effectiveRentPer;
+  const o_disc_amount = Math.round(orc.discSaving * rate);
+
+  // 성수기 차액 표시: 할인 없는 정가 기준 성수기 프리미엄
+  let o_peak_cost_k = 0;
+  if (o_peak_on) {
+    const orcNoDis = calcTotalRentCost('o', nights, rent, false, 0, true);
+    o_peak_cost_k = Math.round((orcNoDis.totalCost - rent * nights) * rate);
+  }
+
+  const r = oCalcCore(rate, nights, persons, pet, o_effective_rent, util, clean, pc, ep, bp, dep, grr, gor, hrr, hor);
   let coupon = 0;
   if(c_rate > 0) {
     const raw = ceil1(c_rate * (r.total_rent_k + r.total_svc));
     coupon = c_max > 0 ? Math.min(raw, c_max) : raw;
   }
-  const f = oCalcCore(rate, nights, persons, pet, disc_rent, util, clean, pc, ep, bp, dep, grr, gor, hrr, hor, coupon);
-  set('o_g_rent', fmt(f.total_rent_k));
+  const f = oCalcCore(rate, nights, persons, pet, o_effective_rent, util, clean, pc, ep, bp, dep, grr, gor, hrr, hor, coupon);
+  set('o_g_rent', fmt(f.total_rent_k + f.svc_r));
   set('o_g_base_rent', fmt(f.base_rent_k));
   set('o_g_extra', fmt(f.extra_k));
+  const oPeakRowLeg = document.getElementById('o_g_peak_row');
+  if (oPeakRowLeg) oPeakRowLeg.style.display = (o_peak_on && o_peak_cost_k !== 0) ? '' : 'none';
+  set('o_g_peak_cost', o_peak_cost_k !== 0 ? (o_peak_cost_k > 0 ? '+' : '') + fmt(o_peak_cost_k) : fmt(0));
   set('o_g_other', fmt(f.total_other_k));
   set('o_g_clean', fmt(f.total_clean_k));
   set('o_g_util', fmt(f.util_k));
-  set('o_g_svc', fmt(f.total_svc));
   set('o_g_svc_r', fmt(f.svc_r));
   set('o_g_svc_o', fmt(f.svc_o));
   const oDiscRow = document.getElementById('o_g_disc_row');
-  if (oDiscRow) oDiscRow.style.display = o_disc_amount > 0 ? '' : 'none';
+  if (oDiscRow) oDiscRow.style.display = (o_disc_amount > 0) ? '' : 'none';
   set('o_g_disc', o_disc_amount > 0 ? '-' + fmt(o_disc_amount) : fmt(0));
   set('o_g_coupon', coupon > 0 ? '-' + fmt(coupon) : fmt(0));
   set('o_g_dep', fmt(f.deposit_k));
@@ -4327,6 +4620,12 @@ function updateV2OKrw() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  // 모든 날짜 입력에 오늘 이전 날짜 선택 불가 설정
+  var today = new Date().toISOString().split('T')[0];
+  document.querySelectorAll('input[type="date"]').forEach(function(el) {
+    el.min = today;
+  });
+
   calcD();
   calcO();
   v2calcD();
@@ -4345,8 +4644,87 @@ document.addEventListener('DOMContentLoaded', function() {
   updateV2OPeakHint();
 });
 
+/* ============================================================
+   날짜 유틸 & 성수기 박수 계산
+============================================================ */
+function dUpdateNights() {
+  var ci = document.getElementById('d_checkin').value;
+  var co = document.getElementById('d_checkout').value;
+  if (ci && co) {
+    var n = Math.round((new Date(co) - new Date(ci)) / 86400000);
+    if (n > 0) document.getElementById('d_nights').value = n;
+  }
+}
+function oUpdateNights() {
+  var ci = document.getElementById('o_checkin').value;
+  var co = document.getElementById('o_checkout').value;
+  if (ci && co) {
+    var n = Math.round((new Date(co) - new Date(ci)) / 86400000);
+    if (n > 0) document.getElementById('o_nights').value = n;
+  }
+}
 
+// 체크인~체크아웃 기간과 성수기 구간이 겹치는 박수 계산
+// 체크인 날 밤부터 카운트: 체크인 <= 날짜 < 체크아웃
+function calcOverlapNights(checkin, checkout, peakStart, peakEnd) {
+  if (!checkin || !checkout || !peakStart || !peakEnd) return 0;
+  var ci = new Date(checkin);
+  var co = new Date(checkout);
+  var ps = new Date(peakStart);
+  var pe = new Date(peakEnd);
+  pe.setDate(pe.getDate() + 1); // 종료일 포함
+  var start = ci > ps ? ci : ps;
+  var end   = co < pe ? co : pe;
+  var diff  = Math.round((end - start) / 86400000);
+  return diff > 0 ? diff : 0;
+}
+
+// 성수기 구간별 박수 & 임대료 계산 → {peakNights, normalNights, effectiveRentPer}
+// prefix: 'd' or 'o'
+function getPeakBreakdown(prefix, totalNights, baseRent, discRate) {
+  var ci = document.getElementById(prefix + '_checkin') ? document.getElementById(prefix + '_checkin').value : '';
+  var co = document.getElementById(prefix + '_checkout') ? document.getElementById(prefix + '_checkout').value : '';
+
+  var segments = [1,2,3].map(function(i) {
+    var s = document.getElementById(prefix + '_peak' + i + '_s') ? document.getElementById(prefix + '_peak' + i + '_s').value : '';
+    var e = document.getElementById(prefix + '_peak' + i + '_e') ? document.getElementById(prefix + '_peak' + i + '_e').value : '';
+    var r = v(prefix + '_peak' + i + '_r') || 0;
+    var n = (s && e && ci && co) ? calcOverlapNights(ci, co, s, e) : 0;
+    // hint 업데이트
+    var hintEl = document.getElementById(prefix + '_peak' + i + '_hint');
+    if (hintEl) {
+      hintEl.textContent = (n > 0 && r > 0) ? '→ ' + n + '박 적용' : (s && e ? '→ 겹치는 구간 없음' : '');
+    }
+    return { n: n, r: r };
+  });
+
+  var dr = discRate || 0;
+  var totalPeakNights = 0;
+  var totalPeakCost = 0;
+
+  segments.forEach(function(seg) {
+    if (seg.n <= 0 || seg.r <= 0) return;
+    var discR = dr > 0 ? Math.ceil(seg.r * (1 - dr)) : seg.r;
+    totalPeakNights += seg.n;
+    totalPeakCost   += discR * seg.n;
+  });
+
+  var normalNights = Math.max(totalNights - totalPeakNights, 0);
+  var discBase = dr > 0 ? Math.ceil(baseRent * (1 - dr)) : baseRent;
+  var normalCost = discBase * normalNights;
+  var totalCost  = normalCost + totalPeakCost;
+  var effectiveRentPer = totalNights > 0 ? totalCost / totalNights : baseRent;
+
+  return {
+    peakNights: totalPeakNights,
+    normalNights: normalNights,
+    totalCost: totalCost,
+    normalCost: normalCost,
+    effectiveRentPer: effectiveRentPer
+  };
+}
 
 </script>
 </body>
 </html>
+
