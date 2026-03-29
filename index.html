@@ -3924,9 +3924,9 @@ function calcSplitD() {
   var total_clean  = clean + (pet ? pc : 0);
 
   // 수수료 총액을 일시불 기준으로 먼저 확정 → 잔여분 방식으로 오차 방지
-  // 임대수수료: min(n, 87)박까지만 적용 (장박 면제)
-  var rent_fee_nights = Math.min(n, OVER_LIMIT);
-  var total_svc_rent  = Math.ceil((rent_per + extra_per * extra_pax) * rent_fee_nights * grr);
+  // 임대수수료: 총 임대료 기준 (min 캡핑 없음 - dCalcCore와 동일 기준)
+  var ls_rent_total_for_svc = (rent_per + extra_per * extra_pax) * n;
+  var total_svc_rent  = Math.ceil(ls_rent_total_for_svc * grr);
   // 기타수수료: 전체 공과금+청소비 기준
   var total_svc_other = Math.ceil((util * n + total_clean) * gor);
 
