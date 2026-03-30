@@ -769,7 +769,7 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         </div>
         <div class="field" style="grid-column:1/-1;">
           <label>적용 환율 <span id="v2o_rate_label" style="color:#4f8ef7;font-weight:700;">(원/바트)</span></label>
-          <input type="number" id="v2o_rate" value="49.3884" step="0.001" oninput="v2calcO();updateV2OKrw();updateV2ODiscHint();updateV2OPeakHint()">
+          <input type="number" id="v2o_rate" value="49.4394" step="0.001" oninput="v2calcO();updateV2OKrw();updateV2ODiscHint();updateV2OPeakHint()">
         </div>
         <!-- W 입력 -->
         <div class="field">
@@ -986,7 +986,7 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
     <div class="grid2">
       <div class="card">
         <div class="card-title teal">변경 후 조건 (기준 통화)</div>
-        <div class="field"><label>적용 환율</label><input type="number" id="v2o_n2_rate" value="49.3884" step="0.001" oninput="v2calcO2()"></div>
+        <div class="field"><label>적용 환율</label><input type="number" id="v2o_n2_rate" value="49.4394" step="0.001" oninput="v2calcO2()"></div>
         <div class="field"><label>총 박수 n (변경 후)</label><input type="number" id="v2o_n2_nights" value="45" oninput="v2calcO2()"></div>
         <div class="field"><label>인원수 k</label><input type="number" id="v2o_n2_persons" value="1" oninput="v2calcO2()"></div>
         <div class="field"><div class="checkbox-row"><input type="checkbox" id="v2o_n2_pet" onchange="v2calcO2()"><label for="v2o_n2_pet">반려동물 있음 (변경 후)</label></div></div>
@@ -1116,6 +1116,15 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="field"><label>기준 인원</label><input type="number" id="d_base_pax" value="3" oninput="calcD()"></div>
         <div class="field"><label>최대 인원</label><input type="number" id="d_max_pax" value="5" oninput="calcD()"></div>
         <div class="field"><label>보증금 (원)</label><input type="number" id="d_deposit" value="0" oninput="calcD()"></div>
+        <div class="field" style="grid-column:1/-1;">
+          <label style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="display:flex;align-items:center;gap:6px;">
+              단기월세 숙소
+              <span style="font-size:10px;color:var(--text-muted);font-weight:400;">ON + 58박↑ → 기간할인/성수기 미적용</span>
+            </span>
+            <input type="checkbox" id="d_short_term" onchange="calcD()" style="width:auto;margin:0;">
+          </label>
+        </div>
       </div>
       <div class="card">
         <div class="card-title">예약 조건</div>
@@ -1450,7 +1459,7 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
             <option value="MY">🇲🇾 말레이시아 (링깃, MYR)</option>
             <option value="VN">🇻🇳 베트남 (동, VND)</option>
           </select></div>
-        <div class="field"><label>적용 환율 (원/기준통화)</label><input type="number" id="o_rate" value="49.3884" step="0.001" oninput="calcO()"></div>
+        <div class="field"><label>적용 환율 (원/기준통화)</label><input type="number" id="o_rate" value="49.4394" step="0.001" oninput="calcO()"></div>
         <div class="field"><label>박당 가격 - ≤13박 기준 W (기준 통화)</label><input type="number" id="o_W" value="1125" step="0.01" oninput="calcO()"></div>
         <div class="field"><label>박당 가격 - 14~28박 기준 M14 (기준 통화)</label><input type="number" id="o_M14" value="1062" step="0.01" oninput="calcO()"></div>
         <div class="field"><label>박당 가격 - ≥29박 기준 M29 (기준 통화)</label><input type="number" id="o_M29" value="944" step="0.01" oninput="calcO()"></div>
@@ -1463,6 +1472,15 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         <div class="field"><label>기준 인원</label><input type="number" id="o_base_pax" value="6" oninput="calcO()"></div>
         <div class="field"><label>최대 인원</label><input type="number" id="o_max_pax" value="11" oninput="calcO()"></div>
         <div class="field"><label>보증금 (기준 통화)</label><input type="number" id="o_deposit" value="5819" oninput="calcO()"></div>
+        <div class="field" style="grid-column:1/-1;">
+          <label style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="display:flex;align-items:center;gap:6px;">
+              단기월세 숙소
+              <span style="font-size:10px;color:var(--text-muted);font-weight:400;">ON + 58박↑ → 기간할인/성수기 미적용</span>
+            </span>
+            <input type="checkbox" id="o_short_term" onchange="calcO()" style="width:auto;margin:0;">
+          </label>
+        </div>
       </div>
       <div class="card">
         <div class="card-title">예약 조건</div>
@@ -1627,7 +1645,7 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
             <option value="MY">🇲🇾 말레이시아 (링깃, MYR)</option>
             <option value="VN">🇻🇳 베트남 (동, VND)</option>
           </select></div>
-        <div class="field"><label>적용 환율 (자동/수동)</label><input type="number" id="o_n2_rate" value="49.3884" step="0.001" oninput="calcO2()"></div>
+        <div class="field"><label>적용 환율 (자동/수동)</label><input type="number" id="o_n2_rate" value="49.4394" step="0.001" oninput="calcO2()"></div>
         <div class="field"><label>박수 (변경 후)</label><input type="number" id="o_n2_nights" value="7" oninput="calcO2()"></div>
         <div class="field"><label>인원수 (변경 후)</label><input type="number" id="o_n2_persons" value="1" oninput="calcO2()"></div>
         <div class="field">
@@ -1890,7 +1908,7 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
             <option value="MY">🇲🇾 말레이시아 (링깃, MYR)</option>
             <option value="VN">🇻🇳 베트남 (동, VND)</option>
           </select></div>
-        <div class="field"><label>적용 환율</label><input type="number" id="cO_rate" value="49.3884" step="0.001" oninput="calcCmpO()"></div>
+        <div class="field"><label>적용 환율</label><input type="number" id="cO_rate" value="49.4394" step="0.001" oninput="calcCmpO()"></div>
         <div class="field"><label>박당 임대료 (기준 통화)</label><input type="number" id="cO_v1_rent" value="1234" step="0.01" oninput="calcCmpO()"></div>
         <div class="field"><label>보증금 (기준 통화)</label><input type="number" id="cO_v1_deposit" value="5819" step="0.01" oninput="calcCmpO()"></div>
         <div class="field"><label>게스트 임대 수수료율 (%)</label><input type="number" id="cO_v1_grr" value="13" step="0.1" oninput="calcCmpO()"></div>
@@ -2227,17 +2245,31 @@ function calcD() {
   const disc_rate = v('d_disc_rate') / 100;
   const d_peak_on = b('d_peak_on');
 
+  // 단기월세 + 58박 이상이면 기간할인/성수기 미적용
+  const short_term_d = b('d_short_term');
+  const ignore_disc_peak_d = short_term_d && nights >= 58;
+  const d_peak_on_eff   = ignore_disc_peak_d ? false : d_peak_on;
+  const disc_on_eff     = ignore_disc_peak_d ? false : disc_on;
+
   // 4가지 케이스 통합 계산
-  const rc = calcTotalRentCost('d', nights, rent_per, disc_on, disc_rate, d_peak_on);
+  const rc = calcTotalRentCost('d', nights, rent_per, disc_on_eff, disc_rate, d_peak_on_eff);
   const effective_rent_per = rc.effectiveRentPer;
   const disc_amount = Math.round(rc.discSaving);
+
+  // 단기월세 시각 피드백: 기간할인/성수기 섹션 dim 처리
+  const discFields = document.getElementById('d_disc_fields');
+  const peakFields = document.getElementById('d_peak_fields');
+  const discCard   = document.getElementById('d_disc_on') ? document.getElementById('d_disc_on').closest('.card') || null : null;
+  const dimStyle   = ignore_disc_peak_d ? 'opacity:0.35;pointer-events:none;' : '';
+  if (discFields) discFields.style.cssText = discFields.style.cssText.replace(/opacity:[^;]+;?/g,'').replace(/pointer-events:[^;]+;?/g,'') + (ignore_disc_peak_d ? 'opacity:0.35;pointer-events:none;' : '');
+  if (peakFields) peakFields.style.cssText = peakFields.style.cssText.replace(/opacity:[^;]+;?/g,'').replace(/pointer-events:[^;]+;?/g,'') + (ignore_disc_peak_d ? 'opacity:0.35;pointer-events:none;' : '');
 
   // 성수기 차액 표시: 할인 없을 때 기본 임대료 대비 성수기 프리미엄
   // = (성수기 포함 정가 총액) - (기본 임대료 × 박수)
   // 할인이 있을 때는 할인 절감을 별도 행으로 보여주므로, 성수기 행은 정가 기준 프리미엄만
   let peak_display = 0;
   if (d_peak_on) {
-    const rcNoDis = calcTotalRentCost('d', nights, rent_per, false, 0, true);
+    const rcNoDis = calcTotalRentCost('d', nights, rent_per, false, 0, d_peak_on_eff ? true : false);
     peak_display = Math.round(rcNoDis.totalCost - rent_per * nights);
   }
 
@@ -2282,6 +2314,7 @@ function calcD() {
   // 저장
   dState = { ...final, coupon, g_rrate, g_orate, h_rrate, h_orate,
              rent_per, extra_per, base_pax, utility_per, pet_clean,
+             effective_rent_per,
              nights: v('d_nights'),
              g_total: final.guest_total, h_total: final.host_total };
 
@@ -2529,14 +2562,20 @@ function calcO() {
   const o_disc_rate = v('o_disc_rate') / 100;
   const o_peak_on = b('o_peak_on');
 
-  const orc = calcTotalRentCost('o', nights, rent, o_disc_on, o_disc_rate, o_peak_on);
+  // 단기월세 + 58박 이상이면 기간할인/성수기 미적용
+  const short_term_o = b('o_short_term');
+  const ignore_disc_peak_o = short_term_o && nights >= 58;
+  const o_peak_on_eff = ignore_disc_peak_o ? false : o_peak_on;
+  const o_disc_on_eff = ignore_disc_peak_o ? false : o_disc_on;
+
+  const orc = calcTotalRentCost('o', nights, rent, o_disc_on_eff, o_disc_rate, o_peak_on_eff);
   const o_effective_rent = orc.effectiveRentPer;
   const o_disc_amount = Math.round(orc.discSaving * rate);
 
   // 성수기 차액 표시: 할인 없는 정가 기준 성수기 프리미엄
   let o_peak_cost_k = 0;
   if (o_peak_on) {
-    const orcNoDis = calcTotalRentCost('o', nights, rent, false, 0, true);
+    const orcNoDis = calcTotalRentCost('o', nights, rent, false, 0, o_peak_on_eff ? true : false);
     o_peak_cost_k = Math.round((orcNoDis.totalCost - rent * nights) * rate);
   }
 
@@ -3904,7 +3943,8 @@ function calcSplitD() {
   if (unavail) unavail.style.display = 'none';
   if (wrap)    wrap.style.display    = 'block';
 
-  var rent_per    = v('d_rent');
+  // 성수기/기간할인 반영된 실제 박당 임대료 사용
+  var rent_per    = (dState.effective_rent_per != null) ? dState.effective_rent_per : v('d_rent');
   var util        = v('d_utility');
   var clean       = v('d_clean');
   var pc          = v('d_pet_clean');
@@ -3933,6 +3973,9 @@ function calcSplitD() {
   var total_svc_rent  = Math.ceil((rent_per + extra_per * extra_pax) * rent_fee_nights * grr);
   // 기타수수료: 전체 공과금+청소비 기준
   var total_svc_other = Math.ceil((util * n + total_clean) * gor);
+  // 총 임대료 (잔여분 오차 방지)
+  var total_rent_split = Math.round((rent_per + extra_per * extra_pax) * n);
+  var paid_rent = 0;
 
   // 총 쿠폰 = ceil((임대료전체 + 전체svc) × rate), 마지막회차는 잔여분
   var coupon_remain = 0;
@@ -3952,7 +3995,9 @@ function calcSplitD() {
     var isLast = (x === total_rounds);
     var nights = (isLast && remain > 0) ? remain : UNIT;
 
-    var rent     = (rent_per + extra_per * extra_pax) * nights;
+    var rent_base = (rent_per + extra_per * extra_pax) * nights;
+    var rent = isLast ? (total_rent_split - paid_rent) : Math.round((rent_per + extra_per * extra_pax) * nights);
+    if (!isLast) paid_rent += rent;
     var util_amt = util * nights;
 
     // 임대 수수료: 마지막 수수료 회차는 잔여분, 이전은 ceil, 이후는 0
@@ -4190,7 +4235,7 @@ function v2calcSplitD() {
 ============================================================ */
 
 // 환율 (기준값, 실제 사용 시 변경 가능)
-var EXCHANGE_RATES = { KRW: 1, USD: 1555.0104, JPY: 9.7981, CNY: 232.9680 };
+var EXCHANGE_RATES = { KRW: 1, USD: 1548.0540, JPY: 9.7376, CNY: 232.1214 };
 var CURRENCY_SYMBOL = { KRW: '₩', USD: '$', JPY: '¥', CNY: '¥' };
 var CURRENCY_LABEL  = { KRW: 'KRW', USD: 'USD', JPY: 'JPY', CNY: 'CNY' };
 var BUFFER = 1.02; // 외화 버퍼 2%
@@ -4506,10 +4551,10 @@ function getV2Deposit(n) {
 
 /* ── VER2 해외 국가/통화 설정 ── */
 var V2O_COUNTRY_INFO = {
-  TH: { name: '태국',       currency: '바트',   code: 'THB', rate: 49.3884 },
-  ID: { name: '인도네시아', currency: '루피아', code: 'IDR', rate: 0.0989  },
-  MY: { name: '말레이시아', currency: '링깃',   code: 'MYR', rate: 414.8442},
-  VN: { name: '베트남',     currency: '동',     code: 'VND', rate: 0.0648  }
+  TH: { name: '태국',       currency: '바트',   code: 'THB', rate: 49.4394 },
+  ID: { name: '인도네시아', currency: '루피아', code: 'IDR', rate: 0.0984  },
+  MY: { name: '말레이시아', currency: '링깃',   code: 'MYR', rate: 416.3538},
+  VN: { name: '베트남',     currency: '동',     code: 'VND', rate: 0.0646  }
 };
 
 // 기존 계산기 해외 국가별 수수료율 설정
