@@ -2139,6 +2139,9 @@ function calcTotalRentCost(prefix, totalNights, rentPer, discOn, discRate, peakO
 
   if (hasDates) {
     // ── 날짜 기반 정확한 계산 ──
+    // 날짜가 있을 때는 실제 날짜 차이를 totalNights로 사용 (필드값과 불일치 방지)
+    var ciDate = new Date(ci), coDate = new Date(co);
+    totalNights = Math.round((coDate - ciDate) / 86400000);
 
     // 성수기 박수 합산 (각 구간은 독립적으로 체크인/아웃과 교집합)
     // 구간 간 날짜 중복은 없다고 가정 (사용자 입력 책임)
@@ -2233,6 +2236,15 @@ function calcTotalRentCost(prefix, totalNights, rentPer, discOn, discRate, peakO
 }
 
 function calcD() {
+  // 날짜가 있으면 날짜 기반 박수 우선 사용 (필드값과 불일치 방지)
+  (function() {
+    var ci = document.getElementById('d_checkin').value;
+    var co = document.getElementById('d_checkout').value;
+    if (ci && co) {
+      var n = Math.round((new Date(co) - new Date(ci)) / 86400000);
+      if (n > 0) document.getElementById('d_nights').value = n;
+    }
+  })();
   const nights = v('d_nights'), persons = v('d_persons'), pet = b('d_pet');
   const rent_per=v('d_rent'), utility_per=v('d_utility'), clean=v('d_clean');
   const pet_clean=v('d_pet_clean'), extra_per=v('d_extra_per'), base_pax=v('d_base_pax');
@@ -2541,6 +2553,15 @@ let oState = {};
 
 
 function calcO() {
+  // 날짜가 있으면 날짜 기반 박수 우선 사용
+  (function() {
+    var ci = document.getElementById('o_checkin').value;
+    var co = document.getElementById('o_checkout').value;
+    if (ci && co) {
+      var n = Math.round((new Date(co) - new Date(ci)) / 86400000);
+      if (n > 0) document.getElementById('o_nights').value = n;
+    }
+  })();
   const rate=v('o_rate'), nights=v('o_nights'), persons=v('o_persons'), pet=b('o_pet');
   const oW=v('o_W'), oM29=v('o_M29'), util=v('o_utility'), clean=v('o_clean'), pc=v('o_pet_clean');
   const ep=v('o_extra_per'), bp=v('o_base_pax'), dep=v('o_deposit');
