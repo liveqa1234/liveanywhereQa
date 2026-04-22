@@ -747,6 +747,44 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
 
 <!-- ═══════ VER2 해외 ═══════ -->
 <div id="v2overseas" class="v2-tab-content">
+
+  <!-- 환율 설정 -->
+  <div class="section">
+    <div class="card" style="background:linear-gradient(135deg,rgba(45,212,160,.07),rgba(45,212,160,.02));border-color:rgba(45,212,160,.25);">
+      <div class="card-title green" style="margin-bottom:12px;">💱 환율 설정 <span style="font-size:10px;font-weight:400;color:var(--text-muted);margin-left:6px;">하나은행 고시환율 기준 · 콘솔 적용환율 = 고시환율 × (1 + 스프레드)</span></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;">
+        <div>
+          <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">🇹🇭 바트 (THB) · 원/바트</label>
+          <input type="number" id="er_THB" value="48.9498" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">🇮🇩 루피아 (IDR) · 원/루피아</label>
+          <input type="number" id="er_IDR" value="0.0962" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">🇲🇾 링깃 (MYR) · 원/링깃</label>
+          <input type="number" id="er_MYR" value="407.7960" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">🇻🇳 동 (VND) · 원/동</label>
+          <input type="number" id="er_VND" value="0.0636" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">🇺🇸 달러 (USD) · 원/달러</label>
+          <input type="number" id="er_USD" value="1526.4606" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">🇯🇵 엔 (JPY) · 원/엔</label>
+          <input type="number" id="er_JPY" value="9.5736" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">🇨🇳 위안 (CNY) · 원/위안</label>
+          <input type="number" id="er_CNY" value="231.2850" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="section">
     <div class="section-header"><span class="section-badge badge-green">① 집 설정 가격 (기준 통화)</span></div>
     <div class="info-box">
@@ -4256,7 +4294,7 @@ function v2calcSplitD() {
 ============================================================ */
 
 // 환율 (기준값, 실제 사용 시 변경 가능)
-var EXCHANGE_RATES = { KRW: 1, USD: 1548.0540, JPY: 9.7376, CNY: 232.1214 };
+var EXCHANGE_RATES = { KRW: 1, USD: 1526.4606, JPY: 9.5736, CNY: 231.2850 };
 var CURRENCY_SYMBOL = { KRW: '₩', USD: '$', JPY: '¥', CNY: '¥' };
 var CURRENCY_LABEL  = { KRW: 'KRW', USD: 'USD', JPY: 'JPY', CNY: 'CNY' };
 var BUFFER = 1.02; // 외화 버퍼 2%
@@ -4572,10 +4610,10 @@ function getV2Deposit(n) {
 
 /* ── VER2 해외 국가/통화 설정 ── */
 var V2O_COUNTRY_INFO = {
-  TH: { name: '태국',       currency: '바트',   code: 'THB', rate: 49.4394 },
-  ID: { name: '인도네시아', currency: '루피아', code: 'IDR', rate: 0.0984  },
-  MY: { name: '말레이시아', currency: '링깃',   code: 'MYR', rate: 416.3538},
-  VN: { name: '베트남',     currency: '동',     code: 'VND', rate: 0.0646  }
+  TH: { name: '태국',       currency: '바트',   code: 'THB', rate: 48.9498 },
+  ID: { name: '인도네시아', currency: '루피아', code: 'IDR', rate: 0.0962  },
+  MY: { name: '말레이시아', currency: '링깃',   code: 'MYR', rate: 407.7960},
+  VN: { name: '베트남',     currency: '동',     code: 'VND', rate: 0.0636  }
 };
 
 // 기존 계산기 해외 국가별 수수료율 설정
@@ -4793,6 +4831,60 @@ function getPeakBreakdown(prefix, totalNights, baseRent, discRate) {
     effectiveRentPer: effectiveRentPer
   };
 }
+
+/* ============================================================
+   환율 설정 업데이트
+============================================================ */
+function applyExchangeRates() {
+  var thb = parseFloat(document.getElementById('er_THB').value) || 48.9498;
+  var idr = parseFloat(document.getElementById('er_IDR').value) || 0.0962;
+  var myr = parseFloat(document.getElementById('er_MYR').value) || 407.7960;
+  var vnd = parseFloat(document.getElementById('er_VND').value) || 0.0636;
+  var usd = parseFloat(document.getElementById('er_USD').value) || 1526.4606;
+  var jpy = parseFloat(document.getElementById('er_JPY').value) || 9.5736;
+  var cny = parseFloat(document.getElementById('er_CNY').value) || 231.2850;
+
+  // V2O_COUNTRY_INFO 업데이트
+  V2O_COUNTRY_INFO.TH.rate = thb;
+  V2O_COUNTRY_INFO.ID.rate = idr;
+  V2O_COUNTRY_INFO.MY.rate = myr;
+  V2O_COUNTRY_INFO.VN.rate = vnd;
+
+  // EXCHANGE_RATES 업데이트 (가격보기 USD/JPY/CNY)
+  EXCHANGE_RATES.USD = usd;
+  EXCHANGE_RATES.JPY = jpy;
+  EXCHANGE_RATES.CNY = cny;
+
+  // 현재 선택된 국가에 맞게 환율 필드 동기화
+  var country = document.getElementById('v2o_country');
+  if (country) {
+    var sel = country.value;
+    var rateMap = { TH: thb, ID: idr, MY: myr, VN: vnd };
+    var newRate = rateMap[sel];
+    if (newRate) {
+      var rateEl = document.getElementById('v2o_rate');
+      if (rateEl) rateEl.value = newRate.toFixed(4);
+    }
+  }
+
+  // V1 해외 계산기도 국가에 맞게 동기화
+  var v1Country = document.getElementById('o_country');
+  if (v1Country) {
+    var v1Sel = v1Country.value;
+    var v1Map = { TH: thb, ID: idr, MY: myr, VN: vnd };
+    var v1Rate = v1Map[v1Sel];
+    if (v1Rate) {
+      var v1RateEl = document.getElementById('o_rate');
+      if (v1RateEl) v1RateEl.value = v1Rate.toFixed(4);
+    }
+  }
+
+  // 재계산
+  if (typeof v2calcO === 'function') v2calcO();
+  if (typeof calcO === 'function') calcO();
+  if (typeof updateV2OKrw === 'function') updateV2OKrw();
+}
+
 
 </script>
 </body>
