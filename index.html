@@ -569,15 +569,19 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
           <div class="price-view-grid">
             <div class="pv-col-head"></div>
             <div class="pv-col-head">6박</div>
+            <div class="pv-col-head">13박</div>
             <div class="pv-col-head">30박</div>
             <div class="pv-row-label">실이용금액</div>
             <div class="pv-val" id="v2d_pv_actual_6">-</div>
+            <div class="pv-val" id="v2d_pv_actual_13">-</div>
             <div class="pv-val" id="v2d_pv_actual_30">-</div>
             <div class="pv-row-label">기본가격</div>
             <div class="pv-val" id="v2d_pv_basic_6">-</div>
+            <div class="pv-val" id="v2d_pv_basic_13">-</div>
             <div class="pv-val" id="v2d_pv_basic_30">-</div>
             <div class="pv-row-label">임대료기준</div>
             <div class="pv-val" id="v2d_pv_rent_6">-</div>
+            <div class="pv-val" id="v2d_pv_rent_13">-</div>
             <div class="pv-val" id="v2d_pv_rent_30">-</div>
           </div>
           <div class="pv-note" id="v2d_pv_note"></div>
@@ -990,15 +994,19 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
           <div class="price-view-grid">
             <div class="pv-col-head"></div>
             <div class="pv-col-head">6박</div>
+            <div class="pv-col-head">13박</div>
             <div class="pv-col-head">30박</div>
             <div class="pv-row-label">실이용금액</div>
             <div class="pv-val" id="v2o_pv_actual_6">-</div>
+            <div class="pv-val" id="v2o_pv_actual_13">-</div>
             <div class="pv-val" id="v2o_pv_actual_30">-</div>
             <div class="pv-row-label">기본가격</div>
             <div class="pv-val" id="v2o_pv_basic_6">-</div>
+            <div class="pv-val" id="v2o_pv_basic_13">-</div>
             <div class="pv-val" id="v2o_pv_basic_30">-</div>
             <div class="pv-row-label">임대료기준</div>
             <div class="pv-val" id="v2o_pv_rent_6">-</div>
+            <div class="pv-val" id="v2o_pv_rent_13">-</div>
             <div class="pv-val" id="v2o_pv_rent_30">-</div>
           </div>
           <div class="pv-note" id="v2o_pv_note"></div>
@@ -4407,7 +4415,7 @@ function updateV2PriceView() {
   var extra_pax = Math.max(k - bp, 0);
   var tc    = clean + (pet ? pc : 0);
 
-  var periods = [6, 30];
+  var periods = [6, 13, 30];
   periods.forEach(function(n) {
     var base_rent;
     if (n < 30) {
@@ -4440,9 +4448,9 @@ function updateV2PriceView() {
     if (el_r) el_r.textContent = formatCurrency(rentOnly);
   });
 
-  // VER2 그리드 2열로 조정
+  // VER2 그리드 3열로 조정 (6박·13박·30박)
   var grid = document.querySelector('#v2d_price_view_box .price-view-grid');
-  if (grid) grid.className = 'price-view-grid grid-2col';
+  if (grid) grid.className = 'price-view-grid';
 
   var note = document.getElementById('v2d_pv_note');
   if (note) {
@@ -4469,7 +4477,7 @@ function updateV2OPriceView() {
   var extra_pax = Math.max(k - bp, 0);
   var tc    = clean + (pet ? pc : 0);
 
-  var periods = [6, 30];
+  var periods = [6, 13, 30];
   periods.forEach(function(n) {
     var base_rent;
     if (n < 30) {
