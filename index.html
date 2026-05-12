@@ -459,7 +459,9 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
       </div>
       <div class="card">
         <div class="card-title green">예약 조건</div>
-        <div class="field"><label>총 박수 n</label><input type="number" id="v2d_nights" value="30" oninput="v2calcD()"></div>
+        <div class="field"><label>체크인</label><input type="date" id="v2d_checkin" oninput="v2dUpdateNights();v2calcD()"></div>
+        <div class="field"><label>체크아웃</label><input type="date" id="v2d_checkout" oninput="v2dUpdateNights();v2calcD()"></div>
+        <div class="field"><label>총 박수 n <span style="font-size:10px;color:var(--text-muted);">(날짜 선택 시 자동계산)</span></label><input type="number" id="v2d_nights" value="30" oninput="v2calcD()"></div>
         <div class="field"><label>인원수 k (유아 제외)</label><input type="number" id="v2d_persons" value="1" oninput="v2calcD()"></div>
         <div class="field">
           <div class="checkbox-row"><input type="checkbox" id="v2d_pet" onchange="v2calcD()"><label for="v2d_pet">반려동물 있음</label></div>
@@ -472,35 +474,42 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
             <input type="checkbox" id="v2d_disc_on" onchange="v2calcD()" style="width:auto;margin:0;">
           </label>
         </div>
+        <div class="field"><label>할인 시작일</label><input type="date" id="v2d_disc_s" oninput="v2calcD()"></div>
+        <div class="field"><label>할인 종료일</label><input type="date" id="v2d_disc_e" oninput="v2calcD()"></div>
         <div class="field">
           <label>할인율 (%)</label>
           <input type="number" id="v2d_disc_rate" value="0" step="0.1" min="0" max="100" oninput="v2calcD()" placeholder="0">
         </div>
-        <div class="field" style="grid-column:1/-1;">
-          <div class="hint" style="margin:0;">✅ 임대료 전체에 할인율 적용 (수수료는 할인 후 임대료 기준으로 재산정)</div>
+        <div class="field" style="grid-column:1/-1;" id="v2d_disc_hint">
+          <div class="hint" style="margin:0;">✅ 날짜 설정 시 체크인/아웃과 겹치는 박수에만 할인 적용 · 날짜 미설정 시 전체 n박 할인</div>
         </div>
         <hr class="section-divider">
-        <div class="card-title orange">성수기 박당 추가요금 <span class="changed-tag">신규</span></div>
+        <div class="card-title orange">할증 요금 <span class="changed-tag">신규</span></div>
         <div class="field" style="grid-column:1/-1;">
           <label style="display:flex;align-items:center;justify-content:space-between;">
-            <span>성수기 박 당 추가요금 적용</span>
+            <span>할증 요금 적용</span>
             <input type="checkbox" id="v2d_peak_on" onchange="v2calcD()" style="width:auto;margin:0;">
           </label>
         </div>
-        <div class="field">
-          <label>구간 1 · 박당 추가요금 (원)</label>
-          <input type="number" id="v2d_peak1" value="0" oninput="v2calcD()" placeholder="0">
-        </div>
-        <div class="field">
-          <label>구간 2 · 박당 추가요금 (원)</label>
-          <input type="number" id="v2d_peak2" value="0" oninput="v2calcD()" placeholder="0">
-        </div>
-        <div class="field">
-          <label>구간 3 · 박당 추가요금 (원)</label>
-          <input type="number" id="v2d_peak3" value="0" oninput="v2calcD()" placeholder="0">
+        <div style="grid-column:1/-1;display:grid;gap:10px;">
+          <div style="background:rgba(255,255,255,.04);border:1px solid #2a3050;border-radius:8px;padding:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:end;">
+            <div><label style="font-size:11px;color:var(--text-muted);">구간1 시작일</label><input type="date" id="v2d_peak1_s" oninput="v2calcD()"></div>
+            <div><label style="font-size:11px;color:var(--text-muted);">구간1 종료일</label><input type="date" id="v2d_peak1_e" oninput="v2calcD()"></div>
+            <div><label style="font-size:11px;color:var(--text-muted);">박당 임대료 (원)</label><input type="number" id="v2d_peak1_r" value="0" oninput="v2calcD()" placeholder="0"></div>
+          </div>
+          <div style="background:rgba(255,255,255,.04);border:1px solid #2a3050;border-radius:8px;padding:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:end;">
+            <div><label style="font-size:11px;color:var(--text-muted);">구간2 시작일</label><input type="date" id="v2d_peak2_s" oninput="v2calcD()"></div>
+            <div><label style="font-size:11px;color:var(--text-muted);">구간2 종료일</label><input type="date" id="v2d_peak2_e" oninput="v2calcD()"></div>
+            <div><label style="font-size:11px;color:var(--text-muted);">박당 임대료 (원)</label><input type="number" id="v2d_peak2_r" value="0" oninput="v2calcD()" placeholder="0"></div>
+          </div>
+          <div style="background:rgba(255,255,255,.04);border:1px solid #2a3050;border-radius:8px;padding:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:end;">
+            <div><label style="font-size:11px;color:var(--text-muted);">구간3 시작일</label><input type="date" id="v2d_peak3_s" oninput="v2calcD()"></div>
+            <div><label style="font-size:11px;color:var(--text-muted);">구간3 종료일</label><input type="date" id="v2d_peak3_e" oninput="v2calcD()"></div>
+            <div><label style="font-size:11px;color:var(--text-muted);">박당 임대료 (원)</label><input type="number" id="v2d_peak3_r" value="0" oninput="v2calcD()" placeholder="0"></div>
+          </div>
         </div>
         <div class="field" style="grid-column:1/-1;">
-          <div class="hint" style="margin:0;">✅ 성수기 박 당 추가요금은 임대료에 합산 · 수수료 대상에 포함</div>
+          <div class="hint" style="margin:0;">✅ 날짜 범위와 체크인/아웃 교집합 박수에 해당 박당 임대료 적용 · 날짜 미설정 시 기존 추가요금 방식(전체 n박)</div>
         </div>
         <hr class="section-divider">
         <div class="card-title green">수수료율 <span class="changed-tag">변경</span></div>
@@ -759,15 +768,15 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;">
         <div>
           <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">🇹🇭 바트 (THB) · 원/바트</label>
-          <input type="number" id="er_THB" value="48.9498" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
+          <input type="number" id="er_THB" value="48.5316" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
         </div>
         <div>
           <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">🇮🇩 루피아 (IDR) · 원/루피아</label>
-          <input type="number" id="er_IDR" value="0.0962" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
+          <input type="number" id="er_IDR" value="0.0947" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
         </div>
         <div>
           <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">🇲🇾 링깃 (MYR) · 원/링깃</label>
-          <input type="number" id="er_MYR" value="407.7960" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
+          <input type="number" id="er_MYR" value="406.5312" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
         </div>
         <div>
           <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">🇻🇳 동 (VND) · 원/동</label>
@@ -775,15 +784,15 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
         </div>
         <div>
           <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">🇺🇸 달러 (USD) · 원/달러</label>
-          <input type="number" id="er_USD" value="1526.4606" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
+          <input type="number" id="er_USD" value="1526.1546" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
         </div>
         <div>
           <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">🇯🇵 엔 (JPY) · 원/엔</label>
-          <input type="number" id="er_JPY" value="9.5736" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
+          <input type="number" id="er_JPY" value="9.6809" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
         </div>
         <div>
           <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">🇨🇳 위안 (CNY) · 원/위안</label>
-          <input type="number" id="er_CNY" value="231.2850" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
+          <input type="number" id="er_CNY" value="231.0708" step="0.0001" oninput="applyExchangeRates()" style="width:100%;font-family:'Space Mono',monospace;">
         </div>
       </div>
     </div>
@@ -2047,8 +2056,8 @@ input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:
    UTILS
 ============================================================ */
 const $ = id => document.getElementById(id);
-const v = id => parseFloat($(id).value) || 0;
-const b = id => $(id).checked;
+const v = id => { var el = $(id); return el ? parseFloat(el.value) || 0 : 0; };
+const b = id => { var el = $(id); return el ? el.checked : false; };
 const set = (id, val) => { const el = $(id); if(el) el.textContent = val; };
 const fmt = n => isNaN(n) ? '-' : Math.round(n).toLocaleString('ko-KR') + '원';
 const fmtB = n => n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
@@ -2114,6 +2123,14 @@ let dState = {};
 
 let dExtState = {}; // ③번 연장 결과 (④번 단축의 기존값)
 
+function v2dUpdateNights() {
+  var ci = document.getElementById('v2d_checkin') ? document.getElementById('v2d_checkin').value : '';
+  var co = document.getElementById('v2d_checkout') ? document.getElementById('v2d_checkout').value : '';
+  if (ci && co) {
+    var n = Math.round((new Date(co) - new Date(ci)) / 86400000);
+    if (n > 0) document.getElementById('v2d_nights').value = n;
+  }
+}
 function toggleDPeak() {
   var el = document.getElementById('d_peak_fields');
   if (el) el.style.display = document.getElementById('d_peak_on').checked ? '' : 'none';
@@ -2914,8 +2931,23 @@ function v2CoreCalc(n, k, pet,
                     g_rate, h_rate, extra_disc_on, extra_disc_rate,
                     disc_on, disc_rate,
                     peak_on, peak1, peak2, peak3,
-                    c_rate, c_max) {
+                    c_rate, c_max,
+                    checkin, checkout,
+                    disc_s, disc_e,
+                    peak1_s, peak1_e, peak1_r,
+                    peak2_s, peak2_e, peak2_r,
+                    peak3_s, peak3_e, peak3_r) {
   const extra_pax = Math.max(k - base_pax, 0);
+
+  // 날짜 교집합 헬퍼
+  function overlapN(ciStr, coStr, psStr, peStr) {
+    if (!ciStr || !coStr || !psStr || !peStr) return null; // null = 날짜 미설정
+    var ci = new Date(ciStr), co = new Date(coStr);
+    var ps = new Date(psStr), pe = new Date(peStr);
+    pe.setDate(pe.getDate() + 1); // inclusive
+    var s = new Date(Math.max(ci, ps)), e = new Date(Math.min(co, pe));
+    return Math.max(Math.round((e - s) / 86400000), 0);
+  }
 
   // 기본 임대료 (추가인원 제외) - 박당 단가 계산
   let rent_per_night;
@@ -2925,15 +2957,27 @@ function v2CoreCalc(n, k, pet,
     rent_per_night = M / 30;
   }
 
-  // [A] 기간 할인 - ceil(박당 × (1-할인율)) × nights
-  const disc_rent_per = (disc_on && disc_rate > 0)
-    ? Math.ceil(rent_per_night * (1 - disc_rate))
-    : rent_per_night;
-  const base_rent = disc_rent_per * n;
+  // [A] 기간 할인 - 날짜 기반 교집합 or 전체 n박
+  let disc_amount = 0;
+  let base_rent;
+  if (disc_on && disc_rate > 0) {
+    var discN = overlapN(checkin, checkout, disc_s, disc_e);
+    if (discN === null) {
+      // 날짜 미설정 → 전체 n박 적용 (기존 방식)
+      const disc_rent_per = Math.ceil(rent_per_night * (1 - disc_rate));
+      base_rent = disc_rent_per * n;
+      disc_amount = rent_per_night * n - base_rent;
+    } else {
+      // 날짜 기반: 교집합 박수에만 할인
+      const normalN = n - discN;
+      const disc_rent_per = Math.ceil(rent_per_night * (1 - disc_rate));
+      base_rent = rent_per_night * normalN + disc_rent_per * discN;
+      disc_amount = rent_per_night * discN - disc_rent_per * discN;
+    }
+  } else {
+    base_rent = rent_per_night * n;
+  }
   const extra_cost = extra_pax * extra_per * n;
-  const disc_amount = (disc_on && disc_rate > 0)
-    ? (rent_per_night * n - base_rent)
-    : 0;
 
   // [B] 90박 초과 추가 할인
   let extra_disc_amount = 0;
@@ -2943,12 +2987,29 @@ function v2CoreCalc(n, k, pet,
     extra_disc_amount = base_per_night * over_nights * extra_disc_rate;
   }
 
-  // [C] 성수기 박당 추가요금
+  // [C] 할증(성수기) - 날짜 기반 or 전체 n박 추가요금
   let peak_cost = 0;
+  let peak_detail = []; // 표시용
   if (peak_on) {
-    peak_cost += (peak1 || 0) * n;
-    peak_cost += (peak2 || 0) * n;
-    peak_cost += (peak3 || 0) * n;
+    var peakSegs = [
+      {s: peak1_s, e: peak1_e, r: peak1_r, legacy: peak1},
+      {s: peak2_s, e: peak2_e, r: peak2_r, legacy: peak2},
+      {s: peak3_s, e: peak3_e, r: peak3_r, legacy: peak3},
+    ];
+    peakSegs.forEach(function(seg) {
+      if (seg.s && seg.e && seg.r) {
+        // 날짜 기반: 교집합 박수 × (박당임대료 - 기본박당임대료)
+        var pn = overlapN(checkin, checkout, seg.s, seg.e);
+        if (pn === null) pn = 0;
+        var extra = (seg.r - rent_per_night) * pn;
+        peak_cost += extra;
+        peak_detail.push({n: pn, r: seg.r, extra: extra});
+      } else if (seg.legacy) {
+        // 날짜 미설정 → 기존 방식 (추가요금 × n)
+        peak_cost += seg.legacy * n;
+        peak_detail.push({n: n, r: seg.legacy, extra: seg.legacy * n});
+      }
+    });
   }
 
   const total_rent = base_rent + extra_cost - disc_amount - extra_disc_amount + peak_cost;
@@ -2965,10 +3026,10 @@ function v2CoreCalc(n, k, pet,
   // [4] 기타 서비스 이용료
   const svc_other = (utility * Math.min(n, 90) + total_clean) * g_rate;
 
-  // 쿠폰 계산
+  // 쿠폰 계산: (임대료 + 게스트 서비스이용료 전체) 기준
   let coupon = 0;
   if (c_rate > 0) {
-    const raw = Math.ceil((total_rent + svc_rent) * c_rate);
+    const raw = Math.ceil((total_rent + svc_rent + svc_other) * c_rate);
     coupon = (c_max > 0) ? Math.min(raw, c_max) : raw;
   }
 
@@ -3066,6 +3127,7 @@ function v2dRentPreview() {
 }
 
 function v2calcD() {
+  if (!document.getElementById('v2d_nights')) return; // DOM 미준비 시 스킵
   const n=v('v2d_nights'), k=v('v2d_persons'), pet=b('v2d_pet');
   const W=v('v2d_W'), M=v('v2d_M'), util=v('v2d_utility');
   const clean=v('v2d_clean'), pc=v('v2d_pet_clean'), ep=v('v2d_extra_per');
@@ -3077,17 +3139,44 @@ function v2calcD() {
   const disc_on   = b('v2d_disc_on');
   const disc_rate = v('v2d_disc_rate') / 100;
   const peak_on   = b('v2d_peak_on');
-  const peak1=v('v2d_peak1');
+  const peak1=v('v2d_peak1'); // 레거시 호환
   const peak2=v('v2d_peak2');
   const peak3=v('v2d_peak3');
 
   const c_rate_d = v('v2d_c_rate') / 100;
   const c_max_d  = v('v2d_c_max');
 
+  // 날짜 기반 파라미터
+  const v2d_ci  = document.getElementById('v2d_checkin')  ? document.getElementById('v2d_checkin').value  : '';
+  const v2d_co  = document.getElementById('v2d_checkout') ? document.getElementById('v2d_checkout').value : '';
+  const v2d_ds  = document.getElementById('v2d_disc_s')   ? document.getElementById('v2d_disc_s').value   : '';
+  const v2d_de  = document.getElementById('v2d_disc_e')   ? document.getElementById('v2d_disc_e').value   : '';
+  const v2d_p1s = document.getElementById('v2d_peak1_s')  ? document.getElementById('v2d_peak1_s').value  : '';
+  const v2d_p1e = document.getElementById('v2d_peak1_e')  ? document.getElementById('v2d_peak1_e').value  : '';
+  const v2d_p1r = document.getElementById('v2d_peak1_r')  ? parseFloat(document.getElementById('v2d_peak1_r').value)||0 : 0;
+  const v2d_p2s = document.getElementById('v2d_peak2_s')  ? document.getElementById('v2d_peak2_s').value  : '';
+  const v2d_p2e = document.getElementById('v2d_peak2_e')  ? document.getElementById('v2d_peak2_e').value  : '';
+  const v2d_p2r = document.getElementById('v2d_peak2_r')  ? parseFloat(document.getElementById('v2d_peak2_r').value)||0 : 0;
+  const v2d_p3s = document.getElementById('v2d_peak3_s')  ? document.getElementById('v2d_peak3_s').value  : '';
+  const v2d_p3e = document.getElementById('v2d_peak3_e')  ? document.getElementById('v2d_peak3_e').value  : '';
+  const v2d_p3r = document.getElementById('v2d_peak3_r')  ? parseFloat(document.getElementById('v2d_peak3_r').value)||0 : 0;
+
+  // 날짜 있으면 박수 자동 계산
+  if (v2d_ci && v2d_co) {
+    var autoN = Math.round((new Date(v2d_co) - new Date(v2d_ci)) / 86400000);
+    var nightsEl = document.getElementById('v2d_nights');
+    if (autoN > 0 && nightsEl) nightsEl.value = autoN;
+  }
+
   const r = v2CoreCalc(n,k,pet,W,M,util,clean,pc,ep,bp,dep,gr,hr,ed_on,ed,
                        disc_on,disc_rate,
                        peak_on,peak1,peak2,peak3,
-                       c_rate_d, c_max_d);
+                       c_rate_d, c_max_d,
+                       v2d_ci, v2d_co,
+                       v2d_ds, v2d_de,
+                       v2d_p1s, v2d_p1e, v2d_p1r,
+                       v2d_p2s, v2d_p2e, v2d_p2r,
+                       v2d_p3s, v2d_p3e, v2d_p3r);
 
   set('v2d_g_rent', fmt(r.total_rent));
   set('v2d_g_base_rent', fmt(r.base_rent));
@@ -4302,7 +4391,7 @@ function v2calcSplitD() {
 ============================================================ */
 
 // 환율 (기준값, 실제 사용 시 변경 가능)
-var EXCHANGE_RATES = { KRW: 1, USD: 1526.4606, JPY: 9.5736, CNY: 231.2850 };
+var EXCHANGE_RATES = { KRW: 1, USD: 1526.1546, JPY: 9.6809, CNY: 231.0708 };
 var CURRENCY_SYMBOL = { KRW: '₩', USD: '$', JPY: '¥', CNY: '¥' };
 var CURRENCY_LABEL  = { KRW: 'KRW', USD: 'USD', JPY: 'JPY', CNY: 'CNY' };
 var BUFFER = 1.02; // 외화 버퍼 2%
@@ -4618,9 +4707,9 @@ function getV2Deposit(n) {
 
 /* ── VER2 해외 국가/통화 설정 ── */
 var V2O_COUNTRY_INFO = {
-  TH: { name: '태국',       currency: '바트',   code: 'THB', rate: 48.9498 },
-  ID: { name: '인도네시아', currency: '루피아', code: 'IDR', rate: 0.0962  },
-  MY: { name: '말레이시아', currency: '링깃',   code: 'MYR', rate: 407.7960},
+  TH: { name: '태국',       currency: '바트',   code: 'THB', rate: 48.5316 },
+  ID: { name: '인도네시아', currency: '루피아', code: 'IDR', rate: 0.0947  },
+  MY: { name: '말레이시아', currency: '링깃',   code: 'MYR', rate: 406.5312},
   VN: { name: '베트남',     currency: '동',     code: 'VND', rate: 0.0636  }
 };
 
